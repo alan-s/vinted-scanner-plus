@@ -1,0 +1,23 @@
+2026-10-27 22:07:29.002 INFO 
+2026-10-27 22:07:29.002 INFO            VINTED SCANNER
+2026-10-27 22:07:29.002 INFO ========================================
+2026-10-27 22:07:29.002 INFO Loading the list of already notified items
+2026-10-27 22:07:29.003 INFO Loaded /home/runner/work/VintedScanner/VintedScanner/already_notified_items.txt
+2026-10-27 22:07:29.003 INFO No excluded_keywords.txt found, no keywords will be excluded
+2026-10-27 22:07:29.670 INFO URL triggered: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff+of+Nottingham&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&attribute_ids%5Bprice_from%5D=4&attribute_ids%5Bprice_to%5D=16&order=newest_first&page=1
+2026-10-27 22:07:29.671 INFO API has returned: 11 items
+2026-10-27 22:07:32.099 INFO Telegram notification sent: https://www.vinted.co.uk/items/10562536266-board-game-sheriff-of-nottingham-arcane-wonders
+2026-10-27 22:07:33.414 INFO Telegram notification sent: https://www.vinted.co.uk/items/10560211184-sheriff-of-nottingham-board-game-brand-new-factory-sealed
+2026-10-27 22:07:34.726 INFO Telegram notification sent: https://www.vinted.co.uk/items/10550112027-sheriff-of-nottingham-2nd-edition
+2026-10-27 22:07:35.967 INFO Telegram notification sent: https://www.vinted.co.uk/items/10490589647-sheriff-of-nottingham-board-game
+2026-10-27 22:07:37.155 INFO Telegram notification sent: https://www.vinted.co.uk/items/10485701011-sheriff-of-nottingham-board-game
+2026-10-27 22:07:38.527 INFO Telegram notification sent: https://www.vinted.co.uk/items/10434920863-sheriff-of-nottingham
+2026-10-27 22:07:39.994 INFO Telegram notification sent: https://www.vinted.co.uk/items/10382167890-sheriff-of-nottingham-board-game
+2026-10-27 22:07:41.248 INFO Telegram notification sent: https://www.vinted.co.uk/items/10311140799-sheriff-of-nottingham-2nd-edition-board-game
+2026-10-27 22:07:42.647 INFO Telegram notification sent: https://www.vinted.co.uk/items/10234664654-sheriff-of-nottingham
+2026-10-27 22:07:43.761 INFO Telegram notification sent: https://www.vinted.co.uk/items/10234088242-sheriff-of-nottingham-game
+2026-10-27 22:07:45.026 INFO Telegram notification sent: https://www.vinted.co.uk/items/10028569995-sheriff-of-nottingham-board-game
+2026-10-27 22:07:45.028 INFO Items already notified: 0
+2026-10-27 22:07:45.028 INFO Items excluded: 0
+2026-10-27 22:07:45.028 INFO Items notified: 11
+2026-10-27 22:07:45.028 INFO List of already notified items file written to /home/runner/work/VintedScanner/VintedScanner/already_notified_items.txt
