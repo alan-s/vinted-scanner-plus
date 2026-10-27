@@ -43,15 +43,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
       
-          cp vinted_items.txt /tmp/vinted_items_new.txt
+          cp already_notified_items.txt /tmp/already_notified_items_new.txt
       
           git fetch origin master
-          git checkout origin/master -- vinted_items.txt || touch vinted_items.txt
+          git checkout origin/master -- already_notified_items.txt || touch already_notified_items.txt
       
-          cat vinted_items.txt /tmp/vinted_items_new.txt | sort -u > vinted_items_merged.txt
-          mv vinted_items_merged.txt vinted_items.txt
+          cat already_notified_items.txt /tmp/already_notified_items_new.txt | sort -u > already_notified_items_merged.txt
+          mv already_notified_items_merged.txt already_notified_items.txt
       
-          git add vinted_items.txt
+          git add already_notified_items.txt
       
           if git diff --cached --quiet; then
             echo "No new items to commit."
