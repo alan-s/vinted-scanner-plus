@@ -1,6 +1,9 @@
 name: Vinted Scanner Sample
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
   schedule:
     - cron: "13 * * * *"
