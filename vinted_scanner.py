@@ -28,8 +28,9 @@ args = parser.parse_args()
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s.%(msecs)03d %(levelname)s %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout),
-              logging.FileHandler("vinted_scanner.log", encoding="utf-8"),],
+    handlers=[logging.StreamHandler(sys.stdout),],
+    # handlers=[logging.StreamHandler(sys.stdout),
+    #           logging.FileHandler("vinted_scanner.log", encoding="utf-8"), ],
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
