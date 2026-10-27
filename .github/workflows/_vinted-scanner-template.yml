@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: vinted-scanner-master
+  group: vinted-scanner-main
   cancel-in-progress: false
 
 jobs:
@@ -45,8 +45,8 @@ jobs:
       
           cp already_notified_items.txt /tmp/already_notified_items_new.txt
       
-          git fetch origin master
-          git checkout origin/master -- already_notified_items.txt || touch already_notified_items.txt
+          git fetch origin main
+          git checkout origin/main -- already_notified_items.txt || touch already_notified_items.txt
       
           cat already_notified_items.txt /tmp/already_notified_items_new.txt | sort -u > already_notified_items_merged.txt
           mv already_notified_items_merged.txt already_notified_items.txt
@@ -57,7 +57,7 @@ jobs:
             echo "No new items to commit."
           else
             git commit -m "Update Vinted seen items."
-            git push origin HEAD:master
+            git push origin HEAD:main
           fi
 
       - name: Commit updated logs
@@ -67,8 +67,8 @@ jobs:
       
           cp vinted_logs.txt /tmp/vinted_logs_new.txt
       
-          git fetch origin master
-          git checkout origin/master -- vinted_logs.txt || touch vinted_logs.txt
+          git fetch origin main
+          git checkout origin/main -- vinted_logs.txt || touch vinted_logs.txt
       
           cat vinted_logs.txt /tmp/vinted_logs_new.txt | sort -u > vinted_logs_merged.txt
           mv vinted_logs_merged.txt vinted_logs.txt
@@ -79,5 +79,5 @@ jobs:
             echo "No new logs to commit."
           else
             git commit -m "Update Vinted logs."
-            git push origin HEAD:master
+            git push origin HEAD:main
           fi
