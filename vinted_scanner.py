@@ -6,6 +6,9 @@ import logging
 import requests
 import unicodedata
 
+from pathlib import Path
+from vinted_html_parser import get_upload_time
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
@@ -25,7 +28,8 @@ args = parser.parse_args()
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s.%(msecs)03d %(levelname)s %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
+    handlers=[logging.StreamHandler(sys.stdout),
+              logging.FileHandler("vinted_scanner.log", encoding="utf-8"),],
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
@@ -64,7 +68,7 @@ def load_already_notified_items():
                 item_id = line.strip()
                 if item_id:
                     already_notified_items.add(item_id)
-
+            logger.info(f"Loaded {Path.cwd() / f.name}")
     except FileNotFoundError:
         logger.info("No previous already_notified_items.txt found, starting fresh")
     except IOError as e:
@@ -81,7 +85,7 @@ def save_already_notified_item(item_id):
         sys.exit()
 
 # Send a Telegram message when a new item is found
-def send_telegram_message(item_title, item_price, item_url, item_image, favourite_count, seller):
+def send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller):
     from html import escape
 
     safe_title = escape(str(item_title))
@@ -94,12 +98,14 @@ def send_telegram_message(item_title, item_price, item_url, item_image, favourit
     caption_lines = [
         f'🔗 <a href="{safe_url}">{safe_title}</a>',
         f"💰 {item_price}" + (f" · ❤️ {favourite_count}" if favourite_count > 0 else ""),
+        f"⏳ {item_upload_time}"
     ]
 
     if seller:
         import pycountry
     
         country_iso_code = (seller.get("country_iso_code") or "").upper()
+        country_title = (seller.get("country_title") or "")
 
         if len(country_iso_code) == 2:
             country_flag = "".join(
@@ -109,18 +115,18 @@ def send_telegram_message(item_title, item_price, item_url, item_image, favourit
         else:
             country_flag = ""
         
-        city = (seller.get("city") or "").strip()
+        #city = (seller.get("city") or "").strip()
         
         location = country_flag
         
-        if city:
-            location += f" {city}"
+        if country_title:
+            location += f" {country_title}"
     
         seller_info = (
             f"👤 {seller.get('login', 'N/D')} · "
-            f"⭐ {seller.get('positive_feedback_count', 0)}/{seller.get('feedback_count', 0)}\n"
-            f"📦 {seller.get('item_count', 0)} for sale · "
-            f"{seller.get('total_items_count', 0)} total · "
+            f"⭐ {seller.get('positive_feedback_count', 0)}/{seller.get('feedback_count', 0)} . "
+            #f"📦 {seller.get('item_count', 0)} for sale · "
+            #f"{seller.get('total_items_count', 0)} total · "
             f"👥 {seller.get('followers_count', 0)}\n"
             f"{location}"
         )
@@ -303,21 +309,21 @@ def main(log_excluded=False, notification_disabled=False):
                 item_price_data = item.get("price") or {}
                 amount = item_price_data.get("amount")
                 item_amount = (
-                    f"{float(amount):.2f}".replace(".", ",")
+                    f"{float(amount):.2f}".replace(".", ".")
                     if amount is not None
                     else "N/D"
                 )
                 item_total_price_data = item.get("total_item_price") or {}
                 total_amount = item_total_price_data.get("amount")
                 item_total_amount = (
-                    f"{float(total_amount):.2f}".replace(".", ",")
+                    f"{float(total_amount):.2f}".replace(".", ".")
                     if total_amount is not None
                     else "N/D"
                 )
-                item_currency = '€'
+                item_currency = '£'
                 item_price = (
-                    f"{item_amount} {item_currency} "
-                    f"({item_total_amount} {item_currency} w/fee)"
+                    f"{item_currency}{item_amount} "
+                    f"({item_currency}{item_total_amount})"
                     if item_amount != "N/D" and item_total_amount != "N/D"
                     else "N/D"
                 )
@@ -326,7 +332,9 @@ def main(log_excluded=False, notification_disabled=False):
     
                 item_photo = item.get("photo") or {}
                 item_image = item_photo.get("full_size_url")
-    
+
+                item_upload_time = get_upload_time(item_id)
+
                 # Skip items whose title or description match any excluded keyword
                 if is_excluded(item_id, item_title, item_description, excluded_keywords, log_excluded):
                     # logger.info(f"Excluding item [{item_id}]: {item_title}")
@@ -346,7 +354,7 @@ def main(log_excluded=False, notification_disabled=False):
                             
                         # Send Telegram notifications if configured
                         if Config.telegram_bot_token and Config.telegram_chat_id:
-                            send_telegram_message(item_title, item_price, item_url, item_image, favourite_count, seller)
+                            send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller)
     
                     # Mark item as notified and save it
                     already_notified_items.add(item_id)
@@ -354,7 +362,7 @@ def main(log_excluded=False, notification_disabled=False):
 
                 else:
                     already_notified_counter += 1
-
+            logger.info(f"List of already notified items file written to {Path.cwd() / 'already_notified_items.txt'}")
             logger.info(f"Items excluded: {excluded_counters}")
             logger.info(f"Items already notified: {already_notified_counter}")
             logger.info(f"Items notified: {notified_counter}")
@@ -364,6 +372,5 @@ def main(log_excluded=False, notification_disabled=False):
                 break
     
             page += 1
-
 if __name__ == "__main__":
     main(args.log_excluded, args.notification_disabled)
