@@ -65,15 +65,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
       
-          cp vinted_logs.txt /tmp/vinted_logs_new.txt
+          cp vinted_scanner.log /tmp/vinted_scanner_new.log
       
           git fetch origin main
-          git checkout origin/main -- vinted_logs.txt || touch vinted_logs.txt
+          git checkout origin/main -- vinted_scanner.log || touch vinted_scanner.log
       
-          cat vinted_logs.txt /tmp/vinted_logs_new.txt | sort -u > vinted_logs_merged.txt
-          mv vinted_logs_merged.txt vinted_logs.txt
+          cat vinted_scanner.log /tmp/vinted_scanner_new.log | sort -u > vinted_scanner_merged.log
+          mv vinted_scanner_merged.log vinted_scanner.log
       
-          git add vinted_logs.txt
+          git add vinted_scanner.log
       
           if git diff --cached --quiet; then
             echo "No new logs to commit."
