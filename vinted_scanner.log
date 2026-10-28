@@ -21,3 +21,15 @@
 2026-10-27 22:07:45.028 INFO Items excluded: 0
 2026-10-27 22:07:45.028 INFO Items notified: 11
 2026-10-27 22:07:45.028 INFO List of already notified items file written to /home/runner/work/VintedScanner/VintedScanner/already_notified_items.txt
+2026-10-28 01:28:36.938 INFO 
+2026-10-28 01:28:36.938 INFO            VINTED SCANNER
+2026-10-28 01:28:36.938 INFO ========================================
+2026-10-28 01:28:36.938 INFO Loaded /home/runner/work/VintedScanner/VintedScanner/already_notified_items.txt
+2026-10-28 01:28:36.938 INFO Loading the list of already notified items
+2026-10-28 01:28:36.938 INFO No excluded_keywords.txt found, no keywords will be excluded
+2026-10-28 01:28:37.652 INFO URL triggered: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff+of+Nottingham&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&attribute_ids%5Bprice_from%5D=4&attribute_ids%5Bprice_to%5D=16&order=newest_first&page=1
+2026-10-28 01:28:37.653 INFO API has returned: 11 items
+2026-10-28 01:28:46.334 INFO Items already notified: 11
+2026-10-28 01:28:46.334 INFO Items excluded: 0
+2026-10-28 01:28:46.334 INFO Items notified: 0
+2026-10-28 01:28:46.334 INFO List of already notified items file written to /home/runner/work/VintedScanner/VintedScanner/already_notified_items.txt
