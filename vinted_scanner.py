@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import argparse
 import sys
-import Config
+import yaml
+import search_config
 import logging
 import requests
 import unicodedata
-
 from pathlib import Path
-from vinted_html_parser import get_upload_time
+import telegram_config
+
+from vinted_item_html_parser import get_upload_time
 
 parser = argparse.ArgumentParser()
 
@@ -60,6 +62,7 @@ headers = {
     "Cache-Control": "no-cache",
 }
 
+
 # Load already notified item IDs to avoid duplicates
 def load_already_notified_items():
     try:
@@ -68,12 +71,13 @@ def load_already_notified_items():
                 item_id = line.strip()
                 if item_id:
                     already_notified_items.add(item_id)
-            logger.info(f"Loaded {Path.cwd() / f.name}")
+            logger.info(f"Loaded the list of already notified items from {Path.cwd() / f.name}")
     except FileNotFoundError:
         logger.info("No previous already_notified_items.txt found, starting fresh")
     except IOError as e:
         logger.error(e, exc_info=True)
         sys.exit()
+
 
 # Save a new notified item to prevent repeated alerts
 def save_already_notified_item(item_id):
@@ -83,6 +87,7 @@ def save_already_notified_item(item_id):
     except IOError as e:
         logger.error(e, exc_info=True)
         sys.exit()
+
 
 # Send a Telegram message when a new item is found
 def send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller):
@@ -102,8 +107,7 @@ def send_telegram_message(item_title, item_price, item_upload_time, item_url, it
     ]
 
     if seller:
-        import pycountry
-    
+
         country_iso_code = (seller.get("country_iso_code") or "").upper()
         country_title = (seller.get("country_title") or "")
 
@@ -114,14 +118,14 @@ def send_telegram_message(item_title, item_price, item_upload_time, item_url, it
             )
         else:
             country_flag = ""
-        
+
         #city = (seller.get("city") or "").strip()
-        
+
         location = country_flag
-        
+
         if country_title:
             location += f" {country_title}"
-    
+
         seller_info = (
             f"👤 {seller.get('login', 'N/D')} · "
             f"⭐ {seller.get('positive_feedback_count', 0)}/{seller.get('feedback_count', 0)} . "
@@ -130,7 +134,7 @@ def send_telegram_message(item_title, item_price, item_upload_time, item_url, it
             f"👥 {seller.get('followers_count', 0)}\n"
             f"{location}"
         )
-    
+
         caption_lines.append("")
         caption_lines.append(seller_info)
 
@@ -138,17 +142,17 @@ def send_telegram_message(item_title, item_price, item_upload_time, item_url, it
 
     try:
         if item_image:
-            url = f"https://api.telegram.org/bot{Config.telegram_bot_token}/sendPhoto"
+            url = f"https://api.telegram.org/bot{telegram_config.telegram_bot_token}/sendPhoto"
             params = {
-                "chat_id": Config.telegram_chat_id,
+                "chat_id": telegram_config.telegram_chat_id,
                 "photo": item_image,
                 "caption": caption,
                 "parse_mode": "HTML",
             }
         else:
-            url = f"https://api.telegram.org/bot{Config.telegram_bot_token}/sendMessage"
+            url = f"https://api.telegram.org/bot{telegram_config.telegram_bot_token}/sendMessage"
             params = {
-                "chat_id": Config.telegram_chat_id,
+                "chat_id": telegram_config.telegram_chat_id,
                 "text": caption,
                 "parse_mode": "HTML",
             }
@@ -170,13 +174,35 @@ def send_telegram_message(item_title, item_price, item_upload_time, item_url, it
     except requests.exceptions.RequestException as e:
         logger.error(f"Error sending Telegram message: {e}")
 
-def normalize(text):
-    return "".join(
-        c for c in unicodedata.normalize("NFKD", str(text))
-        if not unicodedata.combining(c)
-    ).lower()
 
-def load_excluded_keywords():
+def values_match(actual, expected, match_type="exact"):
+    if match_type not in ("exact", "contains"):
+        raise ValueError(f"Invalid match type: {match_type}")
+
+    if match_type == "contains":
+        if not isinstance(actual, str) or not isinstance(expected, str):
+            raise ValueError(
+                "Match type 'contains' requires string values"
+            )
+
+        return normalize(expected) in normalize(actual)
+
+    if isinstance(actual, str) and isinstance(expected, str):
+        return normalize(actual) == normalize(expected)
+
+    # Preserve type distinctions: True must not equal 1.
+    return type(actual) is type(expected) and actual == expected
+
+
+def normalize(text: str) -> str:
+    return "".join(
+        c
+        for c in unicodedata.normalize("NFKD", text)
+        if not unicodedata.combining(c)
+    ).casefold().strip()
+
+
+def load_item_excluded_keywords():
     keywords = set()
 
     try:
@@ -187,7 +213,7 @@ def load_excluded_keywords():
                 if keyword and not keyword.startswith("#"):
                     keywords.add(normalize(keyword))
 
-        logger.info("Loaded %s excluded keywords", len(keywords))
+        logger.info(f"Loaded %s excluded keyword(s) from {Path.cwd() / f.name}", len(keywords))
 
     except FileNotFoundError:
         logger.info("No excluded_keywords.txt found, no keywords will be excluded")
@@ -198,7 +224,8 @@ def load_excluded_keywords():
 
     return keywords
 
-def is_excluded(item_id, item_title, item_description, excluded_keywords, log_excluded):
+
+def is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
     if not excluded_keywords:
         return False
 
@@ -207,21 +234,116 @@ def is_excluded(item_id, item_title, item_description, excluded_keywords, log_ex
     for keyword in excluded_keywords:
         if keyword in text:
             if log_excluded:
-                logger.info(f"Excluded item [{item_id}] - matching keyword: '{keyword}'"                )
+                logger.info(f"Excluded item [{item_id}] - matching keyword: '{keyword}'")
 
             return True
 
     return False
 
+
+def get_nested_value(data, key):
+    """Return (exists, value) for a dot-separated nested key."""
+    current = data
+
+    for part in key.split("."):
+        if not isinstance(current, dict) or part not in current:
+            return False, None
+
+        current = current[part]
+
+    return True, current
+
+
+def load_filters(path="item_filters.yaml"):
+    with open(path, "r", encoding="utf-8") as file:
+        config = yaml.safe_load(file) or {}
+        logger.info(f"Loaded %s filter(s) from {Path.cwd() / file.name}", len(config))
+    return config
+
+def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, filter_type, log_excluded) -> bool:
+    """
+    Determine whether an item should be kept.
+
+    include mode:
+        All rules must match, otherwise return False.
+
+    exclude mode:
+        If any rule matches, return False.
+        Otherwise, return True.
+
+    No matching query_id:
+        Return True (do not filter the item).
+    """
+    filter_label = {"item": "item", "seller": "seller"}.get(filter_type, "item")
+
+    matching_queries = [
+        query
+        for query in filters.get("filters", [])
+        if query.get("query_id") == query_id
+    ]
+
+    if not matching_queries:
+        if log_excluded:
+            logger.info(f"No {filter_label} filters match for [{item_id}]")
+        return True
+
+    # if log_excluded:
+    #     logger.info(f"Found {len(matching_queries)} item filter rule(s) for [{item_id}]")
+
+    for query in matching_queries:
+        mode = query.get("mode", "exclude")
+        rules = query.get("rules", [])
+
+        if mode == "include":
+            # All rules must match.
+            if not all(
+                _item_matches_rule(data_to_filter, rule)
+                for rule in rules
+            ):
+                if log_excluded:
+                    logger.info(f"Excluded item [{item_id}] for not matching all {filter_label} filter rule(s) in include mode")
+                return False
+
+        elif mode == "exclude":
+            # Any matching rule excludes the item.
+            if any(
+                _item_matches_rule(data_to_filter, rule)
+                for rule in rules
+            ):
+                if log_excluded:
+                    logger.info(f"Excluded item [{item_id}] for matching {filter_label} filter rule(s) in exclude mode")
+                return False
+
+        else:
+            raise ValueError(f"Invalid filter mode: {mode}")
+
+    return True
+
+
+def _item_matches_rule(item: dict, rule: dict) -> bool:
+    """Match an item's value against a rule, supporting nested keys."""
+    exists, actual = get_nested_value(item, rule["key"])
+
+    if not exists:
+        return False
+
+    return values_match(
+        actual,
+        rule["value"],
+        rule.get("match_type", "exact"),
+    )
+
 def get_user_details(user_id, session):
     try:
-        url = f"{Config.vinted_url}/api/v2/users/{user_id}"
+        url = f"{search_config.vinted_url}/api/v2/users/{user_id}"
 
         response = session.get(
             url,
             headers=headers,
             timeout=timeoutconnection,
         )
+
+        logger.info("URL triggered: %s", response.url)
 
         response.raise_for_status()
 
@@ -233,54 +355,63 @@ def get_user_details(user_id, session):
         logger.error(f"Unable to fetch Vinted user {user_id}: {e}")
         return None
 
-def main(log_excluded=False, notification_disabled=False):
 
+def main(log_excluded=False, notification_disabled=False):
     logger.info("")
     logger.info("========================================")
     logger.info("           VINTED SCANNER")
     logger.info("========================================")
     logger.info("")
-    
-    vinted_url = Config.vinted_url
+
+    vinted_url = search_config.vinted_url
 
     # Load the list of already notified items
-    logger.info("Loading the list of already notified items")
+    #logger.info("Loading the list of already notified items")
     load_already_notified_items()
 
     # Load excluded keywords
-    excluded_keywords = load_excluded_keywords()
+    excluded_keywords = load_item_excluded_keywords()
+
+    # Load item filters
+    item_filters = load_filters("item_filters.yaml")
+
+    # Load seller filters
+    seller_filters = load_filters("seller_filters.yaml")
 
     # Initialize session
     session = requests.Session()
     session.post(vinted_url, headers=headers, timeout=timeoutconnection)
 
-    # Loop through each search query defined in Config.py
-    for params in Config.queries:
-        
+    # Loop through each search query defined in search_config.py
+    for params in search_config.queries:
+
+        logger.info(f"========================================")
+        logger.info("Processing query [%s]", params.get("query_id"))
+        logger.info(f"========================================")
         page = 1
 
-        while page <= getattr(Config, "pages", 2):
+        while page <= getattr(search_config, "pages", 2):
             params["page"] = page
-        
+
             # Request items from the Vinted API based on the search parameters
             try:
-                url = f"{Config.vinted_api_url}/svc-catalogue/items"
+                url = f"{search_config.vinted_api_url}/svc-catalogue/items"
 
                 response = session.get(
                     url,
-                    params=params,
+                    params={k: v for k, v in params.items() if k != "query_id"},
                     headers=headers,
                     timeout=timeoutconnection,
                 )
-    
+
                 logger.info("URL triggered: %s", response.url)
-                
+
                 response.raise_for_status()
                 data = response.json()
             except (requests.exceptions.RequestException, ValueError) as e:
                 logger.error(f"Unable to fetch Vinted page {page}: {e}")
                 break
-    
+
             items = data.get("items") if isinstance(data, dict) else None
             if not isinstance(items, list):
                 logger.error(
@@ -288,24 +419,24 @@ def main(log_excluded=False, notification_disabled=False):
                     f"(status={response.status_code}, keys={list(data) if isinstance(data, dict) else 'N/A'})"
                 )
                 break
-    
+
             logger.info("API has returned: %s items", len(items))
-    
+
             # Process each item returned in the response
 
             excluded_counters = 0
             already_notified_counter = 0
             notified_counter = 0
-                    
+
             for item in items:
                 item_id = str(item["id"])
                 item_title = item["title"]
 
-                item_box = item.get("item_box") or {}                
+                item_box = item.get("item_box") or {}
                 item_description = item_box.get("accessibility_label") or ""
-                
+
                 item_url = vinted_url + item["url"]
-    
+
                 item_price_data = item.get("price") or {}
                 amount = item_price_data.get("amount")
                 item_amount = (
@@ -327,42 +458,58 @@ def main(log_excluded=False, notification_disabled=False):
                     if item_amount != "N/D" and item_total_amount != "N/D"
                     else "N/D"
                 )
-    
+
                 favourite_count = item.get("favourite_count") or 0
-    
+
                 item_photo = item.get("photo") or {}
                 item_image = item_photo.get("full_size_url")
 
                 item_upload_time = get_upload_time(item_id)
 
                 # Skip items whose title or description match any excluded keyword
-                if is_excluded(item_id, item_title, item_description, excluded_keywords, log_excluded):
-                    # logger.info(f"Excluding item [{item_id}]: {item_title}")
+                if is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
                     excluded_counters += 1
                     continue
-    
+
+                # Filter using items filters
+                if item_filters and not filter_item(item_id, item, params.get("query_id"), item_filters, "item", log_excluded):
+                    excluded_counters += 1
+                    continue
+
+                # Filter using seller filters
+                user = item.get("user") or {}
+                user_id = user.get("id")
+                seller = get_user_details(user_id, session)
+
+                if seller_filters and not filter_item(item_id, seller, params.get("query_id"), seller_filters, "seller", log_excluded):
+                    excluded_counters += 1
+                    continue
+
                 # Check if the item has already been notified to prevent sending it again
                 if item_id not in already_notified_items:
 
                     if not notification_disabled:
                         notified_counter += 1
-                        
-                        user = item.get("user") or {}
-                        user_id = user.get("id")
-    
-                        seller = get_user_details(user_id, session)
-                            
+
+                        # user = item.get("user") or {}
+                        # user_id = user.get("id")
+                        #
+                        # seller = get_user_details(user_id, session)
+
                         # Send Telegram notifications if configured
-                        if Config.telegram_bot_token and Config.telegram_chat_id:
-                            send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller)
-    
+                        if telegram_config.telegram_bot_token and telegram_config.telegram_chat_id:
+                            send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image,
+                                                  favourite_count, seller)
+
                     # Mark item as notified and save it
                     already_notified_items.add(item_id)
                     save_already_notified_item(item_id)
 
                 else:
                     already_notified_counter += 1
-            logger.info(f"List of already notified items file written to {Path.cwd() / 'already_notified_items.txt'}")
+
+            logger.info(f"List of already notified items written to {Path.cwd() / 'already_notified_items.txt'}")
+            logger.info(f"========================================")
             logger.info(f"Items excluded: {excluded_counters}")
             logger.info(f"Items already notified: {already_notified_counter}")
             logger.info(f"Items notified: {notified_counter}")
@@ -370,7 +517,11 @@ def main(log_excluded=False, notification_disabled=False):
             # If fewer than 96 items were returned, this is the last page
             if len(items) < 96:
                 break
-    
+
             page += 1
+
+    logger.info("Completed query [%s]", params.get("query_id"))
+    logger.info(f"========================================")
+
 if __name__ == "__main__":
     main(args.log_excluded, args.notification_disabled)

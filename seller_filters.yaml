@@ -1,0 +1,15 @@
+# Define optional filters on seller attributes for each Vinted search query. Used to include or exclude items from the final result set
+# query_id: same as query_id from search_config.py
+# mode: (include,exclude) include: all rules must match for the item to be included. exclude: a match against any rule excludes the item
+# rules: 
+#   key: the key name for the 'item' attribute to filter on (can be nested using ".")
+#   value: the value to compare
+#   match_type: (exact,contains) exact: normalised case-insenstive exact match, contains: normalised case-insenstive substring match
+
+filters:
+  - query_id: sheriff_board_game
+    mode: exclude
+    rules:
+      - key: country_iso_code
+        value: US
+        match_type: exact
