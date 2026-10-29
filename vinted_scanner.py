@@ -29,7 +29,7 @@ parser.add_argument(
 parser.add_argument(
     "--state_file_disabled",
     action="store_true",
-    help="Disable storing previously notified items in already_notified_items.txt"
+    help="Disable storing previously notified items in already_notified_items.csv"
 )
 
 args = parser.parse_args()
@@ -74,7 +74,7 @@ headers = {
 def load_already_notified_items():
     try:
         with open(
-            "already_notified_items.txt", "r", newline="", errors="ignore"
+            "already_notified_items.csv", "r", newline="", errors="ignore"
         ) as f:
             reader = csv.reader(f)
 
@@ -95,7 +95,7 @@ def load_already_notified_items():
                 f"{Path.cwd() / f.name}"
             )
     except FileNotFoundError:
-        logger.info("No previous already_notified_items.txt found, starting fresh")
+        logger.info("No previous already_notified_items.csv found, starting fresh")
     except IOError as e:
         logger.error(e, exc_info=True)
         sys.exit(1)
@@ -109,7 +109,7 @@ def save_already_notified_item(item_id, title, price):
             "price": price,
         }
 
-        with open("already_notified_items.txt", "a", newline="") as f:
+        with open("already_notified_items.csv", "a", newline="") as f:
             writer = csv.writer(f)
             writer.writerow([item_id, title, price])
 
@@ -443,14 +443,9 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
             logger.info("API has returned %s item(s) with IDs: %s", len(items), [item["id"] for item in items])
 
             # Process each item returned in the response
-
-            # excluded_counters = 0
-            # already_notified_counter = 0
-            # notified_counter = 0
-
-            excluded_counters = []
-            already_notified_counter = []
-            notified_counter = []
+            excluded_items = []
+            already_notified_items = []
+            notified_items = []
 
             for item in items:
                 item_id = str(item["id"])
@@ -493,13 +488,13 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
                 # Skip items whose title or description match any excluded keyword
                 if is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
                     #excluded_counters += 1
-                    excluded_counters.append(item_id)
+                    excluded_items.append(item_id)
                     continue
 
                 # Filter using items filters
                 if not filter_item(item_id, item, params.get("query_id"), item_filters, "item", log_excluded):
                     #excluded_counters += 1
-                    excluded_counters.append(item_id)
+                    excluded_items.append(item_id)
                     continue
 
                 # Filter using seller filters now
@@ -509,7 +504,7 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
 
                 if not filter_item(item_id, seller, params.get("query_id"), seller_filters,"seller", log_excluded):
                     #excluded_counters += 1
-                    excluded_counters.append(item_id)
+                    excluded_items.append(item_id)
                     continue
 
                 # Check if the item has already been notified to prevent sending it again
@@ -517,7 +512,7 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
 
                     if not notification_disabled:
                         #notified_counter += 1
-                        notified_counter.append(item_id)
+                        notified_items.append(item_id)
 
                         # Send Telegram notifications if configured
                         if telegram_config.telegram_bot_token and telegram_config.telegram_chat_id:
@@ -531,15 +526,15 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
 
                 else:
                     #already_notified_counter += 1
-                    already_notified_counter.append(item_id)
+                    already_notified_items.append(item_id)
 
-            logger.info(f"Already notified items updated at {Path.cwd() / 'already_notified_items.txt'}")
+            logger.info(f"{len(notified_items)} notified items updated to {Path.cwd() / 'already_notified_items.csv'}")
             logger.info(f"========================================")
-            logger.info("Items excluded: %s - [%s]", len(excluded_counters),
-                        ", ".join(str(item_id) for item_id in excluded_counters))
-            logger.info("Items already notified: %s - [%s]", len(already_notified_counter),
-                        ", ".join(str(item_id) for item_id in already_notified_counter))
-            logger.info("Items notified: %s - [%s]", len(notified_counter), ", ".join(str(item_id) for item_id in notified_counter))
+            logger.info("Items excluded: %s - [%s]", len(excluded_items),
+                        ", ".join(str(item_id) for item_id in excluded_items))
+            logger.info("Items already notified: %s - [%s]", len(already_notified_items),
+                        ", ".join(str(item_id) for item_id in already_notified_items))
+            logger.info("Items notified: %s - [%s]", len(notified_items), ", ".join(str(item_id) for item_id in notified_items))
 
             # If fewer than 96 items were returned, this is the last page
             if len(items) < 96:

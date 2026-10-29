@@ -1,0 +1,60 @@
+2026-10-29 17:52:04.690 INFO 
+2026-10-29 17:52:04.691 INFO ========================================
+2026-10-29 17:52:04.691 INFO            VINTED SCANNER
+2026-10-29 17:52:04.691 INFO ========================================
+2026-10-29 17:52:04.691 INFO 
+2026-10-29 17:52:04.693 INFO Loaded 0 already notified item(s) from D:\VintedScanner\already_notified_items.txt
+2026-10-29 17:52:04.693 INFO Loaded 0 excluded keyword(s) from D:\VintedScanner\excluded_keywords.txt
+2026-10-29 17:52:04.694 INFO Loaded 0 [item] filter(s) from D:\VintedScanner\item_filters.yaml
+2026-10-29 17:52:04.697 INFO Loaded 1 [seller] filter(s) from D:\VintedScanner\seller_filters.yaml
+2026-10-29 17:52:05.189 INFO ========================================
+2026-10-29 17:52:05.191 INFO Processing query [sheriff_board_game]
+2026-10-29 17:52:05.191 INFO ========================================
+2026-10-29 17:52:05.392 INFO URL triggered: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=19&order=newest_first&page=1
+2026-10-29 17:52:05.393 INFO API has returned 3 item(s) with IDs: [10485701011, 10311140799, 10028569995]
+2026-10-29 17:52:06.178 INFO Item [10485701011] matched 0 [item] filters
+2026-10-29 17:52:06.335 INFO URL triggered: https://www.vinted.co.uk/api/v2/users/3162892928
+2026-10-29 17:52:06.336 INFO Excluded item [10485701011] for matching [seller] filter rule [sheriff_board_game][feedback_count] in exclude mode
+2026-10-29 17:52:07.383 INFO Item [10311140799] matched 0 [item] filters
+2026-10-29 17:52:07.555 INFO URL triggered: https://www.vinted.co.uk/api/v2/users/3184785485
+2026-10-29 17:52:07.556 INFO Item [10311140799] matched 0 [seller] filters
+2026-10-29 17:52:08.206 INFO Item [10028569995] matched 0 [item] filters
+2026-10-29 17:52:08.409 INFO URL triggered: https://www.vinted.co.uk/api/v2/users/3186914811
+2026-10-29 17:52:08.410 INFO Item [10028569995] matched 0 [seller] filters
+2026-10-29 17:52:08.410 INFO Already notified items updated at D:\VintedScanner\already_notified_items.txt
+2026-10-29 17:52:08.410 INFO ========================================
+2026-10-29 17:52:08.411 INFO Items excluded: 1 - [10485701011]
+2026-10-29 17:52:08.411 INFO Items already notified: 0 - []
+2026-10-29 17:52:08.411 INFO Items notified: 0 - []
+2026-10-29 17:52:08.411 INFO Completed query [sheriff_board_game]
+2026-10-29 17:52:08.411 INFO ========================================
+2026-10-29 17:53:28.746 INFO 
+2026-10-29 17:53:28.746 INFO ========================================
+2026-10-29 17:53:28.747 INFO            VINTED SCANNER
+2026-10-29 17:53:28.747 INFO ========================================
+2026-10-29 17:53:28.747 INFO 
+2026-10-29 17:53:28.749 INFO Loaded 0 already notified item(s) from D:\VintedScanner\already_notified_items.csv
+2026-10-29 17:53:28.750 INFO Loaded 0 excluded keyword(s) from D:\VintedScanner\excluded_keywords.txt
+2026-10-29 17:53:28.752 INFO Loaded 0 [item] filter(s) from D:\VintedScanner\item_filters.yaml
+2026-10-29 17:53:28.756 INFO Loaded 1 [seller] filter(s) from D:\VintedScanner\seller_filters.yaml
+2026-10-29 17:53:29.843 INFO ========================================
+2026-10-29 17:53:29.844 INFO Processing query [sheriff_board_game]
+2026-10-29 17:53:29.844 INFO ========================================
+2026-10-29 17:53:30.067 INFO URL triggered: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=19&order=newest_first&page=1
+2026-10-29 17:53:30.067 INFO API has returned 3 item(s) with IDs: [10485701011, 10311140799, 10028569995]
+2026-10-29 17:53:31.293 INFO Item [10485701011] matched 0 [item] filters
+2026-10-29 17:53:31.413 INFO URL triggered: https://www.vinted.co.uk/api/v2/users/3162892928
+2026-10-29 17:53:31.413 INFO Excluded item [10485701011] for matching [seller] filter rule [sheriff_board_game][feedback_count] in exclude mode
+2026-10-29 17:53:32.161 INFO Item [10311140799] matched 0 [item] filters
+2026-10-29 17:53:32.344 INFO URL triggered: https://www.vinted.co.uk/api/v2/users/3184785485
+2026-10-29 17:53:32.346 INFO Item [10311140799] matched 0 [seller] filters
+2026-10-29 17:53:33.097 INFO Item [10028569995] matched 0 [item] filters
+2026-10-29 17:53:33.215 INFO URL triggered: https://www.vinted.co.uk/api/v2/users/3186914811
+2026-10-29 17:53:33.216 INFO Item [10028569995] matched 0 [seller] filters
+2026-10-29 17:53:33.217 INFO Already notified items updated at D:\VintedScanner\already_notified_items.csv
+2026-10-29 17:53:33.218 INFO ========================================
+2026-10-29 17:53:33.218 INFO Items excluded: 1 - [10485701011]
+2026-10-29 17:53:33.218 INFO Items already notified: 0 - []
+2026-10-29 17:53:33.218 INFO Items notified: 0 - []
+2026-10-29 17:53:33.218 INFO Completed query [sheriff_board_game]
+2026-10-29 17:53:33.219 INFO ========================================
