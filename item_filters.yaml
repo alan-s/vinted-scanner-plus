@@ -6,10 +6,10 @@
 #   value: the value to compare
 #   match_type: (exact,contains) exact: normalised case-insenstive exact match, contains: normalised case-insenstive substring match
 
-filters:
-  - query_id: sheriff_board_game
-    mode: exclude
-    rules:
-      - key: user.id
-        value: 3189704914
-        match_type: exact
+# filters:
+#   - query_id: sheriff_board_game
+#     mode: include
+#     rules:
+#       - key: show_1st_time_seller_discount
+#         value: true
+#         match_type: exact

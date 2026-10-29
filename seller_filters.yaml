@@ -11,5 +11,8 @@ filters:
     mode: exclude
     rules:
       - key: country_iso_code
-        value: US
+        value: USA
+        match_type: exact
+      - key: feedback_count
+        value: 22
         match_type: exact

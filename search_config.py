@@ -18,7 +18,7 @@ queries = [
         'attribute_ids[catalog]': '4881',
         'attribute_ids[brand]' : '1317890',
         'price_from' : '4',
-        'price_to' : '16',
+        'price_to' : '19',
         'order': 'newest_first',
     },
 

@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 import argparse
+import csv
 import sys
 import yaml
 import search_config
 import logging
 import requests
 import unicodedata
-from pathlib import Path
 import telegram_config
 
-from vinted_item_html_parser import get_upload_time
+from pathlib import Path
+from vinted_html_parser import get_upload_time
 
 parser = argparse.ArgumentParser()
 
@@ -47,7 +48,7 @@ logger = logging.getLogger(__name__)
 timeoutconnection = 30
 
 # List to keep track of already notified items
-already_notified_items = set()
+already_notified_items = {}
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
@@ -69,30 +70,52 @@ headers = {
 }
 
 
-# Load already notified item IDs to avoid duplicates
+# Load already notified items to avoid duplicates
 def load_already_notified_items():
     try:
-        with open("already_notified_items.txt", "r", errors="ignore") as f:
-            for line in f:
-                item_id = line.strip()
-                if item_id:
-                    already_notified_items.add(item_id)
-            logger.info(f"Loaded the list of already notified items from {Path.cwd() / f.name}")
+        with open(
+            "already_notified_items.txt", "r", newline="", errors="ignore"
+        ) as f:
+            reader = csv.reader(f)
+
+            for row in reader:
+                if row:
+                    if len(row) != 3:
+                        logger.warning(f"Skipping invalid item record: {row}")
+                        continue
+
+                    item_id, title, price = row
+                    already_notified_items[item_id] = {
+                        "title": title,
+                        "price": price,
+                    }
+
+            logger.info(
+                f"Loaded {len(already_notified_items)} already notified item(s) from "
+                f"{Path.cwd() / f.name}"
+            )
     except FileNotFoundError:
         logger.info("No previous already_notified_items.txt found, starting fresh")
     except IOError as e:
         logger.error(e, exc_info=True)
-        sys.exit()
+        sys.exit(1)
 
 
 # Save a new notified item to prevent repeated alerts
-def save_already_notified_item(item_id):
+def save_already_notified_item(item_id, title, price):
     try:
-        with open("already_notified_items.txt", "a") as f:
-            f.write(str(item_id) + "\n")
+        already_notified_items[item_id] = {
+            "title": title,
+            "price": price,
+        }
+
+        with open("already_notified_items.txt", "a", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([item_id, title, price])
+
     except IOError as e:
         logger.error(e, exc_info=True)
-        sys.exit()
+        sys.exit(1)
 
 
 # Send a Telegram message when a new item is found
@@ -260,26 +283,14 @@ def get_nested_value(data, key):
     return True, current
 
 
-def load_filters(path="item_filters.yaml"):
+def load_filters(type, path="item_filters.yaml"):
     with open(path, "r", encoding="utf-8") as file:
         config = yaml.safe_load(file) or {}
-        logger.info(f"Loaded %s filter(s) from {Path.cwd() / file.name}", len(config))
+        logger.info(f"Loaded %s [{type}] filter(s) from {Path.cwd() / file.name}", len(config))
     return config
 
 def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, filter_type, log_excluded) -> bool:
-    """
-    Determine whether an item should be kept.
 
-    include mode:
-        All rules must match, otherwise return False.
-
-    exclude mode:
-        If any rule matches, return False.
-        Otherwise, return True.
-
-    No matching query_id:
-        Return True (do not filter the item).
-    """
     filter_label = {"item": "item", "seller": "seller"}.get(filter_type, "item")
 
     matching_queries = [
@@ -290,11 +301,9 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
 
     if not matching_queries:
         if log_excluded:
-            logger.info(f"No {filter_label} filters match for [{item_id}]")
-        return True
+            logger.info(f"Item [{item_id}] matched {len(matching_queries)} [{filter_label}] filters")
 
-    # if log_excluded:
-    #     logger.info(f"Found {len(matching_queries)} item filter rule(s) for [{item_id}]")
+        return True
 
     for query in matching_queries:
         mode = query.get("mode", "exclude")
@@ -302,26 +311,31 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
 
         if mode == "include":
             # All rules must match.
-            if not all(
-                _item_matches_rule(data_to_filter, rule)
-                for rule in rules
-            ):
-                if log_excluded:
-                    logger.info(f"Excluded item [{item_id}] for not matching all {filter_label} filter rule(s) in include mode")
-                return False
+            for rule in rules:
+                if not _item_matches_rule(data_to_filter, rule):
+                    if log_excluded:
+                        logger.info(
+                            f"Excluded item [{item_id}] for not matching "
+                            f"[{filter_label}] filter rule [{query_id}][{rule['key']}] in include mode"
+                        )
+                    return False
 
         elif mode == "exclude":
             # Any matching rule excludes the item.
-            if any(
-                _item_matches_rule(data_to_filter, rule)
-                for rule in rules
-            ):
-                if log_excluded:
-                    logger.info(f"Excluded item [{item_id}] for matching {filter_label} filter rule(s) in exclude mode")
-                return False
+            for rule in rules:
+                if _item_matches_rule(data_to_filter, rule):
+                    if log_excluded:
+                        logger.info(
+                            f"Excluded item [{item_id}] for matching "
+                            f"[{filter_label}] filter rule [{query_id}][{rule['key']}] in exclude mode"
+                        )
+                    return False
 
         else:
             raise ValueError(f"Invalid filter mode: {mode}")
+
+        if log_excluded:
+            logger.info(f"Item [{item_id}] matched 0 [{filter_label}] filters")
 
     return True
 
@@ -379,10 +393,10 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
     excluded_keywords = load_item_excluded_keywords()
 
     # Load item filters
-    item_filters = load_filters("item_filters.yaml")
+    item_filters = load_filters("item", "item_filters.yaml")
 
     # Load seller filters
-    seller_filters = load_filters("seller_filters.yaml")
+    seller_filters = load_filters("seller", "seller_filters.yaml")
 
     # Initialize session
     session = requests.Session()
@@ -426,13 +440,17 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
                 )
                 break
 
-            logger.info("API has returned: %s items", len(items))
+            logger.info("API has returned %s item(s) with IDs: %s", len(items), [item["id"] for item in items])
 
             # Process each item returned in the response
 
-            excluded_counters = 0
-            already_notified_counter = 0
-            notified_counter = 0
+            # excluded_counters = 0
+            # already_notified_counter = 0
+            # notified_counter = 0
+
+            excluded_counters = []
+            already_notified_counter = []
+            notified_counter = []
 
             for item in items:
                 item_id = str(item["id"])
@@ -474,33 +492,32 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
 
                 # Skip items whose title or description match any excluded keyword
                 if is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
-                    excluded_counters += 1
+                    #excluded_counters += 1
+                    excluded_counters.append(item_id)
                     continue
 
                 # Filter using items filters
-                if item_filters and not filter_item(item_id, item, params.get("query_id"), item_filters, "item", log_excluded):
-                    excluded_counters += 1
+                if not filter_item(item_id, item, params.get("query_id"), item_filters, "item", log_excluded):
+                    #excluded_counters += 1
+                    excluded_counters.append(item_id)
                     continue
 
-                # Filter using seller filters
+                # Filter using seller filters now
                 user = item.get("user") or {}
                 user_id = user.get("id")
                 seller = get_user_details(user_id, session)
 
-                if seller_filters and not filter_item(item_id, seller, params.get("query_id"), seller_filters, "seller", log_excluded):
-                    excluded_counters += 1
+                if not filter_item(item_id, seller, params.get("query_id"), seller_filters,"seller", log_excluded):
+                    #excluded_counters += 1
+                    excluded_counters.append(item_id)
                     continue
 
                 # Check if the item has already been notified to prevent sending it again
                 if item_id not in already_notified_items:
 
                     if not notification_disabled:
-                        notified_counter += 1
-
-                        # user = item.get("user") or {}
-                        # user_id = user.get("id")
-                        #
-                        # seller = get_user_details(user_id, session)
+                        #notified_counter += 1
+                        notified_counter.append(item_id)
 
                         # Send Telegram notifications if configured
                         if telegram_config.telegram_bot_token and telegram_config.telegram_chat_id:
@@ -508,18 +525,21 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
                                                   favourite_count, seller)
 
                     # Mark item as notified and save it
-                    already_notified_items.add(item_id)
+                   #already_notified_items[item_id] = item_title, item_price
                     if not state_file_disabled:
-                        save_already_notified_item(item_id)
+                        save_already_notified_item(item_id, item_title, total_amount)
 
                 else:
-                    already_notified_counter += 1
+                    #already_notified_counter += 1
+                    already_notified_counter.append(item_id)
 
-            logger.info(f"List of already notified items written to {Path.cwd() / 'already_notified_items.txt'}")
+            logger.info(f"Already notified items updated at {Path.cwd() / 'already_notified_items.txt'}")
             logger.info(f"========================================")
-            logger.info(f"Items excluded: {excluded_counters}")
-            logger.info(f"Items already notified: {already_notified_counter}")
-            logger.info(f"Items notified: {notified_counter}")
+            logger.info("Items excluded: %s - [%s]", len(excluded_counters),
+                        ", ".join(str(item_id) for item_id in excluded_counters))
+            logger.info("Items already notified: %s - [%s]", len(already_notified_counter),
+                        ", ".join(str(item_id) for item_id in already_notified_counter))
+            logger.info("Items notified: %s - [%s]", len(notified_counter), ", ".join(str(item_id) for item_id in notified_counter))
 
             # If fewer than 96 items were returned, this is the last page
             if len(items) < 96:
