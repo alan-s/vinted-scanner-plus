@@ -25,6 +25,12 @@ parser.add_argument(
     help="Disable Telegram notifications"
 )
 
+parser.add_argument(
+    "--state_file_disabled",
+    action="store_true",
+    help="Disable storing previously notified items in already_notified_items.txt"
+)
+
 args = parser.parse_args()
 
 logging.basicConfig(
@@ -356,7 +362,7 @@ def get_user_details(user_id, session):
         return None
 
 
-def main(log_excluded=False, notification_disabled=False):
+def main(log_excluded=False, notification_disabled=False, state_file_disabled=False):
     logger.info("")
     logger.info("========================================")
     logger.info("           VINTED SCANNER")
@@ -503,7 +509,8 @@ def main(log_excluded=False, notification_disabled=False):
 
                     # Mark item as notified and save it
                     already_notified_items.add(item_id)
-                    save_already_notified_item(item_id)
+                    if not state_file_disabled:
+                        save_already_notified_item(item_id)
 
                 else:
                     already_notified_counter += 1

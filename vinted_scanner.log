@@ -1,0 +1,71 @@
+2026-10-29 12:02:15.541 INFO 
+2026-10-29 12:02:15.541 INFO ========================================
+2026-10-29 12:02:15.542 INFO            VINTED SCANNER
+2026-10-29 12:02:15.542 INFO ========================================
+2026-10-29 12:02:15.542 INFO 
+2026-10-29 12:02:15.544 INFO Loaded the list of already notified items from D:\VintedScanner\already_notified_items.txt
+2026-10-29 12:02:15.544 INFO Loaded 0 excluded keyword(s) from D:\VintedScanner\excluded_keywords.txt
+2026-10-29 12:02:15.547 INFO Loaded 1 filter(s) from D:\VintedScanner\item_filters.yaml
+2026-10-29 12:02:15.548 INFO Loaded 1 filter(s) from D:\VintedScanner\seller_filters.yaml
+2026-10-29 12:02:16.130 INFO ========================================
+2026-10-29 12:02:16.131 INFO Processing query [sheriff_board_game]
+2026-10-29 12:02:16.131 INFO ========================================
+2026-10-29 12:02:16.356 INFO URL triggered: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=16&order=newest_first&page=1
+2026-10-29 12:02:16.357 INFO API has returned: 2 items
+2026-10-29 12:02:17.103 INFO Excluded item [10560211184] for matching item filter rule(s) in exclude mode
+2026-10-29 12:02:18.040 INFO URL triggered: https://www.vinted.co.uk/api/v2/users/3184785485
+2026-10-29 12:02:18.040 INFO Excluded item [10311140799] for matching seller filter rule(s) in exclude mode
+2026-10-29 12:02:18.041 INFO List of already notified items written to D:\VintedScanner\already_notified_items.txt
+2026-10-29 12:02:18.041 INFO ========================================
+2026-10-29 12:02:18.041 INFO Items excluded: 2
+2026-10-29 12:02:18.041 INFO Items already notified: 0
+2026-10-29 12:02:18.041 INFO Items notified: 0
+2026-10-29 12:02:18.041 INFO Completed query [sheriff_board_game]
+2026-10-29 12:02:18.041 INFO ========================================
+2026-10-29 12:02:49.468 INFO 
+2026-10-29 12:02:49.468 INFO ========================================
+2026-10-29 12:02:49.468 INFO            VINTED SCANNER
+2026-10-29 12:02:49.468 INFO ========================================
+2026-10-29 12:02:49.468 INFO 
+2026-10-29 12:02:49.469 INFO Loaded the list of already notified items from D:\VintedScanner\already_notified_items.txt
+2026-10-29 12:02:49.470 INFO Loaded 0 excluded keyword(s) from D:\VintedScanner\excluded_keywords.txt
+2026-10-29 12:02:49.472 INFO Loaded 1 filter(s) from D:\VintedScanner\item_filters.yaml
+2026-10-29 12:02:49.473 INFO Loaded 1 filter(s) from D:\VintedScanner\seller_filters.yaml
+2026-10-29 12:02:50.050 INFO ========================================
+2026-10-29 12:02:50.050 INFO Processing query [sheriff_board_game]
+2026-10-29 12:02:50.051 INFO ========================================
+2026-10-29 12:02:50.198 INFO URL triggered: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=16&order=newest_first&page=1
+2026-10-29 12:02:50.198 INFO API has returned: 2 items
+2026-10-29 12:02:50.978 INFO Excluded item [10560211184] for matching item filter rule(s) in exclude mode
+2026-10-29 12:02:51.792 INFO URL triggered: https://www.vinted.co.uk/api/v2/users/3184785485
+2026-10-29 12:02:51.793 INFO Excluded item [10311140799] for matching seller filter rule(s) in exclude mode
+2026-10-29 12:02:51.793 INFO List of already notified items written to D:\VintedScanner\already_notified_items.txt
+2026-10-29 12:02:51.793 INFO ========================================
+2026-10-29 12:02:51.794 INFO Items excluded: 2
+2026-10-29 12:02:51.794 INFO Items already notified: 0
+2026-10-29 12:02:51.794 INFO Items notified: 0
+2026-10-29 12:02:51.794 INFO Completed query [sheriff_board_game]
+2026-10-29 12:02:51.794 INFO ========================================
+2026-10-29 12:03:04.187 INFO 
+2026-10-29 12:03:04.188 INFO ========================================
+2026-10-29 12:03:04.188 INFO            VINTED SCANNER
+2026-10-29 12:03:04.188 INFO ========================================
+2026-10-29 12:03:04.188 INFO 
+2026-10-29 12:03:04.190 INFO Loaded the list of already notified items from D:\VintedScanner\already_notified_items.txt
+2026-10-29 12:03:04.191 INFO Loaded 0 excluded keyword(s) from D:\VintedScanner\excluded_keywords.txt
+2026-10-29 12:03:04.195 INFO Loaded 1 filter(s) from D:\VintedScanner\item_filters.yaml
+2026-10-29 12:03:04.198 INFO Loaded 1 filter(s) from D:\VintedScanner\seller_filters.yaml
+2026-10-29 12:03:04.783 INFO ========================================
+2026-10-29 12:03:04.783 INFO Processing query [sheriff_board_game]
+2026-10-29 12:03:04.783 INFO ========================================
+2026-10-29 12:03:04.984 INFO URL triggered: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=16&order=newest_first&page=1
+2026-10-29 12:03:04.985 INFO API has returned: 2 items
+2026-10-29 12:03:05.730 INFO Excluded item [10560211184] for matching item filter rule(s) in exclude mode
+2026-10-29 12:03:06.584 INFO URL triggered: https://www.vinted.co.uk/api/v2/users/3184785485
+2026-10-29 12:03:06.586 INFO List of already notified items written to D:\VintedScanner\already_notified_items.txt
+2026-10-29 12:03:06.586 INFO ========================================
+2026-10-29 12:03:06.586 INFO Items excluded: 1
+2026-10-29 12:03:06.586 INFO Items already notified: 0
+2026-10-29 12:03:06.586 INFO Items notified: 0
+2026-10-29 12:03:06.586 INFO Completed query [sheriff_board_game]
+2026-10-29 12:03:06.586 INFO ========================================
