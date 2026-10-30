@@ -21,13 +21,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--notification_disabled",
+    "--disable_notifications",
     action="store_true",
     help="Disable Telegram notifications"
 )
 
 parser.add_argument(
-    "--state_file_disabled",
+    "--disable_state_file",
     action="store_true",
     help="Disable storing previously notified items in already_notified_items.csv"
 )
@@ -118,7 +118,7 @@ def save_already_notified_item(item_id, title, price):
 
 
 # Send a Telegram message when a new item is found
-def send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller) -> bool:
+def send_telegram_message(item_id, item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller) -> bool:
     from html import escape
 
     safe_title = escape(str(item_title))
@@ -191,38 +191,18 @@ def send_telegram_message(item_title, item_price, item_upload_time, item_url, it
 
         if response.status_code != 200:
             logger.error(
-                f"Telegram notification failed. "
+                f"Telegram notification failed for item [{item_id}]. "
                 f"Status code: {response.status_code}, Response: {response.text}"
             )
             return False
         else:
-            logger.info("Telegram notification sent: %s", item_url)
+            logger.info("Telegram notification sent for item [%s]. API called: %s", item_id, url)
             return True
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Error sending Telegram message: {e}")
 
         return False
-
-
-def values_match(actual, expected, match_type="exact"):
-    if match_type not in ("exact", "contains"):
-        raise ValueError(f"Invalid match type: {match_type}")
-
-    if match_type == "contains":
-        if not isinstance(actual, str) or not isinstance(expected, str):
-            raise ValueError(
-                "Match type 'contains' requires string values"
-            )
-
-        return normalize(expected) in normalize(actual)
-
-    if isinstance(actual, str) and isinstance(expected, str):
-        return normalize(actual) == normalize(expected)
-
-    # Preserve type distinctions: True must not equal 1.
-    return type(actual) is type(expected) and actual == expected
-
 
 def normalize(text: str) -> str:
     return "".join(
@@ -257,6 +237,9 @@ def load_item_excluded_keywords():
 
 def is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
     if not excluded_keywords:
+        if log_excluded:
+            logger.info(f"Item [{item_id}] matched 0 excluded words")
+
         return False
 
     text = normalize(f"{item_title} {item_description}")
@@ -264,25 +247,11 @@ def is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_
     for keyword in excluded_keywords:
         if keyword in text:
             if log_excluded:
-                logger.info(f"Excluded item [{item_id}] - matching keyword: '{keyword}'")
+                logger.info(f"Excluded item [{item_id}] for matching excluded keyword '{keyword}'")
 
             return True
 
     return False
-
-
-def get_nested_value(data, key):
-    """Return (exists, value) for a dot-separated nested key."""
-    current = data
-
-    for part in key.split("."):
-        if not isinstance(current, dict) or part not in current:
-            return False, None
-
-        current = current[part]
-
-    return True, current
-
 
 def load_filters(filter_type, path="item_filters.yaml"):
     try:
@@ -374,9 +343,12 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
 
     if not matching_queries:
         if log_excluded:
-            logger.info(f"Item [{item_id}] matched {len(matching_queries)} [{filter_label}] filters")
+            logger.info(f"Item [{item_id}] in scope for {len(matching_queries)} [{filter_label}] filter(s)")
 
         return True
+
+    if log_excluded:
+        logger.info(f"Item [{item_id}] in scope for {len(matching_queries)} [{filter_label}] filter(s)")
 
     for query in matching_queries:
         mode = query.get("mode", "exclude")
@@ -385,25 +357,29 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
         if mode == "include":
             # All rules must match.
             for rule in rules:
+                if log_excluded:
+                    logger.info(
+                        f"Checking item [{item_id}] against [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+
                 if not _item_matches_rule(data_to_filter, rule):
                     if log_excluded:
-                        logger.info(f"Excluded item [{item_id}] for not matching [{filter_label}] filter rule [{query_id}][{rule['key']}] in include mode")
+                        logger.info(f"Excluded item [{item_id}] for not matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
 
         elif mode == "exclude":
             # Any matching rule excludes the item.
             for rule in rules:
+                if log_excluded:
+                    logger.info(
+                        f"Checking item [{item_id}] against [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+
                 if _item_matches_rule(data_to_filter, rule):
                     if log_excluded:
-                        logger.info(
-                            f"Excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}][{rule['key']}] in exclude mode")
+                        logger.info(f"Excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
 
         else:
             raise ValueError(f"Invalid filter mode: {mode}")
-
-        # if log_excluded:
-        #     logger.info(f"Item [{item_id}] matched 0 [{filter_label}] filters")
 
     return True
 
@@ -413,9 +389,42 @@ def _item_matches_rule(item: dict, rule: dict) -> bool:
     exists, actual = get_nested_value(item, rule["key"])
 
     if not exists:
+        logger.info(f"Key [{rule['key']}] not found in item [{item['id']}]")
         return False
 
     return values_match(actual, rule["value"], rule.get("match_type", "exact"))
+
+
+def values_match(actual, expected, match_type="exact"):
+    if match_type not in ("exact", "contains"):
+        raise ValueError(f"Invalid match type: {match_type}")
+
+    #logger.info(f"Match type: [{match_type}]. Rule value: [{expected}]. Item value: [{actual}]")
+
+    if match_type == "contains":
+        if not isinstance(actual, str) or not isinstance(expected, str):
+            raise ValueError("Match type 'contains' requires string values")
+
+        return normalize(expected) in normalize(actual)
+
+    if isinstance(actual, str) and isinstance(expected, str):
+        return normalize(actual) == normalize(expected)
+
+    # Preserve type distinctions: True must not equal 1.
+    return type(actual) is type(expected) and actual == expected
+
+
+def get_nested_value(data, key):
+    """Return (exists, value) for a dot-separated nested key."""
+    current = data
+
+    for part in key.split("."):
+        if not isinstance(current, dict) or part not in current:
+            return False, None
+
+        current = current[part]
+
+    return True, current
 
 def get_user_details(user_id, session):
     try:
@@ -427,7 +436,7 @@ def get_user_details(user_id, session):
             timeout=timeoutconnection,
         )
 
-        logger.info("URL triggered: %s", response.url)
+        logger.info("Vinted seller API called: %s", response.url)
 
         response.raise_for_status()
 
@@ -436,11 +445,11 @@ def get_user_details(user_id, session):
         return data.get("user")
 
     except (requests.exceptions.RequestException, ValueError) as e:
-        logger.error(f"Unable to fetch Vinted user {user_id}: {e}")
+        logger.error(f"Unable to fetch Vinted seller {user_id}: {e}")
         return None
 
 
-def main(log_excluded=False, notification_disabled=False, state_file_disabled=False):
+def main(log_excluded=False, disable_notifications=False, disable_state_file=False):
     logger.info("")
     logger.info("========================================")
     logger.info("           VINTED SCANNER")
@@ -450,7 +459,6 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
     vinted_url = search_config.vinted_url
 
     # Load the list of already notified items
-    #logger.info("Loading the list of already notified items")
     load_already_notified_items()
 
     # Load excluded keywords
@@ -469,9 +477,7 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
     # Loop through each search query defined in search_config.py
     for params in search_config.queries:
 
-        logger.info(f"================================================================================")
-        logger.info("Processing search query [%s]", params.get("query_id"))
-        logger.info(f"================================================================================")
+        query_log_printer(params.get("query_id"), "Started")
         page = 1
 
         while page <= getattr(search_config, "pages", 2):
@@ -488,7 +494,7 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
                     timeout=timeoutconnection,
                 )
 
-                logger.info("URL triggered: %s", response.url)
+                logger.info("Vinted search API called: %s", response.url)
 
                 response.raise_for_status()
                 data = response.json()
@@ -504,7 +510,7 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
                 )
                 break
 
-            logger.info("API has returned %s item(s) with IDs: %s", len(items), [item["id"] for item in items])
+            logger.info("Vinted search API has returned %s item(s) with IDs: %s", len(items), [item["id"] for item in items])
 
             # Process each item returned in the response
             excluded_items = []
@@ -513,8 +519,11 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
             failed_notified_items = []
 
             for item in items:
+
                 item_id = str(item["id"])
                 item_title = item["title"]
+
+                item_log_printer(item_id, "Started")
 
                 item_box = item.get("item_box") or {}
                 item_description = item_box.get("accessibility_label") or ""
@@ -551,44 +560,65 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
                 item_upload_time = get_upload_time(item_id)
 
                 # Skip items whose title or description match any excluded keyword
+                if log_excluded:
+                    logger.info(f"Checking item [{item_id}] against excluded words")
                 if is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
                     excluded_items.append(item_id)
+                    item_log_printer(item_id, "Completed")
                     continue
 
                 # Filter using items filters
+                if log_excluded:
+                    logger.info(f"Checking item [{item_id}] against [item] filters")
                 if not filter_item(item_id, item, params.get("query_id"), item_filters, "item", log_excluded):
                     excluded_items.append(item_id)
+                    item_log_printer(item_id, "Completed")
                     continue
 
-                # Filter using seller filters now
+                logger.info(f"Getting seller details for item [{item_id}]")
                 user = item.get("user") or {}
                 user_id = user.get("id")
                 seller = get_user_details(user_id, session)
 
+                # Filter using seller filters now
+                if log_excluded:
+                    logger.info(f"Checking item [{item_id}] against [seller] filters")
                 if not filter_item(item_id, seller, params.get("query_id"), seller_filters,"seller", log_excluded):
                     excluded_items.append(item_id)
+                    item_log_printer(item_id, "Completed")
                     continue
+
+                if log_excluded:
+                    logger.info(f"Item [{item_id}] meets all selection filters and no exclusions apply")
 
                 # Check if the item has already been notified to prevent sending it again
                 if item_id not in already_notified_items:
 
-                    if not notification_disabled:
+                    if not disable_notifications:
 
                         # Send Telegram notifications if configured
                         if telegram_config.telegram_bot_token and telegram_config.telegram_chat_id:
-                            if send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller):
+                            if send_telegram_message(item_id, item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller):
                                 notified_items.append(item_id)
                             else:
                                 failed_notified_items.append(item_id)
 
-                    # Mark item as notified and save it
-                    if not state_file_disabled:
-                        save_already_notified_item(item_id, item_title, total_amount)
+                        # Mark item as notified and save it
+                        if not disable_state_file:
+                            save_already_notified_item(item_id, item_title, total_amount)
+                            logger.info(f"Recorded notification for item [{item_id}] in 'already_notified_items.csv'")
+                        else:
+                            logger.info(f"Not recording notification for item [{item_id}] in 'already_notified_items.csv'; '--disable_state_file' set")
+
+                    else:
+                        logger.info(f"No notification sent for item [{item_id}]; '--disable_notifications' set")
+
                 else:
+                    logger.info(f"No notification will be sent on this run for item [{item_id}]; it has been previously notified ('already_notified_items.csv')")
                     previously_notified_items.append(item_id)
 
-            logger.info(f"{len(notified_items)} notified items appended to {Path.cwd() / 'already_notified_items.csv'}")
-            logger.info(f"================================================================================")
+                item_log_printer(item_id, "Completed")
+
             logger.info("Total items matched: %s - [%s]", len(items),
                         ", ".join([str(item["id"]) for item in items]))
             logger.info("Items excluded: %s - [%s]", len(excluded_items),
@@ -598,6 +628,7 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
             logger.info("Items notified: %s - [%s]", len(notified_items), ", ".join(str(item_id) for item_id in notified_items))
             logger.info("Items failed to notify: %s - [%s]", len(failed_notified_items),
                         ", ".join(str(item_id) for item_id in failed_notified_items))
+            logger.info(f"Items recorded as notified: {len(notified_items)} - [{', '.join(str(item_id) for item_id in notified_items)}]")
 
             # If fewer than 96 items were returned, this is the last page
             if len(items) < 96:
@@ -605,8 +636,17 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
 
             page += 1
 
-    logger.info("Completed query [%s]", params.get("query_id"))
+    query_log_printer(params.get("query_id"), "Completed")
+
+def query_log_printer(query_id, state):
+    logger.info(f"================================================================================")
+    logger.info("%s processing search query [%s]", state, query_id)
     logger.info(f"================================================================================")
 
+def item_log_printer(item_id, state):
+    logger.info(f"--------------------------------------------------------------------------------")
+    logger.info("%s processing item [%s]", state,item_id)
+    logger.info(f"--------------------------------------------------------------------------------")
+
 if __name__ == "__main__":
-    main(args.log_excluded, args.notification_disabled)
+    main(args.log_excluded, args.disable_notifications, args.disable_state_file)

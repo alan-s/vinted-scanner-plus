@@ -7,16 +7,16 @@
 #   value: the value to compare
 #   match_type: (exact,contains) exact: normalised case-insenstive exact match, contains: normalised case-insenstive substring match
 
-# filters:
-#   - query_id: sheriff_board_game
-#     mode: include
-#     rules:
-#       - key: country_iso_code
-#         value: US
-#         match_type: exact
-#   - query_id: sheriff_board_game
-#     mode: include
-#     rules:
-#       - key: user.id
-#         value: 3162892928
-#         match_type: exact
+filters:
+  - query_id: sheriff_board_game
+    mode: include
+    rules:
+      - key: country_iso_code
+        value: US
+        match_type: exact
+  - query_id: sheriff_board_game
+    mode: include
+    rules:
+      - key: bundle_discount.minimal_item_count
+        value: 2
+        match_type: exact
