@@ -73,31 +73,30 @@ headers = {
 # Load already notified items to avoid duplicates
 def load_already_notified_items():
     try:
-        with open(
-            "already_notified_items.csv", "r", newline="", errors="ignore"
-        ) as f:
-            reader = csv.reader(f)
+        with open("already_notified_items.csv", "r", newline="", encoding="utf-8") as f:
+            reader = csv.reader(f, strict=True)
 
             for row in reader:
-                if row:
-                    if len(row) != 3:
-                        logger.warning(f"Skipping invalid item record: {row}")
-                        continue
+                    if row:
 
-                    item_id, title, price = row
-                    already_notified_items[item_id] = {
-                        "title": title,
-                        "price": price,
-                    }
-
+                        item_id, title, price = row
+                        already_notified_items[item_id] = {
+                            "title": title,
+                            "price": price,
+                        }
             logger.info(
                 f"Loaded {len(already_notified_items)} already notified item(s) from "
                 f"{Path.cwd() / f.name}"
-            )
+                )
+            logger.info(f"Already notified items: [{', '.join(already_notified_items.keys())}]")
+
     except FileNotFoundError:
         logger.info("No previous already_notified_items.csv found, starting fresh")
     except IOError as e:
         logger.error(e, exc_info=True)
+        sys.exit(1)
+    except (csv.Error, UnicodeDecodeError, ValueError) as e:
+        logger.error("CSV validation failed. Error: %s in row %s", e, row)
         sys.exit(1)
 
 
@@ -119,7 +118,7 @@ def save_already_notified_item(item_id, title, price):
 
 
 # Send a Telegram message when a new item is found
-def send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller):
+def send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller) -> bool:
     from html import escape
 
     safe_title = escape(str(item_title))
@@ -158,8 +157,6 @@ def send_telegram_message(item_title, item_price, item_upload_time, item_url, it
         seller_info = (
             f"👤 {seller.get('login', 'N/D')} · "
             f"⭐ {seller.get('positive_feedback_count', 0)}/{seller.get('feedback_count', 0)} . "
-            #f"📦 {seller.get('item_count', 0)} for sale · "
-            #f"{seller.get('total_items_count', 0)} total · "
             f"👥 {seller.get('followers_count', 0)}\n"
             f"{location}"
         )
@@ -197,11 +194,15 @@ def send_telegram_message(item_title, item_price, item_upload_time, item_url, it
                 f"Telegram notification failed. "
                 f"Status code: {response.status_code}, Response: {response.text}"
             )
+            return False
         else:
             logger.info("Telegram notification sent: %s", item_url)
+            return True
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Error sending Telegram message: {e}")
+
+        return False
 
 
 def values_match(actual, expected, match_type="exact"):
@@ -283,11 +284,83 @@ def get_nested_value(data, key):
     return True, current
 
 
-def load_filters(type, path="item_filters.yaml"):
-    with open(path, "r", encoding="utf-8") as file:
-        config = yaml.safe_load(file) or {}
-        logger.info(f"Loaded %s [{type}] filter(s) from {Path.cwd() / file.name}", len(config))
+def load_filters(filter_type, path="item_filters.yaml"):
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            config = yaml.safe_load(file)
+
+        validate_filters(config)
+
+    except yaml.YAMLError as e:
+        logger.error("Invalid YAML syntax. Error: %s",e)
+        sys.exit(1)
+
+    except ValueError as e:
+        logger.error("Invalid filter configuration in %s. Error: %s",path, e)
+        sys.exit(1)
+
+    # No YAML content means no filters
+    config = config or {"filters": []}
+
+    logger.info(
+        "Loaded %s [%s] filter(s) from %s",
+        len(config["filters"]),
+        filter_type,
+        Path(path).resolve(),
+    )
     return config
+
+def validate_filters(config):
+    """Validate YAML filter configuration if content is defined."""
+
+    # Empty YAML content is valid
+    if config is None:
+        return True
+
+    def check_keys(data, required_keys, context):
+        if not isinstance(data, dict):
+            raise ValueError(f"{context} must be a mapping")
+
+        missing = required_keys - data.keys()
+        unexpected = data.keys() - required_keys
+
+        if missing:
+            raise ValueError(f"{context}: missing keys {sorted(missing)}")
+        if unexpected:
+            raise ValueError(f"{context}: unexpected keys {sorted(unexpected)}")
+
+    check_keys(config, {"filters"}, "Root")
+
+    if not isinstance(config["filters"], list):
+        raise ValueError("'filters' must be a list")
+
+    for i, item in enumerate(config["filters"]):
+        context = f"filters[{i}]"
+        check_keys(item, {"query_id", "mode", "rules"}, context)
+
+        if not isinstance(item["mode"], str) or item["mode"] not in {"include", "exclude"}:
+            raise ValueError(
+                f"{context}.mode must be a string: 'include' or 'exclude'"
+            )
+
+        if not isinstance(item["rules"], list):
+            raise ValueError(f"{context}.rules must be a list")
+
+        for j, rule in enumerate(item["rules"]):
+            rule_context = f"{context}.rules[{j}]"
+            check_keys(rule, {"key", "value", "match_type"}, rule_context)
+
+            if (
+                not isinstance(rule["match_type"], str)
+                or rule["match_type"] not in {"exact", "contains"}
+            ):
+                raise ValueError(
+                    f"{rule_context}.match_type must be a string: "
+                    "'exact' or 'contains'"
+                )
+
+    return True
+
 
 def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, filter_type, log_excluded) -> bool:
 
@@ -314,10 +387,7 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
             for rule in rules:
                 if not _item_matches_rule(data_to_filter, rule):
                     if log_excluded:
-                        logger.info(
-                            f"Excluded item [{item_id}] for not matching "
-                            f"[{filter_label}] filter rule [{query_id}][{rule['key']}] in include mode"
-                        )
+                        logger.info(f"Excluded item [{item_id}] for not matching [{filter_label}] filter rule [{query_id}][{rule['key']}] in include mode")
                     return False
 
         elif mode == "exclude":
@@ -326,16 +396,14 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
                 if _item_matches_rule(data_to_filter, rule):
                     if log_excluded:
                         logger.info(
-                            f"Excluded item [{item_id}] for matching "
-                            f"[{filter_label}] filter rule [{query_id}][{rule['key']}] in exclude mode"
-                        )
+                            f"Excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}][{rule['key']}] in exclude mode")
                     return False
 
         else:
             raise ValueError(f"Invalid filter mode: {mode}")
 
-        if log_excluded:
-            logger.info(f"Item [{item_id}] matched 0 [{filter_label}] filters")
+        # if log_excluded:
+        #     logger.info(f"Item [{item_id}] matched 0 [{filter_label}] filters")
 
     return True
 
@@ -347,11 +415,7 @@ def _item_matches_rule(item: dict, rule: dict) -> bool:
     if not exists:
         return False
 
-    return values_match(
-        actual,
-        rule["value"],
-        rule.get("match_type", "exact"),
-    )
+    return values_match(actual, rule["value"], rule.get("match_type", "exact"))
 
 def get_user_details(user_id, session):
     try:
@@ -405,9 +469,9 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
     # Loop through each search query defined in search_config.py
     for params in search_config.queries:
 
-        logger.info(f"========================================")
-        logger.info("Processing query [%s]", params.get("query_id"))
-        logger.info(f"========================================")
+        logger.info(f"================================================================================")
+        logger.info("Processing search query [%s]", params.get("query_id"))
+        logger.info(f"================================================================================")
         page = 1
 
         while page <= getattr(search_config, "pages", 2):
@@ -444,8 +508,9 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
 
             # Process each item returned in the response
             excluded_items = []
-            already_notified_items = []
+            previously_notified_items = []
             notified_items = []
+            failed_notified_items = []
 
             for item in items:
                 item_id = str(item["id"])
@@ -487,13 +552,11 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
 
                 # Skip items whose title or description match any excluded keyword
                 if is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
-                    #excluded_counters += 1
                     excluded_items.append(item_id)
                     continue
 
                 # Filter using items filters
                 if not filter_item(item_id, item, params.get("query_id"), item_filters, "item", log_excluded):
-                    #excluded_counters += 1
                     excluded_items.append(item_id)
                     continue
 
@@ -503,7 +566,6 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
                 seller = get_user_details(user_id, session)
 
                 if not filter_item(item_id, seller, params.get("query_id"), seller_filters,"seller", log_excluded):
-                    #excluded_counters += 1
                     excluded_items.append(item_id)
                     continue
 
@@ -511,30 +573,31 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
                 if item_id not in already_notified_items:
 
                     if not notification_disabled:
-                        #notified_counter += 1
-                        notified_items.append(item_id)
 
                         # Send Telegram notifications if configured
                         if telegram_config.telegram_bot_token and telegram_config.telegram_chat_id:
-                            send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image,
-                                                  favourite_count, seller)
+                            if send_telegram_message(item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller):
+                                notified_items.append(item_id)
+                            else:
+                                failed_notified_items.append(item_id)
 
                     # Mark item as notified and save it
-                   #already_notified_items[item_id] = item_title, item_price
                     if not state_file_disabled:
                         save_already_notified_item(item_id, item_title, total_amount)
-
                 else:
-                    #already_notified_counter += 1
-                    already_notified_items.append(item_id)
+                    previously_notified_items.append(item_id)
 
-            logger.info(f"{len(notified_items)} notified items updated to {Path.cwd() / 'already_notified_items.csv'}")
-            logger.info(f"========================================")
+            logger.info(f"{len(notified_items)} notified items appended to {Path.cwd() / 'already_notified_items.csv'}")
+            logger.info(f"================================================================================")
+            logger.info("Total items matched: %s - [%s]", len(items),
+                        ", ".join([str(item["id"]) for item in items]))
             logger.info("Items excluded: %s - [%s]", len(excluded_items),
                         ", ".join(str(item_id) for item_id in excluded_items))
-            logger.info("Items already notified: %s - [%s]", len(already_notified_items),
-                        ", ".join(str(item_id) for item_id in already_notified_items))
+            logger.info("Items previously notified: %s - [%s]", len(previously_notified_items),
+                        ", ".join(str(item_id) for item_id in previously_notified_items))
             logger.info("Items notified: %s - [%s]", len(notified_items), ", ".join(str(item_id) for item_id in notified_items))
+            logger.info("Items failed to notify: %s - [%s]", len(failed_notified_items),
+                        ", ".join(str(item_id) for item_id in failed_notified_items))
 
             # If fewer than 96 items were returned, this is the last page
             if len(items) < 96:
@@ -543,7 +606,7 @@ def main(log_excluded=False, notification_disabled=False, state_file_disabled=Fa
             page += 1
 
     logger.info("Completed query [%s]", params.get("query_id"))
-    logger.info(f"========================================")
+    logger.info(f"================================================================================")
 
 if __name__ == "__main__":
     main(args.log_excluded, args.notification_disabled)

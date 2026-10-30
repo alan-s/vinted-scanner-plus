@@ -1,4 +1,5 @@
 # Define optional filters on item attributes for each Vinted search query. Used to include or exclude items from the final result set
+#
 # query_id: same as query_id from search_config.py
 # mode: (include,exclude) include: all rules must match for the item to be included. exclude: a match against any rule excludes the item
 # rules: 
