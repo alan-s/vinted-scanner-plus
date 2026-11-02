@@ -367,7 +367,7 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
                     return False
                 else:
                     if log_excluded:
-                        logger.info(f"[ PASS ☑ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
+                        logger.info(f"[ PASS ✓ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
 
         elif mode == "exclude":
             # Any matching rule excludes the item.
@@ -378,7 +378,7 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
 
                 if _item_matches_rule(data_to_filter, rule):
                     if log_excluded:
-                        logger.info(f"[FAIL ✗ ] excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+                        logger.info(f"[ FAIL ✗ ] excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
                 else:
                     if log_excluded:
