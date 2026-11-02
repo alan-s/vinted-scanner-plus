@@ -363,8 +363,11 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
 
                 if not _item_matches_rule(data_to_filter, rule):
                     if log_excluded:
-                        logger.info(f"Excluded item [{item_id}] for not matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+                        logger.info(f"[ FAIL ✗ ] excluded item [{item_id}] for not matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
+                else:
+                    if log_excluded:
+                        logger.info(f"[ PASS ☑ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
 
         elif mode == "exclude":
             # Any matching rule excludes the item.
@@ -375,8 +378,11 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
 
                 if _item_matches_rule(data_to_filter, rule):
                     if log_excluded:
-                        logger.info(f"Excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+                        logger.info(f"[FAIL ✗ ] excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
+                else:
+                    if log_excluded:
+                        logger.info(f"[ PASS ✓ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
 
         else:
             raise ValueError(f"Invalid filter mode: {mode}")
@@ -387,19 +393,22 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
 def _item_matches_rule(item: dict, rule: dict) -> bool:
     """Match an item's value against a rule, supporting nested keys."""
     exists, actual = get_nested_value(item, rule["key"])
+    expected = rule["value"]
+    match_type = rule.get("match_type", "exact")
 
     if not exists:
         logger.info(f"Key [{rule['key']}] not found in item [{item['id']}]")
         return False
 
-    return values_match(actual, rule["value"], rule.get("match_type", "exact"))
+    logger.info(
+        f"Expected value [{expected}], actual value [{actual}], match type used [{match_type}]")
+
+    return values_match(actual, expected, match_type)
 
 
 def values_match(actual, expected, match_type="exact"):
     if match_type not in ("exact", "contains"):
         raise ValueError(f"Invalid match type: {match_type}")
-
-    #logger.info(f"Match type: [{match_type}]. Rule value: [{expected}]. Item value: [{actual}]")
 
     if match_type == "contains":
         if not isinstance(actual, str) or not isinstance(expected, str):
@@ -455,6 +464,7 @@ def main(log_excluded=False, disable_notifications=False, disable_state_file=Fal
     logger.info("           VINTED SCANNER")
     logger.info("========================================")
     logger.info("")
+    logger.info(f"Launched with the followings args: {" ".join(sys.argv[1:])}")
 
     vinted_url = search_config.vinted_url
 
