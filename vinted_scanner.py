@@ -279,6 +279,7 @@ def load_filters(filter_type, path="item_filters.yaml"):
     )
     return config
 
+
 def validate_filters(config):
     """Validate YAML filter configuration if content is defined."""
 
@@ -286,49 +287,148 @@ def validate_filters(config):
     if config is None:
         return True
 
-    def check_keys(data, required_keys, context):
+    operators = {
+        "equals",
+        "contains",
+        "greater_than",
+        "greater_than_or_equal",
+        "less_than",
+        "less_than_or_equal",
+        "between",
+        "exists",
+        "is_null",
+        "is_empty",
+    }
+
+    operators_without_value = {"exists", "is_null", "is_empty"}
+
+    numeric_operators = {
+        "greater_than",
+        "greater_than_or_equal",
+        "less_than",
+        "less_than_or_equal",
+        "between",
+    }
+
+    def check_keys(data, required_keys, optional_keys, context):
         if not isinstance(data, dict):
             raise ValueError(f"{context} must be a mapping")
 
         missing = required_keys - data.keys()
-        unexpected = data.keys() - required_keys
+        unexpected = data.keys() - (required_keys | optional_keys)
 
         if missing:
             raise ValueError(f"{context}: missing keys {sorted(missing)}")
+
         if unexpected:
             raise ValueError(f"{context}: unexpected keys {sorted(unexpected)}")
 
-    check_keys(config, {"filters"}, "Root")
+    def is_number(value):
+        # bool is a subclass of int in Python, so explicitly exclude it.
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+    check_keys(config, {"filters"}, set(), "Root")
 
     if not isinstance(config["filters"], list):
         raise ValueError("'filters' must be a list")
 
     for i, item in enumerate(config["filters"]):
         context = f"filters[{i}]"
-        check_keys(item, {"query_id", "mode", "rules"}, context)
 
-        if not isinstance(item["mode"], str) or item["mode"] not in {"include", "exclude"}:
+        check_keys(
+            item,
+            {"query_id", "mode", "rules"},
+            set(),
+            context,
+        )
+
+        if not isinstance(item["query_id"], str) or not item["query_id"]:
+            raise ValueError(f"{context}.query_id must be a non-empty string")
+
+        if item["mode"] not in {"include", "exclude"}:
             raise ValueError(
-                f"{context}.mode must be a string: 'include' or 'exclude'"
+                f"{context}.mode must be 'include' or 'exclude'"
             )
 
-        if not isinstance(item["rules"], list):
-            raise ValueError(f"{context}.rules must be a list")
+        if not isinstance(item["rules"], list) or not item["rules"]:
+            raise ValueError(f"{context}.rules must be a non-empty list")
 
         for j, rule in enumerate(item["rules"]):
             rule_context = f"{context}.rules[{j}]"
-            check_keys(rule, {"key", "value", "match_type"}, rule_context)
 
-            if (
-                not isinstance(rule["match_type"], str)
-                or rule["match_type"] not in {"exact", "contains"}
-            ):
+            # Determine whether value is required based on the operator.
+            if not isinstance(rule, dict):
+                raise ValueError(f"{rule_context} must be a mapping")
+
+            operator = rule.get("operator")
+
+            if not isinstance(operator, str) or operator not in operators:
                 raise ValueError(
-                    f"{rule_context}.match_type must be a string: "
-                    "'exact' or 'contains'"
+                    f"{rule_context}.operator must be one of: "
+                    f"{sorted(operators)}"
                 )
 
+            required_keys = {"key", "operator"}
+
+            if operator not in operators_without_value:
+                required_keys.add("value")
+
+            check_keys(
+                rule,
+                required_keys,
+                set(),
+                rule_context,
+            )
+
+            if not isinstance(rule["key"], str) or not rule["key"]:
+                raise ValueError(
+                    f"{rule_context}.key must be a non-empty string"
+                )
+
+            # Validate numeric operators.
+            if operator in numeric_operators:
+                value = rule["value"]
+
+                if operator == "between":
+                    if not isinstance(value, dict):
+                        raise ValueError(
+                            f"{rule_context}.value must be a mapping "
+                            "with 'min' and 'max' for operator 'between'"
+                        )
+
+                    check_keys(
+                        value,
+                        {"min", "max"},
+                        set(),
+                        f"{rule_context}.value",
+                    )
+
+                    if not is_number(value["min"]) or not is_number(value["max"]):
+                        raise ValueError(
+                            f"{rule_context}.value.min and max must be numeric"
+                        )
+
+                    if value["min"] > value["max"]:
+                        raise ValueError(
+                            f"{rule_context}.value.min cannot exceed max"
+                        )
+
+                elif not is_number(value):
+                    raise ValueError(
+                        f"{rule_context}.value must be numeric "
+                        f"for operator '{operator}'"
+                    )
+
+            # Validate string contains.
+            elif operator == "contains":
+                if not isinstance(rule["value"], str):
+                    raise ValueError(
+                        f"{rule_context}.value must be a string "
+                        "for operator 'contains'"
+                    )
+
     return True
+
 
 
 def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, filter_type, log_excluded) -> bool:
@@ -392,30 +492,112 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
 
 def _item_matches_rule(item: dict, rule: dict) -> bool:
     """Match an item's value against a rule, supporting nested keys."""
-    exists, actual = get_nested_value(item, rule["key"])
-    expected = rule["value"]
-    match_type = rule.get("match_type", "exact")
+    key = rule["key"]
+    operator = rule["operator"]
+
+    exists, actual = get_nested_value(item, key)
+
+    if operator == "exists":
+        return exists
 
     if not exists:
-        logger.info(f"Key [{rule['key']}] not found in item [{item['id']}]")
+        logger.info(f"Key [{key}] not found in item [{item.get('id')}]")
         return False
 
+    if operator == "is_null":
+        return actual is None
+
+    if operator == "is_empty":
+        return isinstance(actual, (str, list, dict)) and len(actual) == 0
+
+    expected = rule["value"]
+
     logger.info(
-        f"Expected value [{expected}], actual value [{actual}], match type used [{match_type}]")
+        f"Expected value [{expected}], actual value [{actual}], operator [{operator}]")
 
-    return values_match(actual, expected, match_type)
+    return values_match(actual, expected, operator)
 
 
-def values_match(actual, expected, match_type="exact"):
-    if match_type not in ("exact", "contains"):
-        raise ValueError(f"Invalid match type: {match_type}")
+def values_match(actual, expected, operator="equals"):
+    """Compare two values using the specified operator."""
 
-    if match_type == "contains":
+    valid_operators = (
+        "equals",
+        "contains",
+        "greater_than",
+        "greater_than_or_equal",
+        "less_than",
+        "less_than_or_equal",
+        "between",
+    )
+
+    if operator not in valid_operators:
+        raise ValueError(f"Invalid operator: {operator}")
+
+    # String operators
+    if operator == "contains":
         if not isinstance(actual, str) or not isinstance(expected, str):
-            raise ValueError("Match type 'contains' requires string values")
+            raise ValueError("Operator 'contains' requires string values")
 
         return normalize(expected) in normalize(actual)
 
+    # Numeric operators
+    if operator in (
+        "greater_than",
+        "greater_than_or_equal",
+        "less_than",
+        "less_than_or_equal",
+        "between",
+    ):
+        # bool is a subclass of int in Python, so explicitly exclude it.
+        if (
+            isinstance(actual, bool)
+            or isinstance(expected, bool)
+            or not isinstance(actual, (int, float))
+        ):
+            raise ValueError(f"Operator '{operator}' requires numeric values")
+
+        if operator == "between":
+            if not isinstance(expected, dict) or set(expected.keys()) != {"min", "max"}:
+                raise ValueError(
+                    "Operator 'between' requires a value with 'min' and 'max' keys"
+                )
+
+            minimum = expected["min"]
+            maximum = expected["max"]
+
+            if (
+                isinstance(minimum, bool)
+                or isinstance(maximum, bool)
+                or not isinstance(minimum, (int, float))
+                or not isinstance(maximum, (int, float))
+            ):
+                raise ValueError("'between' min and max must be numeric")
+
+            if minimum > maximum:
+                raise ValueError("'between' minimum cannot exceed maximum")
+
+            return minimum <= actual <= maximum
+
+        if (
+            isinstance(expected, bool)
+            or not isinstance(expected, (int, float))
+        ):
+            raise ValueError(f"Operator '{operator}' requires numeric values")
+
+        if operator == "greater_than":
+            return actual > expected
+
+        if operator == "greater_than_or_equal":
+            return actual >= expected
+
+        if operator == "less_than":
+            return actual < expected
+
+        if operator == "less_than_or_equal":
+            return actual <= expected
+
+    # Equality operators
     if isinstance(actual, str) and isinstance(expected, str):
         return normalize(actual) == normalize(expected)
 
@@ -525,6 +707,7 @@ def main(log_excluded=False, disable_notifications=False, disable_state_file=Fal
             # Process each item returned in the response
             excluded_items = []
             previously_notified_items = []
+            candidate_items = []
             notified_items = []
             failed_notified_items = []
 
@@ -621,6 +804,7 @@ def main(log_excluded=False, disable_notifications=False, disable_state_file=Fal
                             logger.info(f"Not recording notification for item [{item_id}] in 'already_notified_items.csv'; '--disable_state_file' set")
 
                     else:
+                        candidate_items.append(item_id)
                         logger.info(f"No notification sent for item [{item_id}]; '--disable_notifications' set")
 
                 else:
@@ -629,13 +813,15 @@ def main(log_excluded=False, disable_notifications=False, disable_state_file=Fal
 
                 item_log_printer(item_id, "Completed")
 
-            logger.info("Total items matched: %s - [%s]", len(items),
+            logger.info("Items from Vinted search: %s - [%s]", len(items),
                         ", ".join([str(item["id"]) for item in items]))
             logger.info("Items excluded: %s - [%s]", len(excluded_items),
                         ", ".join(str(item_id) for item_id in excluded_items))
             logger.info("Items previously notified: %s - [%s]", len(previously_notified_items),
                         ", ".join(str(item_id) for item_id in previously_notified_items))
-            logger.info("Items notified: %s - [%s]", len(notified_items), ", ".join(str(item_id) for item_id in notified_items))
+            logger.info("Item candidates: %s - [%s]", len(candidate_items), ", ".join(str(item_id) for item_id in candidate_items))
+            logger.info("Items notified: %s - [%s]", len(notified_items),
+                        ", ".join(str(item_id) for item_id in notified_items))
             logger.info("Items failed to notify: %s - [%s]", len(failed_notified_items),
                         ", ".join(str(item_id) for item_id in failed_notified_items))
             logger.info(f"Items recorded as notified: {len(notified_items)} - [{', '.join(str(item_id) for item_id in notified_items)}]")

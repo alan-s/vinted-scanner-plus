@@ -13,10 +13,18 @@ filters:
     rules:
       - key: country_iso_code
         value: US
-        match_type: exact
+        operator: equals
   - query_id: sheriff_board_game
     mode: include
     rules:
-      - key: bundle_discount.minimal_item_count
-        value: 2
-        match_type: exact
+      - key: positive_feedback_count
+        value: 10
+        operator: greater_than_or_equal
+  - query_id: sheriff_board_game
+    mode: exclude
+    rules:
+      - key: positive_feedback_count
+        value:
+          min: 75
+          max: 100
+        operator: between
