@@ -213,47 +213,6 @@ def normalize(text: str) -> str:
     ).casefold().strip()
 
 
-def load_item_excluded_keywords():
-    load_keywords = set()
-
-    try:
-        with open("excluded_keywords.txt", "r", encoding="utf-8", errors="ignore") as f:
-            for line in f:
-                keyword = line.strip()
-
-                if keyword and not keyword.startswith("#"):
-                    load_keywords.add(normalize(keyword))
-
-        logger.info(f"Loaded %s excluded keyword(s) from {Path.cwd() / f.name}", len(load_keywords))
-
-    except FileNotFoundError:
-        logger.info("No excluded_keywords.txt found, no keywords will be excluded")
-
-    except IOError as e:
-        logger.error(e, exc_info=True)
-        sys.exit()
-
-    return load_keywords
-
-
-def is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
-    if not excluded_keywords:
-        if log_excluded:
-            logger.info(f"Item [{item_id}] matched 0 excluded words")
-
-        return False
-
-    text = normalize(f"{item_title} {item_description}")
-
-    for keyword in excluded_keywords:
-        if keyword in text:
-            if log_excluded:
-                logger.info(f"Excluded item [{item_id}] for matching excluded keyword '{keyword}'")
-
-            return True
-
-    return False
-
 def load_filters(filter_type, path="item_filters.yaml"):
     try:
         with open(path, "r", encoding="utf-8") as file:
@@ -420,12 +379,22 @@ def validate_filters(config):
                         f"for operator '{operator}'"
                     )
 
-            # Validate string contains.
-            elif operator == "contains":
-                if not isinstance(rule["value"], str):
+            # Validate string operators (including CSV values).
+            elif operator in {"equals", "contains"}:
+                value = rule["value"]
+
+                if not isinstance(value, str) or not value.strip():
                     raise ValueError(
-                        f"{rule_context}.value must be a string "
-                        "for operator 'contains'"
+                        f"{rule_context}.value must be a non-empty string "
+                        f"for operator '{operator}'"
+                    )
+
+                # Validate comma-separated values.
+                expected_values = [v.strip() for v in value.split(",")]
+
+                if any(not v for v in expected_values):
+                    raise ValueError(
+                        f"{rule_context}.value contains an empty CSV value"
                     )
 
     return True
@@ -462,7 +431,7 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
                     logger.info(
                         f"Checking item [{item_id}] against [{filter_label}] filter rule [{query_id}][{rule['key']}][{rule['value']}] in [{mode}] mode")
 
-                if not _item_matches_rule(data_to_filter, rule):
+                if not item_matches_rule(data_to_filter, rule):
                     if log_excluded:
                         logger.info(f"[ FAIL ✗ ] excluded item [{item_id}] for not matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
@@ -477,7 +446,7 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
                     logger.info(
                         f"Checking item [{item_id}] against [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
 
-                if _item_matches_rule(data_to_filter, rule):
+                if item_matches_rule(data_to_filter, rule):
                     if log_excluded:
                         logger.info(f"[ FAIL ✗ ] excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
@@ -491,7 +460,7 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
     return True
 
 
-def _item_matches_rule(item: dict, rule: dict) -> bool:
+def item_matches_rule(item: dict, rule: dict) -> bool:
     """Match an item's value against a rule, supporting nested keys."""
     key = rule["key"]
     operator = rule["operator"]
@@ -678,16 +647,13 @@ def main(log_excluded=False, disable_notifications=False, disable_state_file=Fal
     # Load the list of already notified items
     load_already_notified_items()
 
-    # Load excluded keywords
-    excluded_keywords = load_item_excluded_keywords()
-
     # Load item filters
     item_filters = load_filters("item", "item_filters.yaml")
 
     # Load seller filters
     seller_filters = load_filters("seller", "seller_filters.yaml")
 
-    # Initialize session
+    # Initialise session
     session = requests.Session()
     session.post(vinted_url, headers=headers, timeout=timeoutconnection)
 
@@ -776,14 +742,6 @@ def main(log_excluded=False, disable_notifications=False, disable_state_file=Fal
                 item_image = item_photo.get("full_size_url")
 
                 item_upload_time = get_upload_time(item_id)
-
-                # Skip items whose title or description match any excluded keyword
-                if log_excluded:
-                    logger.info(f"Checking item [{item_id}] against optional excluded words")
-                if is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
-                    excluded_items.append(item_id)
-                    item_log_printer(item_id, "Completed")
-                    continue
 
                 # Filter using items filters
                 if log_excluded:

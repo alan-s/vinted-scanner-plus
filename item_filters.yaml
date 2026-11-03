@@ -10,10 +10,10 @@
 #     - 'nothing' operators: (exists,is_null,is_empty)
 #   - value: the value to compare (additionally accepts csv list for keys with string value)
 
-# filters:
-#   - query_id: sheriff_board_game
-#     mode: exclude
-#     rules:
-#       - key: title
-#         value: -,2nd
-#         operator: contains
+filters:
+  - query_id: sheriff_board_game
+    mode: exclude
+    rules:
+      - key: title
+        value: 2nd
+        operator: contains
