@@ -1,30 +1,33 @@
-# Define optional filters on seller attributes for each Vinted search query. Used to include or exclude items from the final result set
+# Define optional filters on seller attributes for each Vinted query. Used to include or exclude items from the final result set
 #
 # query_id: same as query_id from search_config.py
 # mode: (include,exclude) include: all rules must match for the item to be included. exclude: a match against any rule excludes the item
 # rules: 
-#   key: the key name for the 'item' attribute to filter on (can be nested using ".")
-#   value: the value to compare
-#   match_type: (exact,contains) exact: normalised case-insenstive exact match, contains: normalised case-insenstive substring match
+#   - key: the key name for the item attribute to filter on (additionally accepts nested keys using "." e.g. item.title)
+#   - operator: 
+#     - string operators: (equals,contains) normalised case-insenstive exact and substring match
+#     - numeric operators: (greater_than,greater_than_or_equal,less_than,less_than_or_equal,between)
+#     - 'nothing' operators: (exists,is_null,is_empty)
+#   - value: the value to compare (additionally accepts csv list for keys with string value)
 
-filters:
-  - query_id: sheriff_board_game
-    mode: include
-    rules:
-      - key: country_iso_code
-        value: US
-        operator: equals
-  - query_id: sheriff_board_game
-    mode: include
-    rules:
-      - key: positive_feedback_count
-        value: 10
-        operator: greater_than_or_equal
-  - query_id: sheriff_board_game
-    mode: exclude
-    rules:
-      - key: positive_feedback_count
-        value:
-          min: 75
-          max: 100
-        operator: between
+# filters:
+#   - query_id: sheriff_board_game
+#     mode: include
+#     rules:
+#       - key: country_iso_code
+#         value: US
+#         operator: equals
+#   - query_id: sheriff_board_game
+#     mode: include
+#     rules:
+#       - key: positive_feedback_count
+#         value: 10
+#         operator: greater_than_or_equal
+#   - query_id: sheriff_board_game
+#     mode: exclude
+#     rules:
+#       - key: positive_feedback_count
+#         value:
+#           min: 75
+#           max: 100
+#         operator: between

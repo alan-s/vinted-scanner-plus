@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import csv
+import re
 import sys
 import yaml
 import search_config
@@ -213,7 +214,7 @@ def normalize(text: str) -> str:
 
 
 def load_item_excluded_keywords():
-    keywords = set()
+    load_keywords = set()
 
     try:
         with open("excluded_keywords.txt", "r", encoding="utf-8", errors="ignore") as f:
@@ -221,9 +222,9 @@ def load_item_excluded_keywords():
                 keyword = line.strip()
 
                 if keyword and not keyword.startswith("#"):
-                    keywords.add(normalize(keyword))
+                    load_keywords.add(normalize(keyword))
 
-        logger.info(f"Loaded %s excluded keyword(s) from {Path.cwd() / f.name}", len(keywords))
+        logger.info(f"Loaded %s excluded keyword(s) from {Path.cwd() / f.name}", len(load_keywords))
 
     except FileNotFoundError:
         logger.info("No excluded_keywords.txt found, no keywords will be excluded")
@@ -232,7 +233,7 @@ def load_item_excluded_keywords():
         logger.error(e, exc_info=True)
         sys.exit()
 
-    return keywords
+    return load_keywords
 
 
 def is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
@@ -459,7 +460,7 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
             for rule in rules:
                 if log_excluded:
                     logger.info(
-                        f"Checking item [{item_id}] against [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+                        f"Checking item [{item_id}] against [{filter_label}] filter rule [{query_id}][{rule['key']}][{rule['value']}] in [{mode}] mode")
 
                 if not _item_matches_rule(data_to_filter, rule):
                     if log_excluded:
@@ -510,15 +511,15 @@ def _item_matches_rule(item: dict, rule: dict) -> bool:
     if operator == "is_empty":
         return isinstance(actual, (str, list, dict)) and len(actual) == 0
 
-    expected = rule["value"]
+    rule_value = rule["value"]
 
     logger.info(
-        f"Expected value [{expected}], actual value [{actual}], operator [{operator}]")
+        f"Rule value(s): [{rule_value}], actual value: [{actual}], operator: [{operator}]")
 
-    return values_match(actual, expected, operator)
+    return values_match(actual, rule_value, operator)
 
 
-def values_match(actual, expected, operator="equals"):
+def values_match(actual, rule_value, operator="equals"):
     """Compare two values using the specified operator."""
 
     valid_operators = (
@@ -535,11 +536,35 @@ def values_match(actual, expected, operator="equals"):
         raise ValueError(f"Invalid operator: {operator}")
 
     # String operators
-    if operator == "contains":
-        if not isinstance(actual, str) or not isinstance(expected, str):
-            raise ValueError("Operator 'contains' requires string values")
+    if operator in ("equals", "contains"):
 
-        return normalize(expected) in normalize(actual)
+        if not isinstance(actual, str) or not isinstance(rule_value, str):
+            raise ValueError(
+                f"Operator '{operator}' requires string values"
+            )
+
+        # Support comma-separated rule values.
+        # Any one of the values matching is sufficient.
+        rule_values = [
+            value.strip()
+            for value in rule_value.split(",")
+            if value.strip()
+        ]
+
+        if operator == "equals":
+            return any(
+                normalize(value) == normalize(actual)
+                for value in rule_values
+            )
+
+        if operator == "contains":
+            return any(
+                re.search(
+                    r"\b" + re.escape(normalize(value)) + r"\b",
+                    normalize(actual)
+                )
+                for value in rule_values
+            )
 
     # Numeric operators
     if operator in (
@@ -552,19 +577,19 @@ def values_match(actual, expected, operator="equals"):
         # bool is a subclass of int in Python, so explicitly exclude it.
         if (
             isinstance(actual, bool)
-            or isinstance(expected, bool)
+            or isinstance(rule_value, bool)
             or not isinstance(actual, (int, float))
         ):
             raise ValueError(f"Operator '{operator}' requires numeric values")
 
         if operator == "between":
-            if not isinstance(expected, dict) or set(expected.keys()) != {"min", "max"}:
+            if not isinstance(rule_value, dict) or set(rule_value.keys()) != {"min", "max"}:
                 raise ValueError(
                     "Operator 'between' requires a value with 'min' and 'max' keys"
                 )
 
-            minimum = expected["min"]
-            maximum = expected["max"]
+            minimum = rule_value["min"]
+            maximum = rule_value["max"]
 
             if (
                 isinstance(minimum, bool)
@@ -580,29 +605,29 @@ def values_match(actual, expected, operator="equals"):
             return minimum <= actual <= maximum
 
         if (
-            isinstance(expected, bool)
-            or not isinstance(expected, (int, float))
+            isinstance(rule_value, bool)
+            or not isinstance(rule_value, (int, float))
         ):
             raise ValueError(f"Operator '{operator}' requires numeric values")
 
         if operator == "greater_than":
-            return actual > expected
+            return actual > rule_value
 
         if operator == "greater_than_or_equal":
-            return actual >= expected
+            return actual >= rule_value
 
         if operator == "less_than":
-            return actual < expected
+            return actual < rule_value
 
         if operator == "less_than_or_equal":
-            return actual <= expected
+            return actual <= rule_value
 
     # Equality operators
-    if isinstance(actual, str) and isinstance(expected, str):
-        return normalize(actual) == normalize(expected)
+    if isinstance(actual, str) and isinstance(rule_value, str):
+        return normalize(actual) == normalize(rule_value)
 
     # Preserve type distinctions: True must not equal 1.
-    return type(actual) is type(expected) and actual == expected
+    return type(actual) is type(rule_value) and actual == rule_value
 
 
 def get_nested_value(data, key):
@@ -754,7 +779,7 @@ def main(log_excluded=False, disable_notifications=False, disable_state_file=Fal
 
                 # Skip items whose title or description match any excluded keyword
                 if log_excluded:
-                    logger.info(f"Checking item [{item_id}] against excluded words")
+                    logger.info(f"Checking item [{item_id}] against optional excluded words")
                 if is_item_excluded_by_keyword(item_id, item_title, item_description, excluded_keywords, log_excluded):
                     excluded_items.append(item_id)
                     item_log_printer(item_id, "Completed")
@@ -762,7 +787,7 @@ def main(log_excluded=False, disable_notifications=False, disable_state_file=Fal
 
                 # Filter using items filters
                 if log_excluded:
-                    logger.info(f"Checking item [{item_id}] against [item] filters")
+                    logger.info(f"Checking item [{item_id}] against optional [item] filters")
                 if not filter_item(item_id, item, params.get("query_id"), item_filters, "item", log_excluded):
                     excluded_items.append(item_id)
                     item_log_printer(item_id, "Completed")
@@ -775,7 +800,7 @@ def main(log_excluded=False, disable_notifications=False, disable_state_file=Fal
 
                 # Filter using seller filters now
                 if log_excluded:
-                    logger.info(f"Checking item [{item_id}] against [seller] filters")
+                    logger.info(f"Checking item [{item_id}] against optional [seller] filters")
                 if not filter_item(item_id, seller, params.get("query_id"), seller_filters,"seller", log_excluded):
                     excluded_items.append(item_id)
                     item_log_printer(item_id, "Completed")
