@@ -4,5 +4,5 @@ __pycache__/
 /.venv
 
 # Config
-already_notified_items.csv
+/state/already_notified_items.csv
 vinted_scanner.log
