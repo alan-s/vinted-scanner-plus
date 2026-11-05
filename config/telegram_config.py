@@ -1,3 +1,0 @@
-# Telegram Token and ChatID for notification
-telegram_bot_token = "REDACTED_TOKEN"
-telegram_chat_id = "REDACTED_CHAT_ID"

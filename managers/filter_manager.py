@@ -2,11 +2,9 @@ import logging
 import re
 import sys
 from pathlib import Path
-
-import yaml
-
 import managers.logging_manager as logging_manager
 import utils.text_utils as text_utils
+import utils.file_utils as file_utils
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
@@ -14,29 +12,23 @@ logger = logging.getLogger(__name__)
 
 def load_filters(filter_type, path):
     try:
-        with open(path, "r", encoding="utf-8") as file:
-            config = yaml.safe_load(file)
-
-        validate_filters(config)
-
-    except yaml.YAMLError as e:
-        logger.error("Invalid YAML syntax. Error: %s",e)
-        sys.exit(1)
+        filter_config = file_utils.load_yaml(path)
+        validate_filters(filter_config)
 
     except ValueError as e:
         logger.error("Invalid filter configuration in %s. Error: %s",path, e)
         sys.exit(1)
 
     # No YAML content means no filters
-    config = config or {"filters": []}
+    filter_config = filter_config or {"filters": []}
 
     logger.info(
         "Loaded %s [%s] filter(s) from %s",
-        len(config["filters"]),
+        len(filter_config["filters"]),
         filter_type,
         Path(path).resolve(),
     )
-    return config
+    return filter_config
 
 
 def validate_filters(config):
@@ -197,7 +189,6 @@ def validate_filters(config):
                     )
 
     return True
-
 
 
 def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, filter_type, args) -> bool:

@@ -2,17 +2,13 @@ import logging
 
 import requests
 from bs4 import BeautifulSoup
-
-import config.search_config as search_cfg
-from managers import logging_manager
+import managers.logging_manager as logging_manager
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
 
 # Timeout configuration for the requests
 timeout_connection = 30
-
-vinted_url = search_cfg.vinted_url
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
@@ -33,22 +29,23 @@ headers = {
     "Cache-Control": "no-cache",
 }
 
-# Initialise session
 session = requests.Session()
-session.post(vinted_url, headers=headers, timeout=timeout_connection)
 
-def get_items_from_catalogue_search(params):
+def get_items_from_catalogue_search(search_config, params):
 
-    items = {}
+    vinted_url = search_config['vinted']['vinted_url']
+    vinted_api_url = search_config['vinted']['vinted_api_url']
+
+    session.post(vinted_url, headers=headers, timeout=timeout_connection)
 
     page = 1
 
-    while page <= getattr(search_cfg, "pages", 2):
+    while page <= getattr(search_config['vinted']['vinted_url'], "pages", 2):
         params["page"] = page
 
         # Request items from the Vinted API based on the search parameters
         try:
-            url = f"{search_cfg.vinted_api_url}/svc-catalogue/items"
+            url = f"{vinted_api_url}/svc-catalogue/items"
 
             response = session.get(
                 url,
@@ -80,10 +77,12 @@ def get_items_from_catalogue_search(params):
     return None
 
 
-def get_item_upload_datetime(item_id):
+def get_item_upload_datetime(search_config, item_id):
+
+    vinted_url = search_config['vinted']['vinted_url']
 
     try:
-        url = f"{search_cfg.vinted_url}/items/{item_id}"
+        url = f"{vinted_url}/items/{item_id}"
 
         response = requests.get(
             f"https://www.vinted.co.uk/items/{item_id}",
@@ -91,7 +90,7 @@ def get_item_upload_datetime(item_id):
             timeout=30,
         )
 
-        logger.info("Vinted seller API called: %s", response.url)
+        logger.info("Vinted item endpoint called: %s", response.url)
 
     except requests.exceptions.HTTPError as e:
         logger.error(e.args[0], exc_info=True)
@@ -111,10 +110,12 @@ def get_item_upload_datetime(item_id):
     return element.get_text(strip=True) if element else None
 
 
-def get_user_details(user_id):
+def get_user_details(search_config, user_id):
+
+    vinted_url = search_config['vinted']['vinted_url']
 
     try:
-        url = f"{search_cfg.vinted_url}/api/v2/users/{user_id}"
+        url = f"{vinted_url}/api/v2/users/{user_id}"
 
         response = session.get(
             url,
@@ -133,3 +134,7 @@ def get_user_details(user_id):
     except (requests.exceptions.RequestException, ValueError) as e:
         logger.error(f"Unable to fetch Vinted seller {user_id}: {e}")
         return None
+
+
+def close_session():
+    session.close()

@@ -1,9 +1,7 @@
 # Send a Telegram message when a new item is found
 import logging
 import requests
-import config.telegram_config as telegram_config
-
-from managers import logging_manager
+import managers.logging_manager as logging_manager
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
@@ -11,8 +9,11 @@ logger = logging.getLogger(__name__)
 # Timeout configuration for the requests
 timeout_connection = 30
 
-def send_telegram_message(item_id, item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller) -> bool:
+def send_telegram_message(notification_config, item_id, item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller) -> bool:
     from html import escape
+
+    telegram_bot_token = notification_config['telegram']['telegram_bot_token']
+    telegram_chat_id = notification_config['telegram']['telegram_chat_id']
 
     safe_title = escape(str(item_title))
 
@@ -22,9 +23,9 @@ def send_telegram_message(item_id, item_title, item_price, item_upload_time, ite
     safe_url = escape(str(item_url), quote=True)
 
     caption_lines = [
-        f'🔗 <a href="{safe_url}">{safe_title}</a>',
-        f"💰 {item_price}" + (f" · ❤️ {favourite_count}" if favourite_count > 0 else ""),
-        f"⏳ {item_upload_time}"
+        f'🔗  <a href="{safe_url}">{safe_title}</a>',
+        f"💰  {item_price}" + (f"    ❤️  {favourite_count}" if favourite_count > 0 else ""),
+        f"⏳  {item_upload_time}"
     ]
 
     if seller:
@@ -40,17 +41,15 @@ def send_telegram_message(item_id, item_title, item_price, item_upload_time, ite
         else:
             country_flag = ""
 
-        #city = (seller.get("city") or "").strip()
-
         location = country_flag
 
         if country_title:
-            location += f" {country_title}"
+            location += f"  {country_title}"
 
         seller_info = (
-            f"👤 {seller.get('login', 'N/D')} · "
-            f"⭐ {seller.get('positive_feedback_count', 0)}/{seller.get('feedback_count', 0)} . "
-            f"👥 {seller.get('followers_count', 0)}\n"
+            f"👤  {seller.get('login', 'N/D')}    "
+            f"⭐  {seller.get('positive_feedback_count', 0)}/{seller.get('feedback_count', 0)}   "
+            f"👥  {seller.get('followers_count', 0)}\n"
             f"{location}"
         )
 
@@ -61,17 +60,17 @@ def send_telegram_message(item_id, item_title, item_price, item_upload_time, ite
 
     try:
         if item_image:
-            url = f"https://api.telegram.org/bot{telegram_config.telegram_bot_token}/sendPhoto"
+            url = f"https://api.telegram.org/bot{telegram_bot_token}/sendPhoto"
             params = {
-                "chat_id": telegram_config.telegram_chat_id,
+                "chat_id": telegram_chat_id,
                 "photo": item_image,
                 "caption": caption,
                 "parse_mode": "HTML",
             }
         else:
-            url = f"https://api.telegram.org/bot{telegram_config.telegram_bot_token}/sendMessage"
+            url = f"https://api.telegram.org/bot{telegram_bot_token}/sendMessage"
             params = {
-                "chat_id": telegram_config.telegram_chat_id,
+                "chat_id": telegram_chat_id,
                 "text": caption,
                 "parse_mode": "HTML",
             }
