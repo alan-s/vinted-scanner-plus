@@ -12,7 +12,7 @@
 
 filters:
   - query_id: sheriff_board_game
-    mode: include
+    mode: exclude
     rules:
       - key: country_iso_code
         value: US

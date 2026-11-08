@@ -1,8 +1,9 @@
-from pathlib import Path
 import logging
-import managers.logging_manager as logging_manager
 import re
 import sys
+from pathlib import Path
+
+import managers.logging_manager as logging_manager
 import utils.file_utils as file_utils
 import utils.text_utils as text_utils
 
@@ -16,7 +17,7 @@ def load_filters(filter_type, path):
         validate_filters(filter_config)
 
     except ValueError as e:
-        logger.error("Invalid filter configuration in %s. Error: %s",path, e)
+        logger.error("Invalid filter configuration in %s. Error: %s", path, e)
         sys.exit(1)
 
     # No YAML content means no filters
@@ -61,22 +62,22 @@ def validate_filters(config):
         "between",
     }
 
-    def check_keys(data, required_keys, optional_keys, context):
-        if not isinstance(data, dict):
-            raise ValueError(f"{context} must be a mapping")
+    def check_keys(data_arg, required_keys_arg, optional_keys, context_arg):
+        if not isinstance(data_arg, dict):
+            raise ValueError(f"{context_arg} must be a mapping")
 
-        missing = required_keys - data.keys()
-        unexpected = data.keys() - (required_keys | optional_keys)
+        missing = required_keys_arg - data_arg.keys()
+        unexpected = data_arg.keys() - (required_keys_arg | optional_keys)
 
         if missing:
-            raise ValueError(f"{context}: missing keys {sorted(missing)}")
+            raise ValueError(f"{context_arg}: missing keys {sorted(missing)}")
 
         if unexpected:
-            raise ValueError(f"{context}: unexpected keys {sorted(unexpected)}")
+            raise ValueError(f"{context_arg}: unexpected keys {sorted(unexpected)}")
 
-    def is_number(value):
+    def is_number(value_arg):
         # bool is a subclass of int in Python, so explicitly exclude it.
-        return isinstance(value, (int, float)) and not isinstance(value, bool)
+        return isinstance(value_arg, (int, float)) and not isinstance(value_arg, bool)
 
     check_keys(config, {"filters"}, set(), "Root")
 
@@ -192,7 +193,6 @@ def validate_filters(config):
 
 
 def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, filter_type, args) -> bool:
-
     filter_label = {"item": "item", "seller": "seller"}.get(filter_type, "item")
 
     matching_queries = [
@@ -223,11 +223,13 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
 
                 if not item_matches_rule(data_to_filter, rule):
                     if args.log_excluded:
-                        logger.info(f"[ FAIL ✗ ] excluded item [{item_id}] for not matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+                        logger.info(
+                            f"[ FAIL ✗ ] excluded item [{item_id}] for not matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
                 else:
                     if args.log_excluded:
-                        logger.info(f"[ PASS ✓ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
+                        logger.info(
+                            f"[ PASS ✓ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
 
         elif mode == "exclude":
             # Any matching rule excludes the item.
@@ -238,11 +240,13 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
 
                 if item_matches_rule(data_to_filter, rule):
                     if args.log_excluded:
-                        logger.info(f"[ FAIL ✗ ] excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+                        logger.info(
+                            f"[ FAIL ✗ ] excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
                 else:
                     if args.log_excluded:
-                        logger.info(f"[ PASS ✓ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
+                        logger.info(
+                            f"[ PASS ✓ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
 
         else:
             raise ValueError(f"Invalid filter mode: {mode}")
@@ -327,17 +331,17 @@ def values_match(actual, rule_value, operator="equals"):
 
     # Numeric operators
     if operator in (
-        "greater_than",
-        "greater_than_or_equal",
-        "less_than",
-        "less_than_or_equal",
-        "between",
+            "greater_than",
+            "greater_than_or_equal",
+            "less_than",
+            "less_than_or_equal",
+            "between",
     ):
         # bool is a subclass of int in Python, so explicitly exclude it.
         if (
-            isinstance(actual, bool)
-            or isinstance(rule_value, bool)
-            or not isinstance(actual, (int, float))
+                isinstance(actual, bool)
+                or isinstance(rule_value, bool)
+                or not isinstance(actual, (int, float))
         ):
             raise ValueError(f"Operator '{operator}' requires numeric values")
 
@@ -351,10 +355,10 @@ def values_match(actual, rule_value, operator="equals"):
             maximum = rule_value["max"]
 
             if (
-                isinstance(minimum, bool)
-                or isinstance(maximum, bool)
-                or not isinstance(minimum, (int, float))
-                or not isinstance(maximum, (int, float))
+                    isinstance(minimum, bool)
+                    or isinstance(maximum, bool)
+                    or not isinstance(minimum, (int, float))
+                    or not isinstance(maximum, (int, float))
             ):
                 raise ValueError("'between' min and max must be numeric")
 
@@ -364,8 +368,8 @@ def values_match(actual, rule_value, operator="equals"):
             return minimum <= actual <= maximum
 
         if (
-            isinstance(rule_value, bool)
-            or not isinstance(rule_value, (int, float))
+                isinstance(rule_value, bool)
+                or not isinstance(rule_value, (int, float))
         ):
             raise ValueError(f"Operator '{operator}' requires numeric values")
 

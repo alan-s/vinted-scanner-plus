@@ -22,11 +22,4 @@ queries:
   attribute_ids[catalog]: 4881
   attribute_ids[brand]: 1317890
   price_from: 4
-  price_to: 19
-#   order: newest_first
-# - query_id: just_one_board_game
-#   search_text: Just One
-#   attribute_ids[catalog]: 4881
-#   price_from: 4
-#   price_to: 8
-#   order: newest_first  
+  price_to: 16

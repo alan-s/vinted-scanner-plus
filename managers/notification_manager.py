@@ -1,6 +1,8 @@
 import logging
-import managers.logging_manager as logging_manager
+
 import requests
+
+import managers.logging_manager as logging_manager
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
@@ -8,7 +10,9 @@ logger = logging.getLogger(__name__)
 # Timeout configuration for the requests
 timeout_connection = 30
 
-def send_telegram_message(notification_config, item_id, item_title, item_desc, item_price, item_upload_time, item_url, item_image, favourite_count, seller) -> bool:
+
+def send_telegram_message(notification_config, item_id, item_title, item_desc, item_price, item_upload_time, item_url,
+                          item_image, favourite_count, seller) -> bool:
     from html import escape
 
     telegram_bot_token = notification_config['telegram']['telegram_bot_token']

@@ -1,8 +1,11 @@
-from pathlib import Path
 import logging
-import managers.logging_manager as logging_manager
 import sys
+from pathlib import Path
+from typing import Optional
+
 import yaml
+
+import managers.logging_manager as logging_manager
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
@@ -24,6 +27,6 @@ def load_yaml(path):
         sys.exit(1)
 
 
-def build_file_path(filename: str, directory_name: str, base_path: str = None) -> Path:
+def build_file_path(filename: str, directory_name: str, base_path: Optional[str] = None) -> Path:
     file_path = Path(base_path) if base_path else Path.cwd() / directory_name
     return file_path / filename

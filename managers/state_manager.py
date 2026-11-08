@@ -1,17 +1,17 @@
 import csv
 import logging
-import managers.logging_manager as logging_manager
 import sys
 
+import managers.logging_manager as logging_manager
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
 
 already_notified_items = {}
 
+
 # Load already notified items to avoid duplicates
 def load_already_notified_items(path):
-
     try:
         with open(path, "r", newline="", encoding="utf-8") as f:
             reader = csv.reader(f, strict=True)
@@ -41,7 +41,6 @@ def load_already_notified_items(path):
 
 # Save a new notified item to prevent repeated alerts
 def record_already_notified_item(path, item_id, title, price):
-
     try:
         with open(path, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)

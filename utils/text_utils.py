@@ -1,5 +1,6 @@
 import unicodedata
 
+
 def normalise(text: str) -> str:
     return "".join(
         c

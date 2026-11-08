@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-from itertools import islice
 import argparse
 import logging
+import pathlib
+import sys
+from itertools import islice
+
 import managers.config_manager as config_manager
 import managers.filter_manager as filter_manager
 import managers.logging_manager as logging_manager
 import managers.notification_manager as notifications_manager
 import managers.state_manager as state_manager
 import managers.vinted_api_manager as vinted_api_manager
-import pathlib
-import sys
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)

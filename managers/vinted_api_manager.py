@@ -1,7 +1,9 @@
-from bs4 import BeautifulSoup
 import logging
-import managers.logging_manager as logging_manager
+
 import requests
+from bs4 import BeautifulSoup
+
+import managers.logging_manager as logging_manager
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
@@ -13,8 +15,8 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8",
     "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
-    #"DNT": "1",
-    #"Connection": "keep-alive",
+    # "DNT": "1",
+    # "Connection": "keep-alive",
     "Upgrade-Insecure-Requests": "1",
     "Priority": "u=0, i",
     "Sec-GPC": "1",
@@ -30,8 +32,8 @@ headers = {
 
 session = requests.Session()
 
-def get_items_from_catalogue_search(search_config, params):
 
+def get_items_from_catalogue_search(search_config, params):
     vinted_url = search_config['vinted']['vinted_url']
     vinted_api_url = search_config['vinted']['vinted_api_url']
     pages = search_config['search']['pages']
@@ -81,7 +83,7 @@ def get_items_from_catalogue_search(search_config, params):
         items.extend(new_items)
 
         logger.info(
-            "Vinted page %d returned %d item(s)",page, len(new_items)
+            "Vinted page %d returned %d item(s)", page, len(new_items)
         )
 
         # If fewer than 96 items were returned, this is the last page
@@ -94,7 +96,6 @@ def get_items_from_catalogue_search(search_config, params):
 
 
 def get_item_description_and_upload_datetime(search_config, item_id):
-
     vinted_url = search_config['vinted']['vinted_url']
 
     try:
@@ -135,7 +136,6 @@ def get_item_description_and_upload_datetime(search_config, item_id):
 
 
 def get_user_details(search_config, user_id):
-
     vinted_url = search_config['vinted']['vinted_url']
 
     try:
