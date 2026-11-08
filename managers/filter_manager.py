@@ -1,10 +1,10 @@
+from pathlib import Path
 import logging
+import managers.logging_manager as logging_manager
 import re
 import sys
-from pathlib import Path
-import managers.logging_manager as logging_manager
-import utils.text_utils as text_utils
 import utils.file_utils as file_utils
+import utils.text_utils as text_utils
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)

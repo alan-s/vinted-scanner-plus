@@ -1,7 +1,6 @@
-# Send a Telegram message when a new item is found
 import logging
-import requests
 import managers.logging_manager as logging_manager
+import requests
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
@@ -9,11 +8,12 @@ logger = logging.getLogger(__name__)
 # Timeout configuration for the requests
 timeout_connection = 30
 
-def send_telegram_message(notification_config, item_id, item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller) -> bool:
+def send_telegram_message(notification_config, item_id, item_title, item_desc, item_price, item_upload_time, item_url, item_image, favourite_count, seller) -> bool:
     from html import escape
 
     telegram_bot_token = notification_config['telegram']['telegram_bot_token']
     telegram_chat_id = notification_config['telegram']['telegram_chat_id']
+    include_desc = notification_config['message']['include_description']
 
     safe_title = escape(str(item_title))
 
@@ -51,6 +51,7 @@ def send_telegram_message(notification_config, item_id, item_title, item_price, 
             f"⭐  {seller.get('positive_feedback_count', 0)}/{seller.get('feedback_count', 0)}   "
             f"👥  {seller.get('followers_count', 0)}\n"
             f"{location}"
+            f"{"\n\n" + item_desc if include_desc else ""}"
         )
 
         caption_lines.append("")

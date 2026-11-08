@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
+from itertools import islice
 import argparse
 import logging
-import pathlib
-import sys
+import managers.config_manager as config_manager
+import managers.filter_manager as filter_manager
 import managers.logging_manager as logging_manager
 import managers.notification_manager as notifications_manager
 import managers.state_manager as state_manager
-import managers.filter_manager as filter_manager
 import managers.vinted_api_manager as vinted_api_manager
-import managers.config_manager as config_manager
-
+import pathlib
+import sys
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ parser.add_argument(
     action="store_true",
     dest="log_excluded",
     default=False,
-    help="Disable logging of excluded items and matching keywords"
+    help="Disable logging of excluded items"
 )
 
 parser.add_argument(
@@ -29,7 +29,7 @@ parser.add_argument(
     action="store_true",
     dest="disable_notifications",
     default=False,
-    help="Disable Telegram notifications"
+    help="Disable notifications to external connectors e.g. Telegram"
 )
 
 parser.add_argument(
@@ -46,10 +46,12 @@ args = parser.parse_args()
 def main():
     logger.info("")
     logger.info("================================================================================")
-    logger.info("                                  VINTED SCANNER                                ")
+    logger.info("                                  VINTED SCANNER PLUS                           ")
     logger.info("================================================================================")
     logger.info("")
-    args_str = " ".join(f"--{k}" for k, v in vars(args).items())
+
+    # Print what options app has been launched with
+    args_str = " ".join(sys.argv[1:])
     logger.info(f"Launched with the following args: {args_str}")
 
     # Get all the required file paths from config
@@ -79,12 +81,13 @@ def main():
     search_config = configs['search_config']
     for params in queries:
 
-        logging_manager.item_log_printer(params.get("query_id"), "Commenced", log_type="query")
+        logging_manager.item_log_printer(params.get("query_id"), "Started", log_type="query")
 
         # Request items from the Vinted API based on the search parameters
-        items = vinted_api_manager.get_items_from_catalogue_search(search_config, params)
+        items = vinted_api_manager.get_items_from_catalogue_search(search_config, params) or []
 
-        logger.info("Vinted search API has returned %s item(s) with IDs: %s", len(items), [item["id"] for item in items])
+        logger.info("Vinted search API returned %d item(s) with IDs: %s", len(items),
+                    [item.get("id") for item in items])
 
         # Keep track for end-of-run stats
         excluded_items = []
@@ -94,15 +97,16 @@ def main():
         failed_notified_items = []
 
         # Process each item returned in the response, and notify based on filters
-        for item in items:
+        max_items = search_config['search']['max_items']
+        if items:
+            logger.info("From Config, the maximum number of items to process/notify: %s", max_items)
+
+        for item in islice(items, max_items):
 
             item_id = str(item["id"])
             item_title = item["title"]
 
             logging_manager.item_log_printer(item_id, "Started", log_type="item")
-
-            item_box = item.get("item_box") or {}
-            item_description = item_box.get("accessibility_label") or ""
 
             item_url = search_config['vinted']['vinted_url'] + item["url"]
 
@@ -134,7 +138,8 @@ def main():
             item_image = item_photo.get("full_size_url")
 
             # Scrape the HTML response for the upload time
-            item_upload_time = vinted_api_manager.get_item_upload_datetime(search_config, item_id)
+            item_upload_time, item_description = vinted_api_manager.get_item_description_and_upload_datetime(
+                search_config, item_id)
 
             # Check against item filters
             if args.log_excluded:
@@ -170,8 +175,11 @@ def main():
 
                     # Send Telegram notifications if configured
                     notification_config = configs['notification_config']
-                    if notification_config['telegram']['telegram_bot_token'] and notification_config['telegram']['telegram_chat_id']:
-                        if notifications_manager.send_telegram_message(notification_config, item_id, item_title, item_price, item_upload_time, item_url, item_image, favourite_count, seller):
+                    if notification_config['telegram']['telegram_bot_token'] and notification_config['telegram'][
+                        'telegram_chat_id']:
+                        if notifications_manager.send_telegram_message(notification_config, item_id, item_title,
+                                                                       item_description, item_price, item_upload_time,
+                                                                       item_url, item_image, favourite_count, seller):
                             notified_items.append(item_id)
                         else:
                             failed_notified_items.append(item_id)
@@ -181,9 +189,11 @@ def main():
                         state_manager.record_already_notified_item(state_file_path, item_id, item_title, total_amount)
                         logger.info(f"Recorded notification for item [{item_id}] in '{state_file_path}'")
                     else:
-                        logger.info(f"Not recording notification for item [{item_id}] in '{state_file_path}'; '--{list(vars(args))[2]}' set")
+                        logger.info(
+                            f"Not recording notification for item [{item_id}] in '{state_file_path}'; '--{list(vars(args))[2]}' set")
                 else:
-                    logger.info(f"No notification will be sent on this run for item [{item_id}]; it has been previously notified ('{state_file_path}')")
+                    logger.info(
+                        f"No notification will be sent on this run for item [{item_id}]; it has been previously notified ('{state_file_path}')")
                     previously_notified_items.append(item_id)
 
             else:
@@ -192,13 +202,15 @@ def main():
 
             logging_manager.item_log_printer(item_id, "Completed", log_type="item")
 
-        # Print end-of-query stats
-        logging_manager.log_end_of_run_stats(items, excluded_items, previously_notified_items, candidate_items, notified_items, failed_notified_items)
+        logging_manager.item_log_printer(params.get("query_id"), "Completed", log_type="query")
 
-    logging_manager.item_log_printer(params.get("query_id"), "Completed", log_type="query")
+        # Print end-of-query stats
+        logging_manager.log_end_of_run_stats(items, excluded_items, previously_notified_items, candidate_items,
+                                             notified_items, failed_notified_items, max_items)
 
     # Close api sessions
     vinted_api_manager.close_session()
+
 
 if __name__ == "__main__":
     main()

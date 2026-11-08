@@ -1,9 +1,8 @@
-import logging
-import sys
 from pathlib import Path
-
-import yaml
+import logging
 import managers.logging_manager as logging_manager
+import sys
+import yaml
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)

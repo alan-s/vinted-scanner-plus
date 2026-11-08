@@ -1,7 +1,7 @@
 import csv
 import logging
-import sys
 import managers.logging_manager as logging_manager
+import sys
 
 
 logging_manager.init_logger()

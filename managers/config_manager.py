@@ -1,7 +1,8 @@
 import logging
+
+import managers.filter_manager as filter_manager
 import managers.logging_manager as logging_manager
 import managers.state_manager as state_manager
-import managers.filter_manager as filter_manager
 import utils.file_utils as file_utils
 
 logging_manager.init_logger()
@@ -10,6 +11,7 @@ logger = logging.getLogger(__name__)
 yaml_files = {'search_config', 'notification_config'}
 filter_files = {'item_filters', 'seller_filters'}
 csv_files = {'state'}
+
 
 def get_config_file_paths(path):
     loaded_yaml = file_utils.load_yaml(path)
@@ -26,6 +28,7 @@ def get_config_file_paths(path):
         configs[config["config"]] = file_path
 
     return configs
+
 
 def load_configs_from_config_file(path):
     loaded_yaml = file_utils.load_yaml(path)
