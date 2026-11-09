@@ -24,7 +24,6 @@ on:
     secrets:
       NOTIFICATION_CONFIG:
         required: true
-        type: string
 
 permissions:
   contents: write
@@ -90,21 +89,24 @@ jobs:
           fi
 
       - name: Run scanner
+        env:
+          SCANNER_ARGS: ${{ inputs.args }}
         run: |
-          python3 vinted_scanner.py ${{ inputs.args }}
+          python3 -c '
+          import os
+          import shlex
+          import subprocess
+
+          args = shlex.split(os.environ.get("SCANNER_ARGS", ""))
+          subprocess.run(
+              ["python3", "vinted_scanner.py", *args],
+              check=True
+          )'
 
       - name: Commit updated logs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          cp vinted_scanner.log /tmp/vinted_scanner_new.log
-
-          git fetch origin main
-          git checkout origin/main -- vinted_scanner.log || touch vinted_scanner.log
-
-          cat vinted_scanner.log /tmp/vinted_scanner_new.log > vinted_scanner_merged.log
-          mv vinted_scanner_merged.log vinted_scanner.log
 
           git add vinted_scanner.log
 
