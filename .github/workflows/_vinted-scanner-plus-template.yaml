@@ -37,6 +37,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check IP of host
+        run: echo "IP address: $(curl -s https://api.ipify.org)"
+
       - name: Checkout repository
         uses: actions/checkout@v5
 
