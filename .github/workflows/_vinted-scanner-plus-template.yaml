@@ -3,26 +3,28 @@ name: Vinted Scanner Plus Template
 on:
   workflow_call:
     inputs:
+      args:
+        type: string
+        required: false
+        default: ""
+
       CONFIGS:
-        description: 'General configuration'
         required: true
         type: string
       SEARCH_CONFIG:
-        description: 'Search configuration'
         required: true
         type: string
       ITEM_FILTERS:
-        description: 'Item filters'
         required: true
         type: string
       SELLER_FILTERS:
-        description: 'Seller filters'
         required: true
         type: string
 
     secrets:
       NOTIFICATION_CONFIG:
         required: true
+        type: string
 
 permissions:
   contents: write
@@ -88,7 +90,8 @@ jobs:
           fi
 
       - name: Run scanner
-        run: python3 vinted_scanner.py             
+        run: |
+          python3 vinted_scanner.py ${{ inputs.args }}    
 
       - name: Commit updated logs
         run: |

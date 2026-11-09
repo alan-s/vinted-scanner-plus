@@ -18,19 +18,19 @@ logger = logging.getLogger(__name__)
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-    "--log_excluded",
+    "--log_filtering",
     action="store_true",
-    dest="log_excluded",
+    dest="log_filtering",
     default=False,
-    help="Disable logging of excluded items"
+    help="Enable logging when filtering items"
 )
 
 parser.add_argument(
-    "--disable_notifications",
+    "--enable_notifications",
     action="store_true",
-    dest="disable_notifications",
+    dest="enable_notifications",
     default=False,
-    help="Disable notifications to external connectors e.g. Telegram"
+    help="Enable notifications to external connectors e.g. Telegram. By default, no notifications are sent"
 )
 
 parser.add_argument(
@@ -38,7 +38,7 @@ parser.add_argument(
     action="store_true",
     dest="disable_state_file",
     default=False,
-    help="Disable storing previously notified items in a state file"
+    help="Disable storing previously notified items in a state file. By default, notified items are stored"
 )
 
 args = parser.parse_args()
@@ -143,7 +143,7 @@ def main():
                 search_config, item_id)
 
             # Check against item filters
-            if args.log_excluded:
+            if args.log_filtering:
                 logger.info(f"Checking item [{item_id}] against optional [item] filters")
             if not filter_manager.filter_item(item_id, item, params.get("query_id"), item_filters, "item", args):
                 excluded_items.append(item_id)
@@ -157,18 +157,18 @@ def main():
             seller = vinted_api_manager.get_user_details(search_config, user_id)
 
             # Check against seller filters
-            if args.log_excluded:
+            if args.log_filtering:
                 logger.info(f"Checking item [{item_id}] against optional [seller] filters")
             if not filter_manager.filter_item(item_id, seller, params.get("query_id"), seller_filters, "seller", args):
                 excluded_items.append(item_id)
                 logging_manager.item_log_printer(item_id, "Completed", log_type="item")
                 continue
 
-            if args.log_excluded:
+            if args.log_filtering:
                 logger.info(f"Item [{item_id}] meets all selection filters and no exclusions apply")
 
             # Send notification is set
-            if not args.disable_notifications:
+            if args.enable_notifications:
 
                 # Check if the item has already been notified to prevent sending it again
                 state_file_path = config_manager.get_config_file_paths(config_file_path)['state']
@@ -199,7 +199,7 @@ def main():
 
             else:
                 candidate_items.append(item_id)
-                logger.info(f"No notification sent for item [{item_id}]; '--{list(vars(args))[1]}' set")
+                logger.info(f"No notification sent for item [{item_id}]; '--{list(vars(args))[1]}' not set")
 
             logging_manager.item_log_printer(item_id, "Completed", log_type="item")
 

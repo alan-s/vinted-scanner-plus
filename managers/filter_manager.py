@@ -202,12 +202,12 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
     ]
 
     if not matching_queries:
-        if args.log_excluded:
+        if args.log_filtering:
             logger.info(f"Item [{item_id}] in scope for {len(matching_queries)} [{filter_label}] filter(s)")
 
         return True
 
-    if args.log_excluded:
+    if args.log_filtering:
         logger.info(f"Item [{item_id}] in scope for {len(matching_queries)} [{filter_label}] filter(s)")
 
     for query in matching_queries:
@@ -217,34 +217,34 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
         if mode == "include":
             # All rules must match.
             for rule in rules:
-                if args.log_excluded:
+                if args.log_filtering:
                     logger.info(
                         f"Checking item [{item_id}] against [{filter_label}] filter rule [{query_id}][{rule['key']}][{rule['value']}] in [{mode}] mode")
 
                 if not item_matches_rule(data_to_filter, rule):
-                    if args.log_excluded:
+                    if args.log_filtering:
                         logger.info(
                             f"[ FAIL ✗ ] excluded item [{item_id}] for not matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
                 else:
-                    if args.log_excluded:
+                    if args.log_filtering:
                         logger.info(
                             f"[ PASS ✓ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
 
         elif mode == "exclude":
             # Any matching rule excludes the item.
             for rule in rules:
-                if args.log_excluded:
+                if args.log_filtering:
                     logger.info(
                         f"Checking item [{item_id}] against [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
 
                 if item_matches_rule(data_to_filter, rule):
-                    if args.log_excluded:
+                    if args.log_filtering:
                         logger.info(
                             f"[ FAIL ✗ ] excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
                     return False
                 else:
-                    if args.log_excluded:
+                    if args.log_filtering:
                         logger.info(
                             f"[ PASS ✓ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
 
