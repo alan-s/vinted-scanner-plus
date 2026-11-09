@@ -1,8 +1,6 @@
-Config.py
 __pycache__/
 /.idea
 /.venv
 
 # Config
-/state/already_notified_items.csv
 vinted_scanner.log

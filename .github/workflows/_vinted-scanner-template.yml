@@ -24,16 +24,37 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.14"
 
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Create Config.py
+      - name: Create Config, Filters and State files
         run: |
-          cat > Config.py <<'PYCONFIG'
-          ${{ secrets.vinted_config }}
-          PYCONFIG
+          # Create directories if they don't exist
+          mkdir -p config filters state
+
+          # Create config files (overwrite if they already exist)
+          cat > config/configs.yaml <<'CONFIGS'
+          ${{ vars.CONFIGS }}
+          CONFIGS
+
+          cat > config/search_config.yaml <<'SEARCH_CONFIG'
+          ${{ secrets.SEARCH_CONFIG }}
+          SEARCH_CONFIG
+
+          cat > config/notification_config.yaml <<'NOTIFICATION_CONFIG'
+          ${{ secrets.NOTIFICATION_CONFIG }}
+          NOTIFICATION_CONFIG
+
+          # Create filter files (overwrite if they already exist)
+          cat > filters/item_filters.yaml <<'ITEM_FILTERS'
+          ${{ secrets.ITEM_FILTERS }}
+          ITEM_FILTERS
+
+          cat > filters/seller_filters.yaml <<'SELLER_FILTERS'
+          ${{ secrets.SELLER_FILTERS }}
+          SELLER_FILTERS
 
       - name: Run scanner
         run: python3 vinted_scanner.py
