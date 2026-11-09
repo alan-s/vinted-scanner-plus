@@ -75,13 +75,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          cp state/already_notified_items.csv /tmp/already_notified_items_new.csv
+          cp /state/already_notified_items.csv /tmp/already_notified_items_new.csv
 
           git fetch origin main
           git checkout origin/main -- already_notified_items.csv || touch already_notified_items.csv
 
-          cat already_notified_items.csv /tmp/already_notified_items_new.csv > already_notified_items_merged.csv
-          mv already_notified_items_merged.csv already_notified_items.csv
+          cat already_notified_items.csv /tmp/already_notified_items_new.csv > /state/already_notified_items_merged.csv
+
+          mv /state/already_notified_items_merged.csv /state/already_notified_items.csv
+
+          cp /state/already_notified_items.csv already_notified_items.csv
 
           git add already_notified_items.csv
 
