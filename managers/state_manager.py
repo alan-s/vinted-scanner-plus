@@ -1,6 +1,7 @@
 import csv
 import logging
 import sys
+from pathlib import Path
 
 import managers.logging_manager as logging_manager
 
@@ -42,6 +43,8 @@ def load_already_notified_items(path):
 # Save a new notified item to prevent repeated alerts
 def record_already_notified_item(path, item_id, title, price):
     try:
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+
         with open(path, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow([item_id, title, price])

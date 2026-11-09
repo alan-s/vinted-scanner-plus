@@ -67,26 +67,16 @@ jobs:
           printf '%s' "$ITEM_FILTERS" > filters/item_filters.yaml
           printf '%s' "$SELLER_FILTERS" > filters/seller_filters.yaml
 
-      - name: Run scanner
-        run: python3 vinted_scanner.py           
-
       - name: Commit updated seen items
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          cp /state/already_notified_items.csv /tmp/already_notified_items_new.csv
-
+          # Retrieve the latest CSV from GitHub
           git fetch origin main
-          git checkout origin/main -- state/already_notified_items.csv || touch state/already_notified_items.csv
+          git checkout origin/main -- state/already_notified_items.csv || true
 
-          # Merge existing and newly generated CSV contents
-          cat state/already_notified_items.csv /tmp/already_notified_items_new.csv > /state/already_notified_items_merged.csv
-
-          mv /state/already_notified_items_merged.csv /state/already_notified_items.csv
-
-          cp /state/already_notified_items.csv state/already_notified_items.csv
-
+          # Stage the updated CSV
           git add state/already_notified_items.csv
 
           # Commit and push only if changes exist
@@ -96,6 +86,9 @@ jobs:
             git commit -m "Update Vinted seen items."
             git push origin HEAD:main
           fi
+
+      - name: Run scanner
+        run: python3 vinted_scanner.py             
 
       - name: Commit updated logs
         run: |
