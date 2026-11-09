@@ -68,7 +68,7 @@ jobs:
           printf '%s' "$SELLER_FILTERS" > filters/seller_filters.yaml
 
       - name: Run scanner
-        run: python3 vinted_scanner.py
+        run: python3 vinted_scanner.py           
 
       - name: Commit updated seen items
         run: |
@@ -78,16 +78,18 @@ jobs:
           cp /state/already_notified_items.csv /tmp/already_notified_items_new.csv
 
           git fetch origin main
-          git checkout origin/main -- already_notified_items.csv || touch already_notified_items.csv
+          git checkout origin/main -- state/already_notified_items.csv || touch state/already_notified_items.csv
 
-          cat already_notified_items.csv /tmp/already_notified_items_new.csv > /state/already_notified_items_merged.csv
+          # Merge existing and newly generated CSV contents
+          cat state/already_notified_items.csv /tmp/already_notified_items_new.csv > /state/already_notified_items_merged.csv
 
           mv /state/already_notified_items_merged.csv /state/already_notified_items.csv
 
-          cp /state/already_notified_items.csv already_notified_items.csv
+          cp /state/already_notified_items.csv state/already_notified_items.csv
 
-          git add already_notified_items.csv
+          git add state/already_notified_items.csv
 
+          # Commit and push only if changes exist
           if git diff --cached --quiet; then
             echo "No new items to commit."
           else
