@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Check IP of host
-        run: echo "IP address: $(curl -s https://api.ipify.org)"
+        run: curl -s https://api.ipify.org
 
       - name: Checkout repository
         uses: actions/checkout@v5
