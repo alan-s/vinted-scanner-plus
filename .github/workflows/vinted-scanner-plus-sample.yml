@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   scan:
-    uses: ./.github/workflows/_vinted-scanner-template.yml
+    uses: ./.github/workflows/_vinted-scanner-plus-template.yml
 
     with:
       CONFIGS: ${{ vars.CONFIGS }}
