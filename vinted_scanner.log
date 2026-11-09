@@ -91,3 +91,34 @@
 2026-11-09 17:47:12.220 INFO Items notified: 0 - []
 2026-11-09 17:47:12.220 INFO Items failed to notify: 0 - []
 2026-11-09 17:47:12.220 INFO Items recorded as notified: 0 - []
+2026-11-09 17:51:27.281 INFO 
+2026-11-09 17:51:27.281 INFO ================================================================================
+2026-11-09 17:51:27.281 INFO                                   VINTED SCANNER PLUS                           
+2026-11-09 17:51:27.281 INFO ================================================================================
+2026-11-09 17:51:27.282 INFO 
+2026-11-09 17:51:27.282 INFO Launched with the following args: --log_filtering
+2026-11-09 17:51:27.284 INFO Loaded 1 search querie(s) from /home/runner/work/VintedScanner/VintedScanner/config/search_config.yaml
+2026-11-09 17:51:27.284 INFO Loaded 1 already notified item(s) from /home/runner/work/VintedScanner/VintedScanner/state/already_notified_items.csv
+2026-11-09 17:51:27.284 INFO Already notified items: [10311140799]
+2026-11-09 17:51:27.285 INFO Loaded 0 [item_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/item_filters.yaml
+2026-11-09 17:51:27.286 INFO Loaded 1 [seller_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/seller_filters.yaml
+2026-11-09 17:51:27.286 INFO ================================================================================
+2026-11-09 17:51:27.286 INFO Started processing search query [sheriff_board_game]
+2026-11-09 17:51:27.286 INFO ================================================================================
+2026-11-09 17:51:27.964 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=16&order=relevance&page=1
+2026-11-09 17:51:27.964 INFO json response:
+
+ {'items': [], 'pagination': {'current_page': 1, 'per_page': 96, 'time': 1794246687, 'total_entries': 0, 'total_pages': 1}, 'search_tracking_params': {'search_correlation_id': 'ecbfa04b-47ef-491b-b16d-0ffec9f1d970', 'search_session_id': '773357e8-a707-4b8c-b198-47c6cc2e8bc3'}}
+2026-11-09 17:51:27.964 INFO Vinted page 1 returned 0 item(s)
+2026-11-09 17:51:27.964 INFO Vinted search API returned 0 item(s) with IDs: []
+2026-11-09 17:51:27.964 INFO ================================================================================
+2026-11-09 17:51:27.964 INFO Completed processing search query [sheriff_board_game]
+2026-11-09 17:51:27.964 INFO ================================================================================
+2026-11-09 17:51:27.964 INFO Maximum no. of items to process/noify (from Config): 5
+2026-11-09 17:51:27.964 INFO Items from Vinted search: 0 - []
+2026-11-09 17:51:27.964 INFO Items excluded: 0 - []
+2026-11-09 17:51:27.964 INFO Items previously notified: 0 - []
+2026-11-09 17:51:27.964 INFO Item candidates: 0 - []
+2026-11-09 17:51:27.965 INFO Items notified: 0 - []
+2026-11-09 17:51:27.965 INFO Items failed to notify: 0 - []
+2026-11-09 17:51:27.965 INFO Items recorded as notified: 0 - []
