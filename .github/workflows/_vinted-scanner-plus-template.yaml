@@ -6,7 +6,6 @@ on:
       args:
         type: string
         required: false
-        default: ""
 
       CONFIGS:
         required: true
@@ -91,7 +90,7 @@ jobs:
 
       - name: Run scanner
         run: |
-          python3 vinted_scanner.py ${{ inputs.args }}    
+          python3 vinted_scanner.py ${{ inputs.args }}
 
       - name: Commit updated logs
         run: |
