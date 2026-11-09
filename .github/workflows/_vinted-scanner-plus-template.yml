@@ -1,9 +1,27 @@
-name: Vinted Scanner Template
+name: Vinted Scanner Plus Template
 
 on:
   workflow_call:
+    inputs:
+      CONFIGS:
+        description: 'General configuration'
+        required: true
+        type: string
+      SEARCH_CONFIG:
+        description: 'Search configuration'
+        required: true
+        type: string
+      ITEM_FILTERS:
+        description: 'Item filters'
+        required: true
+        type: string
+      SELLER_FILTERS:
+        description: 'Seller filters'
+        required: true
+        type: string
+
     secrets:
-      vinted_config:
+      NOTIFICATION_CONFIG:
         required: true
 
 permissions:
@@ -30,31 +48,24 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Create Config, Filters and State files
+        env:
+          CONFIGS: ${{ inputs.CONFIGS }}
+          SEARCH_CONFIG: ${{ inputs.SEARCH_CONFIG }}
+          NOTIFICATION_CONFIG: ${{ secrets.NOTIFICATION_CONFIG }}
+          ITEM_FILTERS: ${{ inputs.ITEM_FILTERS }}
+          SELLER_FILTERS: ${{ inputs.SELLER_FILTERS }}
         run: |
           # Create directories if they don't exist
           mkdir -p config filters state
 
-          # Create config files (overwrite if they already exist)
-          cat > config/configs.yaml <<'CONFIGS'
-          ${{ vars.CONFIGS }}
-          CONFIGS
+          # Create config files
+          printf '%s' "$CONFIGS" > config/configs.yaml
+          printf '%s' "$SEARCH_CONFIG" > config/search_config.yaml
+          printf '%s' "$NOTIFICATION_CONFIG" > config/notification_config.yaml
 
-          cat > config/search_config.yaml <<'SEARCH_CONFIG'
-          ${{ secrets.SEARCH_CONFIG }}
-          SEARCH_CONFIG
-
-          cat > config/notification_config.yaml <<'NOTIFICATION_CONFIG'
-          ${{ secrets.NOTIFICATION_CONFIG }}
-          NOTIFICATION_CONFIG
-
-          # Create filter files (overwrite if they already exist)
-          cat > filters/item_filters.yaml <<'ITEM_FILTERS'
-          ${{ secrets.ITEM_FILTERS }}
-          ITEM_FILTERS
-
-          cat > filters/seller_filters.yaml <<'SELLER_FILTERS'
-          ${{ secrets.SELLER_FILTERS }}
-          SELLER_FILTERS
+          # Create filter files
+          printf '%s' "$ITEM_FILTERS" > filters/item_filters.yaml
+          printf '%s' "$SELLER_FILTERS" > filters/seller_filters.yaml
 
       - name: Run scanner
         run: python3 vinted_scanner.py
@@ -63,17 +74,17 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      
-          cp already_notified_items.txt /tmp/already_notified_items_new.txt
-      
+
+          cp state/already_notified_items.csv /tmp/already_notified_items_new.csv
+
           git fetch origin main
-          git checkout origin/main -- already_notified_items.txt || touch already_notified_items.txt
-      
-          cat already_notified_items.txt /tmp/already_notified_items_new.txt | sort -u > already_notified_items_merged.txt
-          mv already_notified_items_merged.txt already_notified_items.txt
-      
-          git add already_notified_items.txt
-      
+          git checkout origin/main -- already_notified_items.csv || touch already_notified_items.csv
+
+          cat already_notified_items.csv /tmp/already_notified_items_new.csv > already_notified_items_merged.csv
+          mv already_notified_items_merged.csv already_notified_items.csv
+
+          git add already_notified_items.csv
+
           if git diff --cached --quiet; then
             echo "No new items to commit."
           else
@@ -85,17 +96,17 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      
+
           cp vinted_scanner.log /tmp/vinted_scanner_new.log
-      
+
           git fetch origin main
           git checkout origin/main -- vinted_scanner.log || touch vinted_scanner.log
-      
-          cat vinted_scanner.log /tmp/vinted_scanner_new.log | sort -u > vinted_scanner_merged.log
+
+          cat vinted_scanner.log /tmp/vinted_scanner_new.log > vinted_scanner_merged.log
           mv vinted_scanner_merged.log vinted_scanner.log
-      
+
           git add vinted_scanner.log
-      
+
           if git diff --cached --quiet; then
             echo "No new logs to commit."
           else

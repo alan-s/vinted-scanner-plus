@@ -1,0 +1,22 @@
+name: Vinted Scanner Plus Sample
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    uses: ./.github/workflows/_vinted-scanner-template.yml
+
+    with:
+      CONFIGS: ${{ vars.CONFIGS }}
+      SEARCH_CONFIG: ${{ vars.SEARCH_CONFIG }}
+      ITEM_FILTERS: ${{ vars.ITEM_FILTERS }}
+      SELLER_FILTERS: ${{ vars.SELLER_FILTERS }}
+
+    secrets:
+      NOTIFICATION_CONFIG: ${{ secrets.NOTIFICATION_CONFIG }}

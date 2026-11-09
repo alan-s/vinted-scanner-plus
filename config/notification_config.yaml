@@ -1,9 +1,9 @@
 # The message format and the external connectors for sending notifications
 #
 # Message format
-# 'include_description': include the item description (default = True)
+# 'include_description': include the item description (default = true)
 message:
-  include_description: False
+  include_description: false
 
 # Telegram
 telegram:
