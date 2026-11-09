@@ -4,8 +4,9 @@ on:
   workflow_call:
     inputs:
       args:
-        type: string
         required: false
+        type: string
+        default: ""
 
       CONFIGS:
         required: true
