@@ -12,22 +12,10 @@ logger = logging.getLogger(__name__)
 timeout_connection = 30
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8",
-    "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
-    # "DNT": "1",
-    # "Connection": "keep-alive",
-    "Upgrade-Insecure-Requests": "1",
-    "Priority": "u=0, i",
-    "Sec-GPC": "1",
-    "Sec-Ch-Ua-Mobile": "?0",
-    "Sec-Ch-Ua-Platform": "macOS",
-    "Sec-Fetch-Dest": "document",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-Site": "none",
-    "Sec-Fetch-User": "?1",
-    "Pragma": "no-cache",
-    "Cache-Control": "no-cache",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/131.0.0.0 Safari/537.36",
+    "Accept": "*/*",
 }
 
 session = requests.Session()

@@ -40,9 +40,6 @@ jobs:
       - name: Check IP of host
         run: curl -s https://api.ipify.org
 
-      - name: Check response from api 
-        run: curl -i -s "https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=16&page=1"
-
       - name: Checkout repository
         uses: actions/checkout@v5
 
