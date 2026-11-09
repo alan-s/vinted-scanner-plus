@@ -63,6 +63,8 @@ def get_items_from_catalogue_search(search_config, params):
             response.raise_for_status()
             data = response.json()
 
+            #for testing
+            logger.info(f"json response:\n\n {data}")
         except (requests.exceptions.RequestException, ValueError) as e:
             logger.error("Unable to fetch Vinted page %s: %s", page, e)
             return None
