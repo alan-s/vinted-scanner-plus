@@ -30,15 +30,12 @@ HEADERS = {
     "Priority": "u=0, i",
     "Pragma": "no-cache",
     "Cache-Control": "no-cache",
-    'Locale': 'en-GB',
 }
 
 api_headers = {}
-session: requests.Session | None = None
 
 
 def initialise_vinted_session(search_config):
-    global session
 
     # Initialise session
     vinted_url = search_config['vinted']['vinted_url']
@@ -55,17 +52,9 @@ def initialise_vinted_session(search_config):
         timeout=timeout_connection,
     )
 
-    # Retrieve anonymous ID from cookies
-    anon_id = session.cookies.get("anon_id")
-
-    if anon_id:
-        # session.headers.update({
-        #     "X-Anon-Id": anon_id
-        # })
-        api_headers["X-Anon-Id"] = anon_id
-
     response.raise_for_status()
 
+    return session
 
 def build_api_headers(search_config):
 
@@ -89,7 +78,7 @@ def build_api_headers(search_config):
 
     return api_headers
 
-def get_items_from_catalogue_search(search_config, params):
+def get_items_from_catalogue_search(session, search_config, params):
 
     vinted_api_url = search_config['vinted']['vinted_api_url']
     url = f"{vinted_api_url}/svc-catalogue/items"
@@ -163,7 +152,7 @@ def get_items_from_catalogue_search(search_config, params):
     return items
 
 
-def get_item_description_and_upload_datetime(search_config, item_id):
+def get_item_description_and_upload_datetime(session, search_config, item_id):
 
     vinted_url = search_config['vinted']['vinted_url']
 
@@ -207,7 +196,7 @@ def get_item_description_and_upload_datetime(search_config, item_id):
     )
 
 
-def get_user_details(search_config, user_id):
+def get_user_details(session, search_config, user_id):
 
     vinted_url = search_config['vinted']['vinted_url']
 
