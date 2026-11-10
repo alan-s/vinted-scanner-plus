@@ -24,3 +24,4 @@ queries:
   price_from: 4
   price_to: 16
   order: relevance
+  per_page: 96
