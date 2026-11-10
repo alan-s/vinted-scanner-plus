@@ -121,3 +121,57 @@
 2026-11-10 11:21:44.852 INFO Items notified: 0 - [] (Notifications not enabled)
 2026-11-10 11:21:44.852 INFO Items failed to notify: 0 - []
 2026-11-10 11:21:44.852 INFO Items recorded as notified: 0 - []
+2026-11-10 11:26:19.072 INFO 
+2026-11-10 11:26:19.072 INFO ================================================================================
+2026-11-10 11:26:19.072 INFO                                   VINTED SCANNER PLUS                           
+2026-11-10 11:26:19.072 INFO ================================================================================
+2026-11-10 11:26:19.072 INFO 
+2026-11-10 11:26:19.072 INFO Launched with the following args: --log_filtering
+2026-11-10 11:26:19.076 INFO Loaded 1 search querie(s) from /home/runner/work/VintedScanner/VintedScanner/config/search_config.yaml
+2026-11-10 11:26:19.077 INFO No previous '/home/runner/work/VintedScanner/VintedScanner/state/already_notified_items.csv' found; clean run
+2026-11-10 11:26:19.078 INFO Loaded 0 [item_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/item_filters.yaml
+2026-11-10 11:26:19.079 INFO Loaded 1 [seller_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/seller_filters.yaml
+2026-11-10 11:26:19.080 INFO ================================================================================
+2026-11-10 11:26:19.080 INFO Started processing search query [sheriff_board_game]
+2026-11-10 11:26:19.080 INFO ================================================================================
+2026-11-10 11:26:19.453 INFO initialise-session.headers:
+
+{'User-Agent': 'python-requests/2.34.2', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive', 'X-Anon-Id': '533d572d-20db-445e-867f-85e86ba04390'}
+2026-11-10 11:26:19.453 INFO 
+
+
+2026-11-10 11:26:19.658 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=16&order=relevance&per_page=96&page=1
+2026-11-10 11:26:19.659 INFO api_headers:
+
+{'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:128.0) Gecko/20100101 Firefox/128.0', 'Accept': 'application/json, text/plain, */*', 'Accept-Language': 'it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3', 'Platform': 'web', 'x-next-app': 'marketplace-web', 'Origin': 'https://www.vinted.co.uk', 'Referer': 'https://www.vinted.co.uk/', 'X-Anon-Id': '533d572d-20db-445e-867f-85e86ba04390'}
+2026-11-10 11:26:19.659 INFO 
+
+
+2026-11-10 11:26:19.659 INFO session.headers:
+
+{'User-Agent': 'python-requests/2.34.2', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive', 'X-Anon-Id': '533d572d-20db-445e-867f-85e86ba04390'}
+2026-11-10 11:26:19.659 INFO 
+
+
+2026-11-10 11:26:19.659 INFO response.json():
+
+{'items': [], 'pagination': {'current_page': 1, 'per_page': 96, 'time': 1794309979, 'total_entries': 0, 'total_pages': 1}, 'search_tracking_params': {'global_search_session_id': '3cb00f2d-4185-4baa-b612-da6efa3cb1d4', 'search_correlation_id': '2ed3f20b-674e-44d2-b8c8-86fab58d346a', 'search_session_id': 'a55b0277-5c83-4561-980c-f6d118daa417'}}
+2026-11-10 11:26:19.659 INFO 
+
+
+2026-11-10 11:26:19.659 INFO response.json().get('items':
+
+[]
+2026-11-10 11:26:19.659 INFO Vinted page 1 returned 0 item(s)
+2026-11-10 11:26:19.659 INFO Vinted search API returned 0 item(s) with IDs: []
+2026-11-10 11:26:19.659 INFO ================================================================================
+2026-11-10 11:26:19.659 INFO Completed processing search query [sheriff_board_game]
+2026-11-10 11:26:19.659 INFO ================================================================================
+2026-11-10 11:26:19.659 INFO Maximum number of items to process/notify (from config): 5
+2026-11-10 11:26:19.660 INFO Items from Vinted search: 0 - []
+2026-11-10 11:26:19.660 INFO Items excluded: 0 - []
+2026-11-10 11:26:19.660 INFO Items previously notified: 0 - []
+2026-11-10 11:26:19.660 INFO Item candidates: 0 - []
+2026-11-10 11:26:19.660 INFO Items notified: 0 - [] (Notifications not enabled)
+2026-11-10 11:26:19.660 INFO Items failed to notify: 0 - []
+2026-11-10 11:26:19.660 INFO Items recorded as notified: 0 - []
