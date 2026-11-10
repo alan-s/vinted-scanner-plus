@@ -18,7 +18,8 @@ HEADERS = {
         "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
         "image/webp,image/png,image/svg+xml,*/*;q=0.8"
     ),
-    "Accept-Language": "en-GB,en;q=0.9",
+    #"Accept-Language": "en-GB,en;q=0.9",
+    "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
     "DNT": "1",
     "Connection": "keep-alive",
     "Upgrade-Insecure-Requests": "1",
@@ -39,7 +40,7 @@ def initialise_vinted_session(search_config):
     global session
 
     # Initialise session
-    vinted_api_url = search_config['vinted']['vinted_url']
+    vinted_url = search_config['vinted']['vinted_url']
     api_headers.update(build_api_headers(search_config))
 
     session = requests.Session()
@@ -48,7 +49,7 @@ def initialise_vinted_session(search_config):
         raise RuntimeError("Session has not been initialised")
 
     response = session.get(
-        vinted_api_url,
+        url=vinted_url,
         headers=api_headers,
         timeout=timeout_connection,
     )
@@ -63,6 +64,9 @@ def initialise_vinted_session(search_config):
         api_headers["X-Anon-Id"] = anon_id
 
     response.raise_for_status()
+
+    logging.info(f"initialise-session.headers:\n\n{session.headers}")
+    logging.info(f"\n\n")
 
 
 def build_api_headers(search_config):
@@ -79,6 +83,11 @@ def build_api_headers(search_config):
         "Referer": f"{vinted_url}/",
         }
     )
+
+    locale = getattr(search_config, "vinted_locale", None)
+    if locale:
+        api_headers["Locale"] = locale
+
 
     return api_headers
 
