@@ -78,13 +78,14 @@ def build_api_headers(search_config):
 
     return api_headers
 
-def get_items_from_catalogue_search(session, anon_id, search_config, params):
+def get_items_from_catalogue_search(session, anon_id, search_config, query_params):
 
     vinted_api_url = search_config['vinted']['vinted_api_url']
     url = f"{vinted_api_url}/svc-catalogue/items"
     pages = search_config['search']['pages']
-    params = {k: v for k, v in params.items() if k != "query_id"}
+    query_params = {k: v for k, v in query_params.items() if k != "query_id"}
     api_headers["X-Anon-Id"] = anon_id
+    api_headers["Locale"] =  "en-GB"
 
     if session is None:
         raise RuntimeError("Session has not been initialised")
@@ -94,38 +95,19 @@ def get_items_from_catalogue_search(session, anon_id, search_config, params):
 
     while page <= pages:
 
-        params = {**params, "page": page}
+        query_params = {**query_params, "page": page}
 
         # Request items from the Vinted API based on the search parameters
         try:
 
             response = session.get(
                 url=url,
-                params=params,
+                params=query_params,
                 headers=api_headers,
                 timeout=timeout_connection,
             )
 
             logger.info("Vinted search API called: %s", response.url)
-
-            logger.info("Request URL: %s", response.url)
-            logger.info("HTTP status: %s", response.status_code)
-            logger.info("Response length: %s", len(response.content))
-            logger.info("Response headers: %s", dict(response.headers))
-
-            # Exclude potentially sensitive headers
-            safe_headers = {
-                k: v for k, v in response.request.headers.items()
-                if k.lower() not in ("cookie", "authorization")
-            }
-
-            logger.info("Outgoing request headers: %s", safe_headers)
-
-            data = response.json()
-
-            logger.info("Response keys: %s", list(data.keys()))
-            logger.info("Items returned: %s", len(data.get("items", [])))
-            logger.info("Response body: %s", response.text[:3000])
 
             response.raise_for_status()
             data = response.json()
@@ -166,10 +148,6 @@ def get_item_description_and_upload_datetime(session, anon_id, search_config, it
 
     vinted_url = search_config['vinted']['vinted_url']
     api_headers["X-Anon-Id"] = anon_id
-
-    TEST_ANON_ID = "88d22bd0-ef3a-407a-ac64-c6623c17b5b8"
-
-    api_headers["X-Anon-Id"] = TEST_ANON_ID
 
     if session is None:
         raise RuntimeError("Session has not been initialised")
