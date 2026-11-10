@@ -58,9 +58,9 @@ def initialise_vinted_session(search_config):
     anon_id = session.cookies.get("anon_id")
 
     if anon_id:
-        session.headers.update({
-            "X-Anon-Id": anon_id
-        })
+        # session.headers.update({
+        #     "X-Anon-Id": anon_id
+        # })
         api_headers["X-Anon-Id"] = anon_id
 
     response.raise_for_status()
