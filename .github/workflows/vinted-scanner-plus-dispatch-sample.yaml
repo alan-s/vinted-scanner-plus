@@ -1,4 +1,4 @@
-name: Vinted Scanner Plus Sample
+name: Vinted Scanner Plus Dispatch Sample
 
 on:
   workflow_dispatch:

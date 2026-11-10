@@ -1,4 +1,4 @@
-name: Vinted Scanner Plus Template
+name: Vinted Scanner Plus Call Template
 
 on:
   workflow_call:
