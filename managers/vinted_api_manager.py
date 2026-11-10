@@ -31,14 +31,19 @@ HEADERS = {
     "Cache-Control": "no-cache",
 }
 
-api_headers = {}
+API_HEADERS = {
+        "Accept": "application/json, text/plain, */*",
+        "Platform": "web",
+        "x-next-app": "marketplace-web",
+        "Locale": "en-GB",
+        }
 
 
 def initialise_vinted_session(search_config):
 
     # Initialise session
     vinted_url = search_config['vinted']['vinted_url']
-    api_headers.update(build_api_headers(search_config))
+    api_headers = build_api_headers(search_config)
 
     try:
         session = requests.Session()
@@ -48,6 +53,14 @@ def initialise_vinted_session(search_config):
             headers=HEADERS,
             timeout=TIMEOUT_CONNECTION,
         )
+
+        anon_id = session.cookies.get("anon_id")
+
+        if anon_id:
+            # Add X-Anon-Id to all subsequent session requests
+            api_headers["X-Anon-Id"] = anon_id
+
+            session.headers.update(api_headers)
 
         response.raise_for_status()
 
@@ -61,34 +74,27 @@ def initialise_vinted_session(search_config):
 def build_api_headers(search_config):
 
     vinted_url = search_config['vinted']['vinted_url']
+    locale = search_config['vinted']['locale']
 
-    api_headers.update({
+    request_headers = {
+        **API_HEADERS,
         "User-Agent": HEADERS["User-Agent"],
-        "Accept": "application/json, text/plain, */*",
         "Accept-Language": HEADERS["Accept-Language"],
-        "Platform": "web",
-        "x-next-app": "marketplace-web",
         "Origin": vinted_url,
         "Referer": f"{vinted_url}/",
-        "Locale": "en-GB",
+    }
 
-        }
-    )
-
-    locale = getattr(search_config, "vinted_locale", None)
     if locale:
-        api_headers["Locale"] = locale
+        request_headers["Locale"] = locale
+
+    return request_headers
 
 
-    return api_headers
-
-
-def get_items_from_catalogue_search(session, anon_id, search_config, query_params):
+def get_items_from_catalogue_search(session, search_config, query_params):
 
     url = f"{search_config['vinted']['vinted_api_url']}/svc-catalogue/items"
     pages = search_config['search']['pages']
     query_params = {k: v for k, v in query_params.items() if k != "query_id"}
-    api_headers["X-Anon-Id"] = anon_id
 
     page = 1
     items = []
@@ -103,8 +109,6 @@ def get_items_from_catalogue_search(session, anon_id, search_config, query_param
             response = session.get(
                 url=url,
                 params=query_params,
-                headers=api_headers,
-                timeout=TIMEOUT_CONNECTION,
             )
 
             logger.info("Vinted search API called: %s", response.url)
@@ -144,18 +148,15 @@ def get_items_from_catalogue_search(session, anon_id, search_config, query_param
     return items
 
 
-def get_item_description_and_upload_datetime(session, anon_id, search_config, item_id):
+def get_item_description_and_upload_datetime(session, search_config, item_id):
 
     vinted_url = search_config['vinted']['vinted_url']
-    api_headers["X-Anon-Id"] = anon_id
 
     try:
         url = f"{vinted_url}/items/{item_id}"
 
         response = session.get(
             url=url,
-            headers=api_headers,
-            timeout=TIMEOUT_CONNECTION,
         )
 
         logger.info("Vinted item endpoint called: %s", response.url)
@@ -186,18 +187,15 @@ def get_item_description_and_upload_datetime(session, anon_id, search_config, it
     )
 
 
-def get_user_details(session, anon_id, search_config, user_id):
+def get_user_details(session, search_config, user_id):
 
     vinted_url = search_config['vinted']['vinted_url']
-    api_headers["X-Anon-Id"] = anon_id
 
     try:
         url = f"{vinted_url}/api/v2/users/{user_id}"
 
         response = session.get(
             url=url,
-            headers=api_headers,
-            timeout=TIMEOUT_CONNECTION,
         )
 
         logger.info("Vinted seller API called: %s", response.url)
@@ -213,9 +211,7 @@ def get_user_details(session, anon_id, search_config, user_id):
         return None
 
 
-# def close_session():
-#
-#     if session is None:
-#         raise RuntimeError("Session has not been initialised")
-#
-#     session.close()
+def close_session(session):
+    if session is not None:
+        session.close()
+        logger.info("Vinted session closed")

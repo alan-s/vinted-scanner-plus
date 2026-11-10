@@ -9,7 +9,6 @@
 #     - numeric operators: (greater_than,greater_than_or_equal,less_than,less_than_or_equal,between)
 #     - 'nothing' operators: (exists,is_null,is_empty)
 #   - 'value': the value to compare (additionally accepts csv list for keys with string value)
-
 filters:
   - query_id: sheriff_board_game
     mode: include

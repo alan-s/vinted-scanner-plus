@@ -1,7 +1,7 @@
 # The message format and the external connectors for sending notifications
 #
 # Message format
-# 'include_description': include the item description (default = true)
+# 'include_description': include the item description in the notification (default = false)
 message:
   include_description: false
 

@@ -1,10 +1,9 @@
-# Set file paths and names to load for search and filter configs. Also set the csv file name to store state
+# Set file names and file paths to load for search and filter configs. Also set the csv file name to store state
 #
-# 'file': the various config types. Do NOT change this!
-#   base_path: (optional) the parent path where all config are located. If no value is supplied, then current working dir is used
-#   directory_name: the name of the directory where the file is located
-#   file_name: search_config.yaml
-
+# 'config': the config type. Do NOT change these values!
+#   'base_path': (optional) the parent path where all config is located. If no value is supplied, then current working dir. is used
+#   'directory_name': the name of the directory where the file is located
+#   'file_name': the yaml file name for the config e.g. search_config.yaml
 configs:
   - config: search_config
     base_path:
