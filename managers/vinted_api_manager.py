@@ -1,6 +1,8 @@
 import logging
+
 import requests
 from bs4 import BeautifulSoup
+
 import managers.logging_manager as logging_manager
 
 logging_manager.init_logger()
@@ -32,15 +34,14 @@ HEADERS = {
 }
 
 API_HEADERS = {
-        "Accept": "application/json, text/plain, */*",
-        "Platform": "web",
-        "x-next-app": "marketplace-web",
-        "Locale": "en-GB",
-        }
+    "Accept": "application/json, text/plain, */*",
+    "Platform": "web",
+    "x-next-app": "marketplace-web",
+    "Locale": "en-GB",
+}
 
 
 def initialise_vinted_session(search_config):
-
     # Initialise session
     vinted_url = search_config['vinted']['vinted_url']
     api_headers = build_api_headers(search_config)
@@ -67,12 +68,11 @@ def initialise_vinted_session(search_config):
         return session
 
     except (requests.exceptions.RequestException, ValueError) as e:
-        logger.error("Unable to initialise Vinted session: %s",e)
+        logger.error("Unable to initialise Vinted session: %s", e)
         return None
 
 
 def build_api_headers(search_config):
-
     vinted_url = search_config['vinted']['vinted_url']
     locale = search_config['vinted']['locale']
 
@@ -91,7 +91,6 @@ def build_api_headers(search_config):
 
 
 def get_items_from_catalogue_search(session, search_config, query_params):
-
     url = f"{search_config['vinted']['vinted_api_url']}/svc-catalogue/items"
     pages = search_config['search']['pages']
     query_params = {k: v for k, v in query_params.items() if k != "query_id"}
@@ -149,7 +148,6 @@ def get_items_from_catalogue_search(session, search_config, query_params):
 
 
 def get_item_description_and_upload_datetime(session, search_config, item_id):
-
     vinted_url = search_config['vinted']['vinted_url']
 
     try:
@@ -188,7 +186,6 @@ def get_item_description_and_upload_datetime(session, search_config, item_id):
 
 
 def get_user_details(session, search_config, user_id):
-
     vinted_url = search_config['vinted']['vinted_url']
 
     try:

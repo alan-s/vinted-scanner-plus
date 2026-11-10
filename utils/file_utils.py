@@ -26,6 +26,6 @@ def load_yaml(path):
         sys.exit(1)
 
 
-def build_file_path(filename: str, directory_name: str,  base_path: str | None = None) -> Path:
+def build_file_path(filename: str, directory_name: str, base_path: str | None = None) -> Path:
     file_path = Path(base_path) if base_path else Path.cwd() / directory_name
     return file_path / filename
