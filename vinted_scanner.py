@@ -83,15 +83,13 @@ def main():
     session = vinted_api_manager.initialise_vinted_session(search_config)
 
     anon_id = session.cookies.get("anon_id")
-    if anon_id:
-        api_headers["X-Anon-Id"] = anon_id
 
     for params in queries:
 
         logging_manager.item_log_printer(params.get("query_id"), "Started", log_type="query")
 
         # Request items from the Vinted API based on the search parameters
-        items = vinted_api_manager.get_items_from_catalogue_search(session, search_config, params) or []
+        items = vinted_api_manager.get_items_from_catalogue_search(session, anon_id, search_config, params) or []
         logger.info("Vinted search API returned %d item(s) with IDs: %s", len(items),
                     [item.get("id") for item in items])
 
@@ -145,7 +143,7 @@ def main():
 
             # Scrape the HTML response for the upload time
             item_upload_time, item_description = vinted_api_manager.get_item_description_and_upload_datetime(
-                session, search_config, item_id)
+                session, anon_id, search_config, item_id)
 
             # Check against item filters
             if args.log_filtering:
@@ -159,7 +157,7 @@ def main():
             logger.info(f"Getting seller details for item [{item_id}]")
             user = item.get("user") or {}
             user_id = user.get("id")
-            seller = vinted_api_manager.get_user_details(session, search_config, user_id)
+            seller = vinted_api_manager.get_user_details(session, anon_id, search_config, user_id)
 
             # Check against seller filters
             if args.log_filtering:
@@ -215,7 +213,7 @@ def main():
                                              notified_items, failed_notified_items, max_items, args.enable_notifications)
 
     # Close api sessions
-    vinted_api_manager.close_session()
+    #vinted_api_manager.close_session()
 
 
 if __name__ == "__main__":

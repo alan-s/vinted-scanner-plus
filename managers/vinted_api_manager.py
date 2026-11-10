@@ -78,12 +78,13 @@ def build_api_headers(search_config):
 
     return api_headers
 
-def get_items_from_catalogue_search(session, search_config, params):
+def get_items_from_catalogue_search(session, anon_id, search_config, params):
 
     vinted_api_url = search_config['vinted']['vinted_api_url']
     url = f"{vinted_api_url}/svc-catalogue/items"
     pages = search_config['search']['pages']
     params = {k: v for k, v in params.items() if k != "query_id"}
+    api_headers["X-Anon-Id"] = anon_id
 
     if session is None:
         raise RuntimeError("Session has not been initialised")
@@ -152,9 +153,10 @@ def get_items_from_catalogue_search(session, search_config, params):
     return items
 
 
-def get_item_description_and_upload_datetime(session, search_config, item_id):
+def get_item_description_and_upload_datetime(session, anon_id, search_config, item_id):
 
     vinted_url = search_config['vinted']['vinted_url']
+    api_headers["X-Anon-Id"] = anon_id
 
     if session is None:
         raise RuntimeError("Session has not been initialised")
@@ -196,9 +198,10 @@ def get_item_description_and_upload_datetime(session, search_config, item_id):
     )
 
 
-def get_user_details(session, search_config, user_id):
+def get_user_details(session, anon_id, search_config, user_id):
 
     vinted_url = search_config['vinted']['vinted_url']
+    api_headers["X-Anon-Id"] = anon_id
 
     if session is None:
         raise RuntimeError("Session has not been initialised")
@@ -225,9 +228,9 @@ def get_user_details(session, search_config, user_id):
         return None
 
 
-def close_session():
-
-    if session is None:
-        raise RuntimeError("Session has not been initialised")
-
-    session.close()
+# def close_session():
+#
+#     if session is None:
+#         raise RuntimeError("Session has not been initialised")
+#
+#     session.close()
