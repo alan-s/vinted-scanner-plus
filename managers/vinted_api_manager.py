@@ -39,6 +39,9 @@ session: requests.Session | None = None
 def initialise_vinted_session(search_config):
     global session
 
+    logging.info(f"initialise-session.headers: Start was hit")
+    logging.info(f"\n\n")
+
     # Initialise session
     vinted_url = search_config['vinted']['vinted_url']
     api_headers.update(build_api_headers(search_config))
@@ -50,7 +53,7 @@ def initialise_vinted_session(search_config):
 
     response = session.get(
         url=vinted_url,
-        headers=api_headers,
+        headers=HEADERS,
         timeout=timeout_connection,
     )
 
