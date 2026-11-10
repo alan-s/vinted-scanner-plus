@@ -82,9 +82,9 @@ def build_api_headers(search_config):
         }
     )
 
-    locale = getattr(search_config, "vinted_locale", None)
-    if locale:
-        api_headers["Locale"] = locale
+    # locale = getattr(search_config, "vinted_locale", None)
+    # if locale:
+    #     api_headers["Locale"] = locale
 
 
     return api_headers
