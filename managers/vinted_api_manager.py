@@ -7,7 +7,7 @@ logging_manager.init_logger()
 logger = logging.getLogger(__name__)
 
 # Timeout configuration for the requests
-timeout_connection = 30
+TIMEOUT_CONNECTION = 30
 
 HEADERS = {
     "User-Agent": (
@@ -18,8 +18,7 @@ HEADERS = {
         "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
         "image/webp,image/png,image/svg+xml,*/*;q=0.8"
     ),
-    #"Accept-Language": "en-GB,en;q=0.9",
-    "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
+    "Accept-Language": "en-GB,en;q=0.9",
     "DNT": "1",
     "Connection": "keep-alive",
     "Upgrade-Insecure-Requests": "1",
@@ -41,20 +40,23 @@ def initialise_vinted_session(search_config):
     vinted_url = search_config['vinted']['vinted_url']
     api_headers.update(build_api_headers(search_config))
 
-    session = requests.Session()
+    try:
+        session = requests.Session()
 
-    if session is None:
-        raise RuntimeError("Session has not been initialised")
+        response = session.get(
+            url=vinted_url,
+            headers=HEADERS,
+            timeout=TIMEOUT_CONNECTION,
+        )
 
-    response = session.get(
-        url=vinted_url,
-        headers=HEADERS,
-        timeout=timeout_connection,
-    )
+        response.raise_for_status()
 
-    response.raise_for_status()
+        return session
 
-    return session
+    except (requests.exceptions.RequestException, ValueError) as e:
+        logger.error("Unable to initialise Vinted session: %s",e)
+        return None
+
 
 def build_api_headers(search_config):
 
@@ -68,27 +70,25 @@ def build_api_headers(search_config):
         "x-next-app": "marketplace-web",
         "Origin": vinted_url,
         "Referer": f"{vinted_url}/",
+        "Locale": "en-GB",
+
         }
     )
 
-    # locale = getattr(search_config, "vinted_locale", None)
-    # if locale:
-    #     api_headers["Locale"] = locale
+    locale = getattr(search_config, "vinted_locale", None)
+    if locale:
+        api_headers["Locale"] = locale
 
 
     return api_headers
 
+
 def get_items_from_catalogue_search(session, anon_id, search_config, query_params):
 
-    vinted_api_url = search_config['vinted']['vinted_api_url']
-    url = f"{vinted_api_url}/svc-catalogue/items"
+    url = f"{search_config['vinted']['vinted_api_url']}/svc-catalogue/items"
     pages = search_config['search']['pages']
     query_params = {k: v for k, v in query_params.items() if k != "query_id"}
     api_headers["X-Anon-Id"] = anon_id
-    api_headers["Locale"] =  "en-GB"
-
-    if session is None:
-        raise RuntimeError("Session has not been initialised")
 
     page = 1
     items = []
@@ -104,7 +104,7 @@ def get_items_from_catalogue_search(session, anon_id, search_config, query_param
                 url=url,
                 params=query_params,
                 headers=api_headers,
-                timeout=timeout_connection,
+                timeout=TIMEOUT_CONNECTION,
             )
 
             logger.info("Vinted search API called: %s", response.url)
@@ -149,22 +149,19 @@ def get_item_description_and_upload_datetime(session, anon_id, search_config, it
     vinted_url = search_config['vinted']['vinted_url']
     api_headers["X-Anon-Id"] = anon_id
 
-    if session is None:
-        raise RuntimeError("Session has not been initialised")
-
     try:
         url = f"{vinted_url}/items/{item_id}"
 
-        response = requests.get(
+        response = session.get(
             url=url,
             headers=api_headers,
-            timeout=timeout_connection,
+            timeout=TIMEOUT_CONNECTION,
         )
 
         logger.info("Vinted item endpoint called: %s", response.url)
 
-    except requests.exceptions.HTTPError as e:
-        logger.error(e.args[0], exc_info=True)
+    except (requests.exceptions.RequestException, ValueError) as e:
+        logger.error("Unable to fetch Vinted item page: %s", e)
         return None
 
     try:
@@ -194,16 +191,13 @@ def get_user_details(session, anon_id, search_config, user_id):
     vinted_url = search_config['vinted']['vinted_url']
     api_headers["X-Anon-Id"] = anon_id
 
-    if session is None:
-        raise RuntimeError("Session has not been initialised")
-
     try:
         url = f"{vinted_url}/api/v2/users/{user_id}"
 
         response = session.get(
             url=url,
             headers=api_headers,
-            timeout=timeout_connection,
+            timeout=TIMEOUT_CONNECTION,
         )
 
         logger.info("Vinted seller API called: %s", response.url)
