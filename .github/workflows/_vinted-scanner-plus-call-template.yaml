@@ -79,7 +79,7 @@ jobs:
 
           args = shlex.split(os.environ.get("SCANNER_ARGS", ""))
           subprocess.run(
-              ["python3", "vinted_scanner.py", *args],
+              ["python3", "vinted_scanner_plus.py", *args],
               check=True
           )'
 
@@ -109,11 +109,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add vinted_scanner.log
+          git add vinted_scanner_plus.log
 
           if git diff --cached --quiet; then
             echo "No new logs to commit."
           else
-            git commit -m "Update Vinted logs."
+            git commit -m "Update logs."
             git push origin HEAD:main
           fi

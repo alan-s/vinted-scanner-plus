@@ -1,7 +1,7 @@
 import logging
 import sys
 
-log_name = "vinted_scanner.log"
+log_name = "vinted_scanner_plus.log"
 logger = logging.getLogger(__name__)
 
 
