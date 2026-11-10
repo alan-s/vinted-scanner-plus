@@ -39,9 +39,6 @@ session: requests.Session | None = None
 def initialise_vinted_session(search_config):
     global session
 
-    logging.info(f"initialise-session.headers: Start was hit")
-    logging.info(f"\n\n")
-
     # Initialise session
     vinted_url = search_config['vinted']['vinted_url']
     api_headers.update(build_api_headers(search_config))
@@ -67,9 +64,6 @@ def initialise_vinted_session(search_config):
         api_headers["X-Anon-Id"] = anon_id
 
     response.raise_for_status()
-
-    logging.info(f"initialise-session.headers:\n\n{session.headers}")
-    logging.info(f"\n\n")
 
 
 def build_api_headers(search_config):
@@ -113,6 +107,8 @@ def get_items_from_catalogue_search(search_config, params):
 
         # Request items from the Vinted API based on the search parameters
         try:
+            logging.info("Session default headers:", session.headers)
+            logging.info("API headers:", api_headers)
             response = session.get(
                 url=url,
                 params=params,
@@ -133,6 +129,7 @@ def get_items_from_catalogue_search(search_config, params):
             logging.info(f"\n\n")
             logging.info(f"response.json().get('items':\n\n{response.json().get('items')}")
 
+            logging.info("Actual outgoing headers:", response.request.headers)
         except (requests.exceptions.RequestException, ValueError) as e:
             logger.error("Unable to fetch Vinted page %s: %s", page, e)
             return None
