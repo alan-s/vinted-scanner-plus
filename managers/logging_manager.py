@@ -28,8 +28,8 @@ def item_log_printer(identifier, state, log_type="query"):
 
 
 def log_end_of_run_stats(items, excluded_items, previously_notified_items, candidate_items, notified_items,
-                         failed_notified_items, max_items):
-    logger.info("Maximum no. of items to process/noify (from Config): %s", max_items)
+                         failed_notified_items, max_items, notifications_enabled):
+    logger.info("Maximum number of items to process/notify (from config): %s", max_items)
     logger.info("Items from Vinted search: %s - [%s]", len(items),
                 ", ".join([str(item["id"]) for item in items]))
     logger.info("Items excluded: %s - [%s]", len(excluded_items),
@@ -38,8 +38,11 @@ def log_end_of_run_stats(items, excluded_items, previously_notified_items, candi
                 ", ".join(str(item_id) for item_id in previously_notified_items))
     logger.info("Item candidates: %s - [%s]", len(candidate_items),
                 ", ".join(str(item_id) for item_id in candidate_items))
-    logger.info("Items notified: %s - [%s]", len(notified_items),
-                ", ".join(str(item_id) for item_id in notified_items))
+    logger.info(
+        "Items notified: %s - [%s]%s",
+        len(notified_items),
+        ", ".join(str(item_id) for item_id in notified_items),
+        " (Notifications not enabled)" if not notifications_enabled else "")
     logger.info("Items failed to notify: %s - [%s]", len(failed_notified_items),
                 ", ".join(str(item_id) for item_id in failed_notified_items))
     logger.info(

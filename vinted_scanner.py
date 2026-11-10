@@ -85,6 +85,7 @@ def main():
         logging_manager.item_log_printer(params.get("query_id"), "Started", log_type="query")
 
         # Request items from the Vinted API based on the search parameters
+        vinted_api_manager.initialise_vinted_session(search_config)
         items = vinted_api_manager.get_items_from_catalogue_search(search_config, params) or []
 
         logger.info("Vinted search API returned %d item(s) with IDs: %s", len(items),
@@ -100,7 +101,7 @@ def main():
         # Process each item returned in the response, and notify based on filters
         max_items = search_config['search']['max_items']
         if items:
-            logger.info("From Config, the maximum number of items to process/notify: %s", max_items)
+            logger.info("The maximum number of items to process/notify (from config): %s", max_items)
 
         for item in islice(items, max_items):
 
@@ -207,7 +208,7 @@ def main():
 
         # Print end-of-query stats
         logging_manager.log_end_of_run_stats(items, excluded_items, previously_notified_items, candidate_items,
-                                             notified_items, failed_notified_items, max_items)
+                                             notified_items, failed_notified_items, max_items, args.enable_notifications)
 
     # Close api sessions
     vinted_api_manager.close_session()
