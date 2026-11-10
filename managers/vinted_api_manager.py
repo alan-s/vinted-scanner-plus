@@ -98,8 +98,7 @@ def get_items_from_catalogue_search(session, anon_id, search_config, params):
 
         # Request items from the Vinted API based on the search parameters
         try:
-            logging.info("Session default headers:", session.headers)
-            logging.info("API headers:", api_headers)
+
             response = session.get(
                 url=url,
                 params=params,
@@ -109,18 +108,28 @@ def get_items_from_catalogue_search(session, anon_id, search_config, params):
 
             logger.info("Vinted search API called: %s", response.url)
 
+            logger.info("Request URL: %s", response.url)
+            logger.info("HTTP status: %s", response.status_code)
+            logger.info("Response length: %s", len(response.content))
+            logger.info("Response headers: %s", dict(response.headers))
+
+            # Exclude potentially sensitive headers
+            safe_headers = {
+                k: v for k, v in response.request.headers.items()
+                if k.lower() not in ("cookie", "authorization")
+            }
+
+            logger.info("Outgoing request headers: %s", safe_headers)
+
+            data = response.json()
+
+            logger.info("Response keys: %s", list(data.keys()))
+            logger.info("Items returned: %s", len(data.get("items", [])))
+            logger.info("Response body: %s", response.text[:3000])
+
             response.raise_for_status()
             data = response.json()
 
-            logging.info(f"api_headers:\n\n{api_headers}")
-            logging.info(f"\n\n")
-            logging.info(f"session.headers:\n\n{session.headers}")
-            logging.info(f"\n\n")
-            logging.info(f"response.json():\n\n{response.json()}")
-            logging.info(f"\n\n")
-            logging.info(f"response.json().get('items':\n\n{response.json().get('items')}")
-
-            logging.info("Actual outgoing headers:", response.request.headers)
         except (requests.exceptions.RequestException, ValueError) as e:
             logger.error("Unable to fetch Vinted page %s: %s", page, e)
             return None
