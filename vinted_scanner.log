@@ -175,3 +175,61 @@
 2026-11-10 11:26:19.660 INFO Items notified: 0 - [] (Notifications not enabled)
 2026-11-10 11:26:19.660 INFO Items failed to notify: 0 - []
 2026-11-10 11:26:19.660 INFO Items recorded as notified: 0 - []
+2026-11-10 11:39:47.172 INFO 
+2026-11-10 11:39:47.172 INFO ================================================================================
+2026-11-10 11:39:47.172 INFO                                   VINTED SCANNER PLUS                           
+2026-11-10 11:39:47.172 INFO ================================================================================
+2026-11-10 11:39:47.172 INFO 
+2026-11-10 11:39:47.172 INFO Launched with the following args: --log_filtering
+2026-11-10 11:39:47.176 INFO Loaded 1 search querie(s) from /home/runner/work/VintedScanner/VintedScanner/config/search_config.yaml
+2026-11-10 11:39:47.176 INFO No previous '/home/runner/work/VintedScanner/VintedScanner/state/already_notified_items.csv' found; clean run
+2026-11-10 11:39:47.177 INFO Loaded 0 [item_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/item_filters.yaml
+2026-11-10 11:39:47.179 INFO Loaded 1 [seller_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/seller_filters.yaml
+2026-11-10 11:39:47.180 INFO ================================================================================
+2026-11-10 11:39:47.180 INFO Started processing search query [sheriff_board_game]
+2026-11-10 11:39:47.180 INFO ================================================================================
+2026-11-10 11:39:47.180 INFO initialise-session.headers: Start was hit
+2026-11-10 11:39:47.180 INFO 
+
+
+2026-11-10 11:39:48.631 INFO initialise-session.headers:
+
+{'User-Agent': 'python-requests/2.34.2', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive', 'X-Anon-Id': 'ba3b9c6b-a4a3-4f6e-b670-2effa0b680f4'}
+2026-11-10 11:39:48.631 INFO 
+
+
+2026-11-10 11:39:48.907 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=16&order=relevance&per_page=96&page=1
+2026-11-10 11:39:48.908 INFO api_headers:
+
+{'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:128.0) Gecko/20100101 Firefox/128.0', 'Accept': 'application/json, text/plain, */*', 'Accept-Language': 'it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3', 'Platform': 'web', 'x-next-app': 'marketplace-web', 'Origin': 'https://www.vinted.co.uk', 'Referer': 'https://www.vinted.co.uk/', 'X-Anon-Id': 'ba3b9c6b-a4a3-4f6e-b670-2effa0b680f4'}
+2026-11-10 11:39:48.908 INFO 
+
+
+2026-11-10 11:39:48.908 INFO session.headers:
+
+{'User-Agent': 'python-requests/2.34.2', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive', 'X-Anon-Id': 'ba3b9c6b-a4a3-4f6e-b670-2effa0b680f4'}
+2026-11-10 11:39:48.908 INFO 
+
+
+2026-11-10 11:39:48.908 INFO response.json():
+
+{'items': [], 'pagination': {'current_page': 1, 'per_page': 96, 'time': 1794310788, 'total_entries': 0, 'total_pages': 1}, 'search_tracking_params': {'global_search_session_id': '9d9d2c63-5e5b-4a7a-8e45-c81459baf114', 'search_correlation_id': '81086f80-de0a-4cf1-b2f3-284285229269', 'search_session_id': 'de0441ec-6a26-47c7-a36f-5ac07ef915d1'}}
+2026-11-10 11:39:48.908 INFO 
+
+
+2026-11-10 11:39:48.908 INFO response.json().get('items':
+
+[]
+2026-11-10 11:39:48.908 INFO Vinted page 1 returned 0 item(s)
+2026-11-10 11:39:48.908 INFO Vinted search API returned 0 item(s) with IDs: []
+2026-11-10 11:39:48.908 INFO ================================================================================
+2026-11-10 11:39:48.908 INFO Completed processing search query [sheriff_board_game]
+2026-11-10 11:39:48.908 INFO ================================================================================
+2026-11-10 11:39:48.908 INFO Maximum number of items to process/notify (from config): 5
+2026-11-10 11:39:48.908 INFO Items from Vinted search: 0 - []
+2026-11-10 11:39:48.908 INFO Items excluded: 0 - []
+2026-11-10 11:39:48.909 INFO Items previously notified: 0 - []
+2026-11-10 11:39:48.909 INFO Item candidates: 0 - []
+2026-11-10 11:39:48.909 INFO Items notified: 0 - [] (Notifications not enabled)
+2026-11-10 11:39:48.909 INFO Items failed to notify: 0 - []
+2026-11-10 11:39:48.909 INFO Items recorded as notified: 0 - []
