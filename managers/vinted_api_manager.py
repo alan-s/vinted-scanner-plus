@@ -30,6 +30,7 @@ HEADERS = {
     "Priority": "u=0, i",
     "Pragma": "no-cache",
     "Cache-Control": "no-cache",
+    'Locale': 'en-GB',
 }
 
 api_headers = {}
