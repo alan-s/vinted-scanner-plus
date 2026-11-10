@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   scan:
-    uses: ./.github/workflows/_vinted-scanner-plus-template.yaml
+    uses: ./.github/workflows/_vinted-scanner-plus-call-template
 
     with:
       args: "--log_filtering --enable_notifications"
