@@ -49,3 +49,54 @@
 2026-11-10 11:46:33.884 INFO Items notified: 0 - [] (Notifications not enabled)
 2026-11-10 11:46:33.884 INFO Items failed to notify: 0 - []
 2026-11-10 11:46:33.884 INFO Items recorded as notified: 0 - []
+2026-11-10 12:00:03.288 INFO 
+2026-11-10 12:00:03.289 INFO ================================================================================
+2026-11-10 12:00:03.289 INFO                                   VINTED SCANNER PLUS                           
+2026-11-10 12:00:03.289 INFO ================================================================================
+2026-11-10 12:00:03.289 INFO 
+2026-11-10 12:00:03.289 INFO Launched with the following args: --log_filtering
+2026-11-10 12:00:03.294 INFO Loaded 1 search querie(s) from /home/runner/work/VintedScanner/VintedScanner/config/search_config.yaml
+2026-11-10 12:00:03.294 INFO No previous '/home/runner/work/VintedScanner/VintedScanner/state/already_notified_items.csv' found; clean run
+2026-11-10 12:00:03.295 INFO Loaded 0 [item_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/item_filters.yaml
+2026-11-10 12:00:03.296 INFO Loaded 1 [seller_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/seller_filters.yaml
+2026-11-10 12:00:03.297 INFO ================================================================================
+2026-11-10 12:00:03.297 INFO Started processing search query [sheriff_board_game]
+2026-11-10 12:00:03.297 INFO ================================================================================
+2026-11-10 12:00:04.518 INFO Session default headers:
+2026-11-10 12:00:04.519 INFO API headers:
+2026-11-10 12:00:04.964 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=16&order=relevance&per_page=96&page=1
+2026-11-10 12:00:04.964 INFO api_headers:
+
+{'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:128.0) Gecko/20100101 Firefox/128.0', 'Accept': 'application/json, text/plain, */*', 'Accept-Language': 'it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3', 'Platform': 'web', 'x-next-app': 'marketplace-web', 'Origin': 'https://www.vinted.co.uk', 'Referer': 'https://www.vinted.co.uk/', 'X-Anon-Id': 'fcf48359-d053-432b-882a-c9ee3b874a6d'}
+2026-11-10 12:00:04.964 INFO 
+
+
+2026-11-10 12:00:04.964 INFO session.headers:
+
+{'User-Agent': 'python-requests/2.34.2', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'}
+2026-11-10 12:00:04.964 INFO 
+
+
+2026-11-10 12:00:04.964 INFO response.json():
+
+{'items': [], 'pagination': {'current_page': 1, 'per_page': 96, 'time': 1794312004, 'total_entries': 0, 'total_pages': 1}, 'search_tracking_params': {'global_search_session_id': 'a161581a-b0d9-4af1-bec8-5722dbb650ee', 'search_correlation_id': '0ff1ccfb-6290-43fd-877e-21e73b159741', 'search_session_id': '464afc24-6a5b-45d0-9d19-8cd5da679c39'}}
+2026-11-10 12:00:04.964 INFO 
+
+
+2026-11-10 12:00:04.964 INFO response.json().get('items':
+
+[]
+2026-11-10 12:00:04.964 INFO Actual outgoing headers:
+2026-11-10 12:00:04.964 INFO Vinted page 1 returned 0 item(s)
+2026-11-10 12:00:04.964 INFO Vinted search API returned 0 item(s) with IDs: []
+2026-11-10 12:00:04.964 INFO ================================================================================
+2026-11-10 12:00:04.964 INFO Completed processing search query [sheriff_board_game]
+2026-11-10 12:00:04.964 INFO ================================================================================
+2026-11-10 12:00:04.964 INFO Maximum number of items to process/notify (from config): 5
+2026-11-10 12:00:04.964 INFO Items from Vinted search: 0 - []
+2026-11-10 12:00:04.964 INFO Items excluded: 0 - []
+2026-11-10 12:00:04.964 INFO Items previously notified: 0 - []
+2026-11-10 12:00:04.964 INFO Item candidates: 0 - []
+2026-11-10 12:00:04.964 INFO Items notified: 0 - [] (Notifications not enabled)
+2026-11-10 12:00:04.964 INFO Items failed to notify: 0 - []
+2026-11-10 12:00:04.965 INFO Items recorded as notified: 0 - []
