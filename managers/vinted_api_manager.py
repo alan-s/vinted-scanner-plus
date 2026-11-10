@@ -167,6 +167,10 @@ def get_item_description_and_upload_datetime(session, anon_id, search_config, it
     vinted_url = search_config['vinted']['vinted_url']
     api_headers["X-Anon-Id"] = anon_id
 
+    TEST_ANON_ID = "88d22bd0-ef3a-407a-ac64-c6623c17b5b8"
+
+    api_headers["X-Anon-Id"] = TEST_ANON_ID
+
     if session is None:
         raise RuntimeError("Session has not been initialised")
 
