@@ -1,0 +1,48 @@
+2026-11-10 21:51:09.853 INFO 
+2026-11-10 21:51:09.853 INFO ================================================================================
+2026-11-10 21:51:09.853 INFO                                   VINTED SCANNER PLUS                           
+2026-11-10 21:51:09.853 INFO ================================================================================
+2026-11-10 21:51:09.853 INFO 
+2026-11-10 21:51:09.853 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-10 21:51:09.857 INFO Loaded 1 search querie(s) from /home/runner/work/VintedScanner/VintedScanner/config/search_config.yaml
+2026-11-10 21:51:09.857 INFO No previous '/home/runner/work/VintedScanner/VintedScanner/state/already_notified_items.csv' found; clean run
+2026-11-10 21:51:09.858 INFO Loaded 0 [item_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/item_filters.yaml
+2026-11-10 21:51:09.859 INFO Loaded 1 [seller_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/seller_filters.yaml
+2026-11-10 21:51:10.270 INFO ================================================================================
+2026-11-10 21:51:10.270 INFO Started processing search query [sheriff_board_game]
+2026-11-10 21:51:10.270 INFO ================================================================================
+2026-11-10 21:51:10.518 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=16&order=relevance&page=1
+2026-11-10 21:51:10.518 INFO Vinted page 1 returned 1 item(s)
+2026-11-10 21:51:10.518 INFO Vinted search API returned 1 item(s) with IDs: [10311140799]
+2026-11-10 21:51:10.518 INFO The maximum number of items to process/notify (from config): 5
+2026-11-10 21:51:10.518 INFO --------------------------------------------------------------------------------
+2026-11-10 21:51:10.518 INFO Started processing item [10311140799]
+2026-11-10 21:51:10.518 INFO --------------------------------------------------------------------------------
+2026-11-10 21:51:11.073 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10311140799-sheriff-of-nottingham-2nd-edition-board-game
+2026-11-10 21:51:11.118 INFO Checking item [10311140799] against optional [item] filters
+2026-11-10 21:51:11.118 INFO Item [10311140799] in scope for 0 [item] filter(s)
+2026-11-10 21:51:11.118 INFO Getting seller details for item [10311140799]
+2026-11-10 21:51:11.340 INFO Vinted seller API called: https://www.vinted.co.uk/api/v2/users/3184785485
+2026-11-10 21:51:11.341 INFO Checking item [10311140799] against optional [seller] filters
+2026-11-10 21:51:11.341 INFO Item [10311140799] in scope for 1 [seller] filter(s)
+2026-11-10 21:51:11.341 INFO Checking item [10311140799] against [seller] filter rule [sheriff_board_game][country_iso_code][US] in [include] mode
+2026-11-10 21:51:11.341 INFO Rule value(s): [US], actual value: [US], operator: [equals]
+2026-11-10 21:51:11.341 INFO [ PASS ✓ ] item [10311140799] not excluded for current rule. Checking next rule if any
+2026-11-10 21:51:11.341 INFO Item [10311140799] meets all selection filters and no exclusions apply
+2026-11-10 21:51:11.720 INFO Telegram notification sent for item [10311140799]. API called: https://api.telegram.org/botREDACTED_TOKEN/sendPhoto
+2026-11-10 21:51:11.722 INFO Recorded notification for item [10311140799] in '/home/runner/work/VintedScanner/VintedScanner/state/already_notified_items.csv'
+2026-11-10 21:51:11.722 INFO --------------------------------------------------------------------------------
+2026-11-10 21:51:11.722 INFO Completed processing item [10311140799]
+2026-11-10 21:51:11.722 INFO --------------------------------------------------------------------------------
+2026-11-10 21:51:11.722 INFO ================================================================================
+2026-11-10 21:51:11.722 INFO Completed processing search query [sheriff_board_game]
+2026-11-10 21:51:11.722 INFO ================================================================================
+2026-11-10 21:51:11.722 INFO Maximum number of items to process/notify (from config): 5
+2026-11-10 21:51:11.722 INFO Items from Vinted search: 1 - [10311140799]
+2026-11-10 21:51:11.722 INFO Items excluded: 0 - []
+2026-11-10 21:51:11.722 INFO Items previously notified: 0 - []
+2026-11-10 21:51:11.722 INFO Item candidates: 0 - []
+2026-11-10 21:51:11.722 INFO Items notified: 1 - [10311140799]
+2026-11-10 21:51:11.722 INFO Items failed to notify: 0 - []
+2026-11-10 21:51:11.722 INFO Items recorded as notified: 1 - [10311140799]
+2026-11-10 21:51:11.724 INFO Vinted session closed
