@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Create Config, Filters and State files
+      - name: Load config and filters
         env:
           CONFIGS: ${{ inputs.CONFIGS }}
           SEARCH_CONFIG: ${{ inputs.SEARCH_CONFIG }}
@@ -67,6 +67,21 @@ jobs:
           # Create filter files
           printf '%s' "$ITEM_FILTERS" > filters/item_filters.yaml
           printf '%s' "$SELLER_FILTERS" > filters/seller_filters.yaml
+
+      - name: Run scanner
+        env:
+          SCANNER_ARGS: ${{ inputs.args }}
+        run: |
+          python3 -c '
+          import os
+          import shlex
+          import subprocess
+
+          args = shlex.split(os.environ.get("SCANNER_ARGS", ""))
+          subprocess.run(
+              ["python3", "vinted_scanner.py", *args],
+              check=True
+          )'
 
       - name: Commit updated seen items
         if: ${{ hashFiles('state/already_notified_items.csv') != '' }}
@@ -88,21 +103,6 @@ jobs:
             git commit -m "Update Vinted seen items."
             git push origin HEAD:main
           fi
-
-      - name: Run scanner
-        env:
-          SCANNER_ARGS: ${{ inputs.args }}
-        run: |
-          python3 -c '
-          import os
-          import shlex
-          import subprocess
-
-          args = shlex.split(os.environ.get("SCANNER_ARGS", ""))
-          subprocess.run(
-              ["python3", "vinted_scanner.py", *args],
-              check=True
-          )'
 
       - name: Commit updated logs
         run: |
