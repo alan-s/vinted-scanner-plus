@@ -13,7 +13,7 @@ jobs:
     uses: ./.github/workflows/_vinted-scanner-plus-template.yaml
 
     with:
-      args: "--log_filtering"
+      args: "--log_filtering --enable_notifications"
 
       CONFIGS: ${{ vars.CONFIGS }}
       SEARCH_CONFIG: ${{ vars.SEARCH_CONFIG }}
