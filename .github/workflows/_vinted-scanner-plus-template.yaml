@@ -72,6 +72,7 @@ jobs:
           printf '%s' "$SELLER_FILTERS" > filters/seller_filters.yaml
 
       - name: Commit updated seen items
+        if: ${{ hashFiles('state/already_notified_items.csv') != '' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
