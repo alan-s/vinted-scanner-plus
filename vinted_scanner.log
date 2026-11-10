@@ -1,0 +1,27 @@
+2026-11-10 10:39:13.629 INFO 
+2026-11-10 10:39:13.629 INFO ================================================================================
+2026-11-10 10:39:13.629 INFO                                   VINTED SCANNER PLUS                           
+2026-11-10 10:39:13.629 INFO ================================================================================
+2026-11-10 10:39:13.629 INFO 
+2026-11-10 10:39:13.630 INFO Launched with the following args: --log_filtering
+2026-11-10 10:39:13.632 INFO Loaded 1 search querie(s) from /home/runner/work/VintedScanner/VintedScanner/config/search_config.yaml
+2026-11-10 10:39:13.632 INFO No previous '/home/runner/work/VintedScanner/VintedScanner/state/already_notified_items.csv' found; clean run
+2026-11-10 10:39:13.633 INFO Loaded 0 [item_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/item_filters.yaml
+2026-11-10 10:39:13.634 INFO Loaded 1 [seller_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/seller_filters.yaml
+2026-11-10 10:39:13.635 INFO ================================================================================
+2026-11-10 10:39:13.635 INFO Started processing search query [sheriff_board_game]
+2026-11-10 10:39:13.635 INFO ================================================================================
+2026-11-10 10:39:14.620 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=4&price_to=16&order=relevance&per_page=96&page=1
+2026-11-10 10:39:14.620 INFO Vinted page 1 returned 0 item(s)
+2026-11-10 10:39:14.620 INFO Vinted search API returned 0 item(s) with IDs: []
+2026-11-10 10:39:14.620 INFO ================================================================================
+2026-11-10 10:39:14.620 INFO Completed processing search query [sheriff_board_game]
+2026-11-10 10:39:14.620 INFO ================================================================================
+2026-11-10 10:39:14.620 INFO Maximum number of items to process/notify (from config): 5
+2026-11-10 10:39:14.620 INFO Items from Vinted search: 0 - []
+2026-11-10 10:39:14.620 INFO Items excluded: 0 - []
+2026-11-10 10:39:14.620 INFO Items previously notified: 0 - []
+2026-11-10 10:39:14.620 INFO Item candidates: 0 - []
+2026-11-10 10:39:14.620 INFO Items notified: 0 - [] (Notifications not enabled)
+2026-11-10 10:39:14.620 INFO Items failed to notify: 0 - []
+2026-11-10 10:39:14.621 INFO Items recorded as notified: 0 - []
