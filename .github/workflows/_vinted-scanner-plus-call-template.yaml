@@ -57,12 +57,12 @@ jobs:
           SELLER_FILTERS: ${{ inputs.SELLER_FILTERS }}
         run: |
           # Create directories if they don't exist
-          mkdir -p config filters state
+          mkdir -p configs filters state
 
           # Create config files
-          printf '%s' "$CONFIGS" > config/configs.yaml
-          printf '%s' "$SEARCH_CONFIG" > config/search_config.yaml
-          printf '%s' "$NOTIFICATION_CONFIG" > config/notification_config.yaml
+          printf '%s' "$CONFIGS" > configs/configs.yaml
+          printf '%s' "$SEARCH_CONFIG" > configs/search_config.yaml
+          printf '%s' "$NOTIFICATION_CONFIG" > configs/notification_config.yaml
 
           # Create filter files
           printf '%s' "$ITEM_FILTERS" > filters/item_filters.yaml
@@ -83,26 +83,19 @@ jobs:
               check=True
           )'
 
+      - name: Get state file path
+        id: config
+        env:
+          CONFIGS: ${{ inputs.CONFIGS }}
+        run: |
+          FILE_PATH=$(echo "$CONFIGS" | yq -r '.configs[] | select(.config == "state") | "\(.directory_name)/\(.file_name)"')
+          echo "file_path=$FILE_PATH" >> "$GITHUB_OUTPUT"
+
       - name: Commit updated seen items
-        if: ${{ hashFiles('state/already_notified_items.csv') != '' }}
+        if: ${{ hashFiles(steps.config.outputs.file_path) != '' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Retrieve the latest CSV from GitHub
-          git fetch origin main
-          git checkout origin/main -- state/already_notified_items.csv || true
-
-          # Stage the updated CSV
-          git add state/already_notified_items.csv
-
-          # Commit and push only if changes exist
-          if git diff --cached --quiet; then
-            echo "No new items to commit."
-          else
-            git commit -m "Update Vinted seen items."
-            git push origin HEAD:main
-          fi
 
       - name: Commit updated logs
         run: |

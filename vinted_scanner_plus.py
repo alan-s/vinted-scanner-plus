@@ -22,7 +22,7 @@ parser.add_argument(
     action="store_true",
     dest="log_filtering",
     default=False,
-    help="Enable logging when filtering items"
+    help="Enable logging when filtering items. By default, logging of filters is off"
 )
 
 parser.add_argument(
