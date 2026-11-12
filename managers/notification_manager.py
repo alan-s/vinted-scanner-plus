@@ -8,7 +8,7 @@ logging_manager.init_logger()
 logger = logging.getLogger(__name__)
 
 # Timeout configuration for the requests
-timeout_connection = 30
+TIMEOUT_CONNECTION = 30
 
 
 def send_telegram_message(notification_config, item_id, item_title, item_desc, item_price, item_upload_time, item_url,
@@ -83,7 +83,7 @@ def send_telegram_message(notification_config, item_id, item_title, item_desc, i
         response = requests.post(
             url,
             params=params,
-            timeout=timeout_connection
+            timeout=TIMEOUT_CONNECTION
         )
 
         if response.status_code != 200:

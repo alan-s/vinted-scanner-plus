@@ -17,7 +17,6 @@ def init_logger():
         ]
     )
 
-
 def item_log_printer(identifier, state, log_type="query"):
     separator = "=" * 80 if log_type == "query" else "-" * 80
     label = "search query" if log_type == "query" else "item"

@@ -1,18 +1,25 @@
 # Define optional filters on item attributes for each Vinted query. Used to include or exclude items from the final result set
 #
 # 'query_id': same as query_id from search_config.yaml
-# 'mode': (include,exclude) include: all rules must match for the item to be included. exclude: a match against any rule excludes the item
+# 'mode': [include,exclude] include: all rules must match for the item to be included. exclude: a match against any rule excludes the item
 # 'rules': 
-#   - 'key': the key name for the item attribute to filter on (additionally accepts nested keys using "." e.g. item.title)
-#   - 'operator': 
-#     - string operators: (equals,contains) normalised case-insensitive exact and substring match
-#     - numeric operators: (greater_than,greater_than_or_equal,less_than,less_than_or_equal,between)
-#     - 'nothing' operators: (exists,is_null,is_empty)
-#   - 'value': the value to compare (additionally accepts csv list for keys with string value)
-# filters:
-#   - query_id: sheriff_board_game
-#     mode: exclude
-#     rules:
-#       - key: title
-#         value: 2nd
-#         operator: contains
+#   - 'key': key to filter (additionally accepts nested keys using "." e.g. item.title)
+#   - 'operator': available operators for the comparison
+#     - string operators: [equals,contains] normalised case-insensitive exact match, or substring match (default is partial matching. Add optional 'word_match: false' for full word)
+#     - numeric operators: [equals,greater_than,greater_than_or_equal,less_than,less_than_or_equal,between]
+#     - 'nothing' operators: [exists,is_null,is_empty] whether the key exists, or explictly equals NULL, or whether it is empty
+#   - 'value': the value to use in the comparison operator (can accept csv list of values)
+filters:
+  # - query_id: sheriff_board_game
+  #   mode: include
+  #   rules:
+  #     - key: title
+  #       operator: contains
+  #       word_match: false
+  #       value: 1
+  - query_id: sheriff_board_game
+    mode: include
+    rules:
+      - key: favourite_count
+        operator: equals
+        value: 29

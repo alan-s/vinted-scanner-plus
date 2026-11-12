@@ -1,0 +1,31 @@
+# Vinted platform urls and queries to search
+#
+# 'vinted_url': change the TLD according to your country (.fr, .es, etc.)
+# 'vinted_api_url': url of the api for the same country TLD
+# 'locale': marketplace locale e.g. en-GB, it-IT, etc.
+vinted:
+  vinted_url: https://www.vinted.co.uk
+  vinted_api_url: https://api.vinted.co.uk
+  locale:
+
+# 'pages': number of pages to scan for each request. Note, Vinted returns a maximum of 96 items per page by default
+# 'max_items': maximum number of items to process (and potentially notify) for each search query
+search:
+  pages: 2
+  max_items: 10
+
+# Vinted queries for search
+# 'query_id' : provide a unique query identifier
+# 'search_text' : free search field, this field may be empty if you wish to search other attributes
+# 'attribute_ids[catalog]' : the category to search, if the field is empty it will search in all categories. Vinted assigns a numeric ID to each category, e.g. 2996 is the ID for e-Book Reader
+# 'attribute_ids[brand]' search by brand. Vinted assigns a numeric ID to each brand, e.g. 417 is the ID for Louis Vuitton
+# 'order' : [relevance, newest_first, price_high_to_low, price_low_to_high] : how to order the results
+# Note: where supported, multiple values can be supplied in comma supported format e.g. attribute_ids[brand]: 1317890,295656
+queries:
+  - query_id: sheriff_board_game
+    search_text: Sheriff
+    attribute_ids[catalog]: 4881
+    attribute_ids[brand]: 1317890
+    price_from: 5
+    price_to: 20
+    order: newest_first

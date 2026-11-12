@@ -57,7 +57,7 @@ def main():
 
     # Get all the required file paths from config
     base_dir = pathlib.Path.cwd()
-    config_file_path = base_dir / "config" / "configs.yaml"
+    config_file_path = base_dir / "configs" / "configs.yaml"
     configs = config_manager.load_configs_from_config_file(config_file_path)
 
     # Load search queries

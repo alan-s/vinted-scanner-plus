@@ -1,11 +1,13 @@
 import logging
 import re
 import sys
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 import managers.logging_manager as logging_manager
 import utils.file_utils as file_utils
 import utils.text_utils as text_utils
+
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
@@ -29,6 +31,7 @@ def load_filters(filter_type, path):
         filter_type,
         Path(path).resolve(),
     )
+
     return filter_config
 
 
@@ -61,6 +64,8 @@ def validate_filters(config):
         "less_than_or_equal",
         "between",
     }
+
+    string_operators = {"equals", "contains"}
 
     def check_keys(data_arg, required_keys_arg, optional_keys, context_arg):
         if not isinstance(data_arg, dict):
@@ -108,7 +113,6 @@ def validate_filters(config):
         for j, rule in enumerate(item["rules"]):
             rule_context = f"{context}.rules[{j}]"
 
-            # Determine whether value is required based on the operator.
             if not isinstance(rule, dict):
                 raise ValueError(f"{rule_context} must be a mapping")
 
@@ -128,9 +132,21 @@ def validate_filters(config):
             check_keys(
                 rule,
                 required_keys,
-                set(),
+                {"word_match"},
                 rule_context,
             )
+
+            # Exception if 'word_match' is defined for anything but 'contains' operator
+            if "word_match" in rule:
+                if rule["operator"] != "contains":
+                    raise ValueError(
+                        f"{rule_context}.word_match is only valid with the 'contains' operator"
+                    )
+
+                if not isinstance(rule["word_match"], bool):
+                    raise ValueError(
+                        f"{rule_context}.word_match must be a boolean"
+                    )
 
             if not isinstance(rule["key"], str) or not rule["key"]:
                 raise ValueError(
@@ -171,11 +187,22 @@ def validate_filters(config):
                         f"for operator '{operator}'"
                     )
 
-            # Validate string operators (including CSV values).
-            elif operator in {"equals", "contains"}:
+            # Validate string/equality operators.
+            elif operator in string_operators:
                 value = rule["value"]
 
-                if not isinstance(value, str) or not value.strip():
+                if (
+                    not isinstance(value, (str, int, float))
+                    or isinstance(value, bool)
+                ):
+                    raise ValueError(
+                        f"{rule_context}.value must be a string or number "
+                        f"for operator '{operator}'"
+                    )
+
+                value = str(value)
+
+                if not value.strip():
                     raise ValueError(
                         f"{rule_context}.value must be a non-empty string "
                         f"for operator '{operator}'"
@@ -193,7 +220,10 @@ def validate_filters(config):
 
 
 def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, filter_type, args) -> bool:
-    filter_label = {"item": "item", "seller": "seller"}.get(filter_type, "item")
+
+    filter_label = {"item": "item", "seller": "seller"}.get(
+        filter_type, "item"
+    )
 
     matching_queries = [
         query
@@ -201,14 +231,16 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
         if query.get("query_id") == query_id
     ]
 
-    if not matching_queries:
-        if args.log_filtering:
-            logger.info(f"Item [{item_id}] in scope for {len(matching_queries)} [{filter_label}] filter(s)")
-
-        return True
-
     if args.log_filtering:
-        logger.info(f"Item [{item_id}] in scope for {len(matching_queries)} [{filter_label}] filter(s)")
+        logger.info(
+            "Item [%s] in scope for %s [%s] filter(s)",
+            item_id,
+            len(matching_queries),
+            filter_label,
+        )
+
+    if not matching_queries:
+        return True
 
     for query in matching_queries:
         mode = query.get("mode", "exclude")
@@ -218,35 +250,31 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
             # All rules must match.
             for rule in rules:
                 if args.log_filtering:
-                    logger.info(
-                        f"Checking item [{item_id}] against [{filter_label}] filter rule [{query_id}][{rule['key']}][{rule['value']}] in [{mode}] mode")
+                    logger.info("Checking item [%s] against [%s] filter rule [%s][%s][%s] in [%s] mode", item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
 
-                if not item_matches_rule(data_to_filter, rule):
+                if not item_matches_rule(data_to_filter, rule, word_match=rule.get("word_match", False)):
                     if args.log_filtering:
-                        logger.info(
-                            f"[ FAIL ✗ ] excluded item [{item_id}] for not matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+                        logger.info("[ FAIL ✗ ] excluded item [%s] for not matching [%s] filter rule [%s, %s, %s] in [%s] mode", item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
+
                     return False
-                else:
-                    if args.log_filtering:
-                        logger.info(
-                            f"[ PASS ✓ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
+
+                elif args.log_filtering:
+                    logger.info("[ PASS ✓ ] item [%s] not excluded for current rule. Checking next rule if any", item_id)
 
         elif mode == "exclude":
             # Any matching rule excludes the item.
             for rule in rules:
                 if args.log_filtering:
-                    logger.info(
-                        f"Checking item [{item_id}] against [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+                    logger.info("Checking item [%s] against [%s] filter rule [%s, %s, %s] in [%s] mode", item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
 
-                if item_matches_rule(data_to_filter, rule):
+                if item_matches_rule(data_to_filter, rule, word_match=rule.get("word_match", False)):
                     if args.log_filtering:
-                        logger.info(
-                            f"[ FAIL ✗ ] excluded item [{item_id}] for matching [{filter_label}] filter rule [{query_id}, {rule['key']}, {rule['value']}] in [{mode}] mode")
+                        logger.info("[ FAIL ✗ ] excluded item [%s] for matching [%s] filter rule [%s, %s, %s] in [%s] mode", item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
+
                     return False
-                else:
-                    if args.log_filtering:
-                        logger.info(
-                            f"[ PASS ✓ ] item [{item_id}] not excluded for current rule. Checking next rule if any")
+
+                elif args.log_filtering:
+                    logger.info("[ PASS ✓ ] item [%s] not excluded for current rule. Checking next rule if any", item_id)
 
         else:
             raise ValueError(f"Invalid filter mode: {mode}")
@@ -254,8 +282,9 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
     return True
 
 
-def item_matches_rule(item: dict, rule: dict) -> bool:
+def item_matches_rule(item: dict, rule: dict, word_match=False) -> bool:
     """Match an item's value against a rule, supporting nested keys."""
+
     key = rule["key"]
     operator = rule["operator"]
 
@@ -265,7 +294,11 @@ def item_matches_rule(item: dict, rule: dict) -> bool:
         return exists
 
     if not exists:
-        logger.info(f"Key [{key}] not found in item [{item.get('id')}]")
+        logger.info(
+            "Key [%s] not found in item [%s]",
+            key,
+            item.get("id"),
+        )
         return False
 
     if operator == "is_null":
@@ -277,12 +310,17 @@ def item_matches_rule(item: dict, rule: dict) -> bool:
     rule_value = rule["value"]
 
     logger.info(
-        f"Rule value(s): [{rule_value}], actual value: [{actual}], operator: [{operator}]")
+        "Rule value(s): [%s], actual value: [%s], operator: [%s], word_match: [%s]",
+        rule_value,
+        actual,
+        operator,
+        word_match,
+    )
 
-    return values_match(actual, rule_value, operator)
+    return values_match(actual, rule_value, operator, word_match)
 
 
-def values_match(actual, rule_value, operator="equals"):
+def values_match(actual, rule_value, operator="equals", word_match=False):
     """Compare two values using the specified operator."""
 
     valid_operators = (
@@ -298,68 +336,122 @@ def values_match(actual, rule_value, operator="equals"):
     if operator not in valid_operators:
         raise ValueError(f"Invalid operator: {operator}")
 
-    # String operators
-    if operator in ("equals", "contains"):
+    def is_number(value):
+        # bool is a subclass of int in Python, so explicitly exclude it.
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
 
-        if not isinstance(actual, str) or not isinstance(rule_value, str):
-            raise ValueError(
-                f"Operator '{operator}' requires string values"
+    def numeric_string_equal(number, string):
+        """Compare a numeric value with a numeric string."""
+
+        try:
+            return Decimal(str(number)) == Decimal(string.strip())
+        except (InvalidOperation, ValueError):
+            return False
+
+    # Equality operator.
+    if operator == "equals":
+
+        # Do not allow booleans to be treated as numbers.
+        if isinstance(actual, bool) or isinstance(rule_value, bool):
+            return type(actual) is type(rule_value) and actual == rule_value
+
+        # Numeric equality.
+        if is_number(actual) and is_number(rule_value):
+            return actual == rule_value
+
+        # String equality.
+        if isinstance(actual, str) and isinstance(rule_value, str):
+            return any(
+                text_utils.normalise(value.strip())
+                == text_utils.normalise(actual)
+                for value in rule_value.split(",")
+                if value.strip()
             )
+
+        # Support numeric API values against quoted numeric YAML values,
+        # and vice versa.
+        if is_number(actual) and isinstance(rule_value, str):
+            return any(
+                numeric_string_equal(actual, value)
+                for value in rule_value.split(",")
+                if value.strip()
+            )
+
+        if isinstance(actual, str) and is_number(rule_value):
+            return numeric_string_equal(rule_value, actual)
+
+        return False
+
+    # Contains operator.
+    if operator == "contains":
+
+        if (
+            isinstance(actual, bool)
+            or isinstance(rule_value, bool)
+            or not isinstance(actual, (str, int, float))
+            or not isinstance(rule_value, (str, int, float))
+        ):
+            raise ValueError(
+                f"Operator '{operator}' requires string or numeric values. "
+                "Check values from Vinted API and in rule config"
+            )
+
+        actual = text_utils.normalise(str(actual))
+        rule_value = str(rule_value)
 
         # Support comma-separated rule values.
         # Any one of the values matching is sufficient.
         rule_values = [
-            value.strip()
+            text_utils.normalise(value.strip())
             for value in rule_value.split(",")
             if value.strip()
         ]
 
-        if operator == "equals":
-            return any(
-                text_utils.normalise(value) == text_utils.normalise(actual)
-                for value in rule_values
-            )
-
-        if operator == "contains":
+        if word_match:
             return any(
                 re.search(
-                    r"\b" + re.escape(text_utils.normalise(value)) + r"\b",
-                    text_utils.normalise(actual)
+                    r"\b" + re.escape(value) + r"\b",
+                    actual,
                 )
                 for value in rule_values
             )
 
-    # Numeric operators
+        # Substring matching.
+        return any(
+            value in actual
+            for value in rule_values
+        )
+
+    # Numeric comparison operators.
+    # "equals" is also an operator (see above)
     if operator in (
-            "greater_than",
-            "greater_than_or_equal",
-            "less_than",
-            "less_than_or_equal",
-            "between",
+        "greater_than",
+        "greater_than_or_equal",
+        "less_than",
+        "less_than_or_equal",
+        "between",
     ):
-        # bool is a subclass of int in Python, so explicitly exclude it.
-        if (
-                isinstance(actual, bool)
-                or isinstance(rule_value, bool)
-                or not isinstance(actual, (int, float))
-        ):
-            raise ValueError(f"Operator '{operator}' requires numeric values")
+
+        if not is_number(actual):
+            raise ValueError(
+                f"Operator '{operator}' requires numeric actual values. "
+                "Check values from Vinted API"
+            )
 
         if operator == "between":
-            if not isinstance(rule_value, dict) or set(rule_value.keys()) != {"min", "max"}:
+            if (
+                not isinstance(rule_value, dict)
+                or set(rule_value.keys()) != {"min", "max"}
+            ):
                 raise ValueError(
-                    "Operator 'between' requires a value with 'min' and 'max' keys"
+                    "Operator 'between' requires a value with "
+                    "'min' and 'max' keys"
                 )
 
             minimum = rule_value["min"]
             maximum = rule_value["max"]
 
-            if (
-                    isinstance(minimum, bool)
-                    or isinstance(maximum, bool)
-                    or not isinstance(minimum, (int, float))
-                    or not isinstance(maximum, (int, float))
-            ):
+            if not is_number(minimum) or not is_number(maximum):
                 raise ValueError("'between' min and max must be numeric")
 
             if minimum > maximum:
@@ -367,11 +459,11 @@ def values_match(actual, rule_value, operator="equals"):
 
             return minimum <= actual <= maximum
 
-        if (
-                isinstance(rule_value, bool)
-                or not isinstance(rule_value, (int, float))
-        ):
-            raise ValueError(f"Operator '{operator}' requires numeric values")
+        if not is_number(rule_value):
+            raise ValueError(
+                f"Operator '{operator}' requires numeric values. "
+                "Check values in rule config"
+            )
 
         if operator == "greater_than":
             return actual > rule_value
@@ -385,16 +477,13 @@ def values_match(actual, rule_value, operator="equals"):
         if operator == "less_than_or_equal":
             return actual <= rule_value
 
-    # Equality operators
-    if isinstance(actual, str) and isinstance(rule_value, str):
-        return text_utils.normalise(actual) == text_utils.normalise(rule_value)
+    return False
 
-    # Preserve type distinctions: True must not equal 1.
-    return type(actual) is type(rule_value) and actual == rule_value
 
 
 def get_nested_value(data, key):
     """Return (exists, value) for a dot-separated nested key."""
+
     current = data
 
     for part in key.split("."):
