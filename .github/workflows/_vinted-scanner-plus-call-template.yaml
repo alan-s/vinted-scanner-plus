@@ -92,8 +92,11 @@ jobs:
           echo "file_path=$FILE_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Commit updated seen items
-        if: ${{ hashFiles(steps.config.outputs.file_path) != '' }}
+        if: ${{ steps.config.outputs.file_path != '' && hashFiles(steps.config.outputs.file_path) != '' }}
+        env:
+          FILE_PATH: ${{ steps.config.outputs.file_path }}
         run: |
+          echo "Committing changes for $FILE_PATH"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
