@@ -60,29 +60,21 @@ def main():
     base_dir = pathlib.Path.cwd()
     config_file_path = base_dir / "configs" / "configs.yaml"
     config_yaml = config_manager.load_configs_file_with_paths(config_file_path)
-    #file_configs = config_manager.load_configs_from_config_yaml(config_yaml)
+
     search_config, state_config, item_filters_config, seller_filters_config, notification_config = config_manager.load_configs_from_config_yaml(config_yaml).values()
 
     # Load search queries
     queries = search_config['queries']
 
-    # Load the list of already notified items
-    already_notified_items = state_manager.load_already_notified_items(state_config['file_path'])
-
-    # Load item filters
-    item_filters = item_filters_config['filters']
-
-    # Load seller filters
-    seller_filters = seller_filters_config['filters']
-
     # No search queries
     if not queries:
-        logger.info(f"Terminating; no search queries defined in '{config_yaml['file_path']}'")
+        logger.info(f"Terminating; no search queries defined in '{search_config['file_path']}'")
         sys.exit(0)
 
-    # Loop through each search query defined in search_cfg.py
+    # Init session to be used for api calls
     session = vinted_api_manager.initialise_vinted_session(search_config)
 
+    # Loop through each search query defined in config
     for params in queries:
 
         logging_manager.item_log_printer(params.get("query_id"), "Started", log_type="query")
@@ -147,6 +139,8 @@ def main():
             # Check against item filters
             if args.log_filtering:
                 logger.info(f"Checking item [{item_id}] against optional [item] filters")
+
+            item_filters = item_filters_config['filters']
             if not filter_manager.filter_item(item_id, item, params.get("query_id"), item_filters, "item", args):
                 excluded_items.append(item_id)
                 logging_manager.item_log_printer(item_id, "Completed", log_type="item")
@@ -161,6 +155,8 @@ def main():
             # Check against seller filters
             if args.log_filtering:
                 logger.info(f"Checking item [{item_id}] against optional [seller] filters")
+
+            seller_filters = seller_filters_config['filters']
             if not filter_manager.filter_item(item_id, seller, params.get("query_id"), seller_filters, "seller", args):
                 excluded_items.append(item_id)
                 logging_manager.item_log_printer(item_id, "Completed", log_type="item")
@@ -171,6 +167,9 @@ def main():
 
             # Send notification is set
             if args.enable_notifications:
+
+                # Load the list of already notified items
+                already_notified_items = state_manager.load_already_notified_items(state_config['file_path'])
 
                 # Check if the item has already been notified to prevent sending it again
                 if item_id not in already_notified_items:
@@ -187,14 +186,14 @@ def main():
 
                     # Record item as notified in state file if set
                     if not args.disable_state_file:
-                        state_manager.record_already_notified_item(config_yaml['state_config']['file_path'], item_id, item_title, total_amount)
-                        logger.info(f"Recorded notification for item [{item_id}] in '{config_yaml['state_config']['file_path']}'")
+                        state_manager.record_already_notified_item(state_config['file_path'], item_id, item_title, total_amount)
+                        logger.info(f"Recorded notification for item [{item_id}] in '{state_config['file_path']}'")
                     else:
                         logger.info(
-                            f"Not recording notification for item [{item_id}] in '{config_yaml['state_config']['file_path']}'; '--{list(vars(args))[2]}' set")
+                            f"Not recording notification for item [{item_id}] in '{state_config['file_path']}'; '--{list(vars(args))[2]}' set")
                 else:
                     logger.info(
-                        f"No notification will be sent on this run for item [{item_id}]; it has been previously notified ('{config_yaml['state_config']['file_path']}')")
+                        f"No notification will be sent on this run for item [{item_id}]; it has been previously notified ('{state_config['file_path']}')")
                     previously_notified_items.append(item_id)
 
             else:

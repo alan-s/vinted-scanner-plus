@@ -8,7 +8,6 @@ import managers.logging_manager as logging_manager
 import utils.file_utils as file_utils
 import utils.text_utils as text_utils
 
-
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
 
@@ -192,8 +191,8 @@ def validate_filters(config):
                 value = rule["value"]
 
                 if (
-                    not isinstance(value, (str, int, float))
-                    or isinstance(value, bool)
+                        not isinstance(value, (str, int, float))
+                        or isinstance(value, bool)
                 ):
                     raise ValueError(
                         f"{rule_context}.value must be a string or number "
@@ -219,13 +218,12 @@ def validate_filters(config):
     return True
 
 
-def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, filter_type, args) -> bool:
-
+def filter_item(item_id, data_to_filter: dict, query_id: str, filters: list, filter_type, args) -> bool:
     filter_label = {"item": "item", "seller": "seller"}.get(filter_type, "item")
 
     matching_queries = [
         query
-        for query in filters.get("filters", [])
+        for query in filters
         if query.get("query_id") == query_id
     ]
 
@@ -248,31 +246,39 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, fil
             # All rules must match.
             for rule in rules:
                 if args.log_filtering:
-                    logger.info("Checking item [%s] against [%s] filter rule [%s][%s][%s] in [%s] mode", item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
+                    logger.info("Checking item [%s] against [%s] filter rule [%s][%s][%s] in [%s] mode", item_id,
+                                filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
 
                 if not item_matches_rule(data_to_filter, rule, word_match=rule.get("word_match", False)):
                     if args.log_filtering:
-                        logger.info("[ FAIL ✗ ] excluded item [%s] for not matching [%s] filter rule [%s, %s, %s] in [%s] mode", item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
+                        logger.info(
+                            "[ FAIL ✗ ] excluded item [%s] for not matching [%s] filter rule [%s, %s, %s] in [%s] mode",
+                            item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
 
                     return False
 
                 elif args.log_filtering:
-                    logger.info("[ PASS ✓ ] item [%s] not excluded for current rule. Checking next rule if any", item_id)
+                    logger.info("[ PASS ✓ ] item [%s] not excluded for current rule. Checking next rule if any",
+                                item_id)
 
         elif mode == "exclude":
             # Any matching rule excludes the item.
             for rule in rules:
                 if args.log_filtering:
-                    logger.info("Checking item [%s] against [%s] filter rule [%s, %s, %s] in [%s] mode", item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
+                    logger.info("Checking item [%s] against [%s] filter rule [%s, %s, %s] in [%s] mode", item_id,
+                                filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
 
                 if item_matches_rule(data_to_filter, rule, word_match=rule.get("word_match", False)):
                     if args.log_filtering:
-                        logger.info("[ FAIL ✗ ] excluded item [%s] for matching [%s] filter rule [%s, %s, %s] in [%s] mode", item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
+                        logger.info(
+                            "[ FAIL ✗ ] excluded item [%s] for matching [%s] filter rule [%s, %s, %s] in [%s] mode",
+                            item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
 
                     return False
 
                 elif args.log_filtering:
-                    logger.info("[ PASS ✓ ] item [%s] not excluded for current rule. Checking next rule if any", item_id)
+                    logger.info("[ PASS ✓ ] item [%s] not excluded for current rule. Checking next rule if any",
+                                item_id)
 
         else:
             raise ValueError(f"Invalid filter mode: {mode}")
@@ -384,10 +390,10 @@ def values_match(actual, rule_value, operator="equals", word_match=False):
     if operator == "contains":
 
         if (
-            isinstance(actual, bool)
-            or isinstance(rule_value, bool)
-            or not isinstance(actual, (str, int, float))
-            or not isinstance(rule_value, (str, int, float))
+                isinstance(actual, bool)
+                or isinstance(rule_value, bool)
+                or not isinstance(actual, (str, int, float))
+                or not isinstance(rule_value, (str, int, float))
         ):
             raise ValueError(
                 f"Operator '{operator}' requires string or numeric values. "
@@ -423,11 +429,11 @@ def values_match(actual, rule_value, operator="equals", word_match=False):
     # Numeric comparison operators.
     # "equals" is also an operator (see above)
     if operator in (
-        "greater_than",
-        "greater_than_or_equal",
-        "less_than",
-        "less_than_or_equal",
-        "between",
+            "greater_than",
+            "greater_than_or_equal",
+            "less_than",
+            "less_than_or_equal",
+            "between",
     ):
 
         if not is_number(actual):
@@ -438,8 +444,8 @@ def values_match(actual, rule_value, operator="equals", word_match=False):
 
         if operator == "between":
             if (
-                not isinstance(rule_value, dict)
-                or set(rule_value.keys()) != {"min", "max"}
+                    not isinstance(rule_value, dict)
+                    or set(rule_value.keys()) != {"min", "max"}
             ):
                 raise ValueError(
                     "Operator 'between' requires a value with "
@@ -476,7 +482,6 @@ def values_match(actual, rule_value, operator="equals", word_match=False):
             return actual <= rule_value
 
     return False
-
 
 
 def get_nested_value(data, key):

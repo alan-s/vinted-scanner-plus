@@ -1,10 +1,8 @@
 import logging
 import sys
-from copy import deepcopy
 
 import managers.filter_manager as filter_manager
 import managers.logging_manager as logging_manager
-import managers.state_manager as state_manager
 import utils.file_utils as file_utils
 
 logging_manager.init_logger()
@@ -15,21 +13,7 @@ FILTER_YAML_FILES = {'item_filters', 'seller_filters'}
 CSV_FILES = {'state_config'}
 
 
-# def get_config_file_paths(path):
-#     loaded_yaml = file_utils.load_yaml(path)
-#
-#     configs = {}
-#
-#     for config in configs['file_configs']:
-#         file_path = file_utils.build_file_path(config['file_name'], config['directory_name'], config['base_path'])
-#
-#         configs[config["file_configs"]] = file_path
-#
-#     return configs
-
-
 def load_configs_file_with_paths(path):
-
     try:
         configs = file_utils.load_yaml(path)
         file_configs = configs['file_configs']
@@ -64,7 +48,8 @@ def load_configs_from_config_yaml(yaml_config):
             file_configs[config_name] = file_utils.load_yaml(config['file_path'])
 
             if config_name == "search_config":
-                logger.info(f"Loaded {len(file_configs['search_config']['queries'])} search querie(s) from {config['file_path']}")
+                logger.info(
+                    f"Loaded {len(file_configs['search_config']['queries'])} search querie(s) from {config['file_path']}")
         elif config_name in CSV_FILES:
             file_configs[config_name] = config
         else:

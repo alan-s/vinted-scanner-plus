@@ -16,26 +16,26 @@ filters:
       - key: country_iso_code
         operator: equals
         value: US,AU
-#   - query_id: sheriff_board_game
-#     mode: exclude
-#     rules:
-#       - key: country_iso_code
-#         operator: equals
-#         value: AU
-#       - key: positive_feedback_count
-#         operator: greater_than_or_equal
-#         value: 10
-#   - query_id: sheriff_board_game
-#     mode: include
-#     rules:
-#       - key: positive_feedback_count
-#         operator: greater_than_or_equal
-#         value: 10
-#   - query_id: sheriff_board_game
-#     mode: exclude
-#     rules:
-#       - key: positive_feedback_count
-#         operator: between      
-#         value:
-#           min: 75
-#           max: 100
+  # - query_id: sheriff_board_game
+  #   mode: exclude
+  #   rules:
+  #     - key: country_iso_code
+  #       operator: equals
+  #       value: AU
+  #     - key: positive_feedback_count
+  #       operator: greater_than_or_equal
+  #       value: 10
+  # - query_id: sheriff_board_game
+  #   mode: include
+  #   rules:
+  #     - key: positive_feedback_count
+  #       operator: greater_than_or_equal
+  #       value: 10
+  # - query_id: sheriff_board_game
+  #   mode: exclude
+  #   rules:
+  #     - key: positive_feedback_count
+  #       operator: between      
+  #       value:
+  #         min: 75
+  #         max: 100
