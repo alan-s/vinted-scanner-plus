@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Load config and filters
+      - name: Load config and filter yaml from input vars
         env:
           CONFIGS: ${{ inputs.CONFIGS }}
           SEARCH_CONFIG: ${{ inputs.SEARCH_CONFIG }}
