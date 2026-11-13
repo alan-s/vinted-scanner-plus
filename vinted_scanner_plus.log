@@ -1103,3 +1103,10 @@
 2026-11-13 14:16:02.082 INFO 
 2026-11-13 14:16:02.083 INFO Launched with the following args: --log_filtering --enable_notifications
 2026-11-13 14:16:02.091 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 14:20:39.472 INFO 
+2026-11-13 14:20:39.474 INFO ================================================================================
+2026-11-13 14:20:39.474 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 14:20:39.474 INFO ================================================================================
+2026-11-13 14:20:39.475 INFO 
+2026-11-13 14:20:39.475 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 14:20:39.482 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml

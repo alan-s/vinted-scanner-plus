@@ -92,13 +92,30 @@ jobs:
 
           config_file_path = "configs/configs.yaml"
           config_yaml = config_manager.load_configs_file_with_paths(config_file_path)
-          state_file_path = config_yaml["state_config"]["file_path"]
+          state_file_path = config_yaml["file_configs"]["state_config"]["file_path"]
 
           print(state_file_path)
           ')
 
           echo "State file: $FILE_PATH"
           echo "file_path=$FILE_PATH" >> "$GITHUB_OUTPUT"
+
+        - name: Commit updated seen items
+        if: ${{ steps.config.outputs.file_path != '' && hashFiles(steps.config.outputs.file_path) != '' }}
+        env:
+          FILE_PATH: ${{ steps.config.outputs.file_path }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -- "$FILE_PATH"
+
+          if git diff --cached --quiet; then
+            echo "No changes to state file."
+          else
+            git commit -m "Update seen items."
+            git push origin HEAD:main
+          fi
 
       - name: Commit updated logs
         run: |
