@@ -11,7 +11,6 @@ import managers.logging_manager as logging_manager
 import managers.notification_manager as notifications_manager
 import managers.state_manager as state_manager
 import managers.vinted_api_manager as vinted_api_manager
-import utils.file_utils as file_utils
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)

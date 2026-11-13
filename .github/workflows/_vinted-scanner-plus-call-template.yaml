@@ -85,20 +85,17 @@ jobs:
 
       - name: Get state file path
         id: config
-        env:
-          CONFIGS: ${{ inputs.CONFIGS }}
         run: |
-          FILE_PATH=$(echo "$CONFIGS" | yq -r '.configs[] | select(.config == "state_config") | "\(.directory_name)/\(.file_name)"')
-          echo "file_path=$FILE_PATH" >> "$GITHUB_OUTPUT"
+          FILE_PATH=$(python3 -c '
+          import managers.config_manager as config_manager
 
-      - name: Commit updated seen items
-        if: ${{ steps.config.outputs.file_path != '' && hashFiles(steps.config.outputs.file_path) != '' }}
-        env:
-          FILE_PATH: ${{ steps.config.outputs.file_path }}
-        run: |
-          echo "Committing changes for $FILE_PATH"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          state_file_path = config_manager.load_configs_file_with_paths(config_file_path)["state_config"]
+
+          print(state_file_path)
+          ')
+
+          echo "State file: $FILE_PATH"
+          echo "file_path=$FILE_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Commit updated logs
         run: |
