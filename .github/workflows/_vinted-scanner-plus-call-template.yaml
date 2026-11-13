@@ -87,9 +87,13 @@ jobs:
         id: config
         run: |
           FILE_PATH=$(python3 -c '
+
           import managers.config_manager as config_manager
 
-          state_file_path = config_manager.load_configs_file_with_paths(config_file_path)["state_config"]
+          config_file_path = "configs/configs.yaml"
+          config_yaml = config_manager.load_configs_file_with_paths(config_file_path)
+
+          state_file_path = config_manager.load_configs_file_with_paths(config_file_path)["state_config"]["file_path"]
 
           print(state_file_path)
           ')
