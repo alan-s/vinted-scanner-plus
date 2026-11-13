@@ -591,3 +591,137 @@
 2026-11-13 00:13:58.241 INFO Items failed to notify: 0 - []
 2026-11-13 00:13:58.241 INFO Items recorded as notified: 3 - [10725716303, 10409613595, 10335204567]
 2026-11-13 00:13:58.242 INFO Vinted session closed
+2026-11-13 06:54:28.370 INFO 
+2026-11-13 06:54:28.370 INFO ================================================================================
+2026-11-13 06:54:28.370 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 06:54:28.370 INFO ================================================================================
+2026-11-13 06:54:28.370 INFO 
+2026-11-13 06:54:28.370 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 06:54:28.376 INFO Loaded 1 search querie(s) from /home/runner/work/VintedScanner/VintedScanner/configs/search_config.yaml
+2026-11-13 06:54:28.376 INFO No previous '/home/runner/work/VintedScanner/VintedScanner/state/notified_items.csv' found; clean run
+2026-11-13 06:54:28.377 INFO Loaded 0 [item_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/item_filters.yaml
+2026-11-13 06:54:28.380 INFO Loaded 1 [seller_filters] filter(s) from /home/runner/work/VintedScanner/VintedScanner/filters/seller_filters.yaml
+2026-11-13 06:54:29.002 INFO ================================================================================
+2026-11-13 06:54:29.002 INFO Started processing search query [sheriff_board_game]
+2026-11-13 06:54:29.002 INFO ================================================================================
+2026-11-13 06:54:29.233 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=5&price_to=20&order=newest_first&page=1
+2026-11-13 06:54:29.234 INFO Vinted page 1 returned 6 item(s)
+2026-11-13 06:54:29.234 INFO Vinted search API returned 6 item(s) with IDs: [10725716303, 10505260486, 10485701011, 10409613595, 10311140799, 10335204567]
+2026-11-13 06:54:29.234 INFO The maximum number of items to process/notify (from config): 10
+2026-11-13 06:54:29.234 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:29.234 INFO Started processing item [10725716303]
+2026-11-13 06:54:29.234 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:29.709 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10725716303-sheriff-of-nottingham-second-edition
+2026-11-13 06:54:29.777 INFO Checking item [10725716303] against optional [item] filters
+2026-11-13 06:54:29.777 INFO Item [10725716303] in scope for 0 [item] filter(s)
+2026-11-13 06:54:29.777 INFO Getting seller details for item [10725716303]
+2026-11-13 06:54:29.957 INFO Vinted seller API called: https://www.vinted.co.uk/api/v2/users/3187396505
+2026-11-13 06:54:29.957 INFO Checking item [10725716303] against optional [seller] filters
+2026-11-13 06:54:29.957 INFO Item [10725716303] in scope for 1 [seller] filter(s)
+2026-11-13 06:54:29.957 INFO Checking item [10725716303] against [seller] filter rule [sheriff_board_game, country_iso_code, US,AU] in [exclude] mode
+2026-11-13 06:54:29.957 INFO Rule value(s): [US,AU], actual value: [GB], operator: [equals], word_match: [False]
+2026-11-13 06:54:29.957 INFO [ PASS ✓ ] item [10725716303] not excluded for current rule. Checking next rule if any
+2026-11-13 06:54:29.957 INFO Item [10725716303] meets all selection filters and no exclusions apply
+2026-11-13 06:54:30.268 INFO Telegram notification sent for item [10725716303]. API called: https://api.telegram.org/botREDACTED_TOKEN/sendPhoto
+2026-11-13 06:54:30.269 INFO Recorded notification for item [10725716303] in '/home/runner/work/VintedScanner/VintedScanner/state/notified_items.csv'
+2026-11-13 06:54:30.269 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:30.270 INFO Completed processing item [10725716303]
+2026-11-13 06:54:30.270 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:30.270 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:30.270 INFO Started processing item [10505260486]
+2026-11-13 06:54:30.270 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:30.769 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10505260486-sheriff-of-nottingham-game
+2026-11-13 06:54:30.829 INFO Checking item [10505260486] against optional [item] filters
+2026-11-13 06:54:30.830 INFO Item [10505260486] in scope for 0 [item] filter(s)
+2026-11-13 06:54:30.830 INFO Getting seller details for item [10505260486]
+2026-11-13 06:54:31.084 INFO Vinted seller API called: https://www.vinted.co.uk/api/v2/users/3181708225
+2026-11-13 06:54:31.084 INFO Checking item [10505260486] against optional [seller] filters
+2026-11-13 06:54:31.084 INFO Item [10505260486] in scope for 1 [seller] filter(s)
+2026-11-13 06:54:31.085 INFO Checking item [10505260486] against [seller] filter rule [sheriff_board_game, country_iso_code, US,AU] in [exclude] mode
+2026-11-13 06:54:31.085 INFO Rule value(s): [US,AU], actual value: [AU], operator: [equals], word_match: [False]
+2026-11-13 06:54:31.085 INFO [ FAIL ✗ ] excluded item [10505260486] for matching [seller] filter rule [sheriff_board_game, country_iso_code, US,AU] in [exclude] mode
+2026-11-13 06:54:31.085 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:31.085 INFO Completed processing item [10505260486]
+2026-11-13 06:54:31.085 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:31.085 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:31.085 INFO Started processing item [10485701011]
+2026-11-13 06:54:31.085 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:31.593 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10485701011-sheriff-of-nottingham-board-game
+2026-11-13 06:54:31.646 INFO Checking item [10485701011] against optional [item] filters
+2026-11-13 06:54:31.646 INFO Item [10485701011] in scope for 0 [item] filter(s)
+2026-11-13 06:54:31.646 INFO Getting seller details for item [10485701011]
+2026-11-13 06:54:31.927 INFO Vinted seller API called: https://www.vinted.co.uk/api/v2/users/3162892928
+2026-11-13 06:54:31.927 INFO Checking item [10485701011] against optional [seller] filters
+2026-11-13 06:54:31.927 INFO Item [10485701011] in scope for 1 [seller] filter(s)
+2026-11-13 06:54:31.928 INFO Checking item [10485701011] against [seller] filter rule [sheriff_board_game, country_iso_code, US,AU] in [exclude] mode
+2026-11-13 06:54:31.928 INFO Rule value(s): [US,AU], actual value: [US], operator: [equals], word_match: [False]
+2026-11-13 06:54:31.928 INFO [ FAIL ✗ ] excluded item [10485701011] for matching [seller] filter rule [sheriff_board_game, country_iso_code, US,AU] in [exclude] mode
+2026-11-13 06:54:31.928 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:31.928 INFO Completed processing item [10485701011]
+2026-11-13 06:54:31.928 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:31.928 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:31.928 INFO Started processing item [10409613595]
+2026-11-13 06:54:31.928 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:32.475 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10409613595-sheriff-of-nottingham-board-game-1st-edition
+2026-11-13 06:54:32.528 INFO Checking item [10409613595] against optional [item] filters
+2026-11-13 06:54:32.528 INFO Item [10409613595] in scope for 0 [item] filter(s)
+2026-11-13 06:54:32.528 INFO Getting seller details for item [10409613595]
+2026-11-13 06:54:32.764 INFO Vinted seller API called: https://www.vinted.co.uk/api/v2/users/3126432101
+2026-11-13 06:54:32.765 INFO Checking item [10409613595] against optional [seller] filters
+2026-11-13 06:54:32.765 INFO Item [10409613595] in scope for 1 [seller] filter(s)
+2026-11-13 06:54:32.765 INFO Checking item [10409613595] against [seller] filter rule [sheriff_board_game, country_iso_code, US,AU] in [exclude] mode
+2026-11-13 06:54:32.765 INFO Rule value(s): [US,AU], actual value: [GB], operator: [equals], word_match: [False]
+2026-11-13 06:54:32.765 INFO [ PASS ✓ ] item [10409613595] not excluded for current rule. Checking next rule if any
+2026-11-13 06:54:32.765 INFO Item [10409613595] meets all selection filters and no exclusions apply
+2026-11-13 06:54:33.096 INFO Telegram notification sent for item [10409613595]. API called: https://api.telegram.org/botREDACTED_TOKEN/sendPhoto
+2026-11-13 06:54:33.097 INFO Recorded notification for item [10409613595] in '/home/runner/work/VintedScanner/VintedScanner/state/notified_items.csv'
+2026-11-13 06:54:33.097 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:33.097 INFO Completed processing item [10409613595]
+2026-11-13 06:54:33.098 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:33.098 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:33.098 INFO Started processing item [10311140799]
+2026-11-13 06:54:33.098 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:33.572 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10311140799-sheriff-of-nottingham-2nd-edition-board-game
+2026-11-13 06:54:33.625 INFO Checking item [10311140799] against optional [item] filters
+2026-11-13 06:54:33.625 INFO Item [10311140799] in scope for 0 [item] filter(s)
+2026-11-13 06:54:33.625 INFO Getting seller details for item [10311140799]
+2026-11-13 06:54:33.805 INFO Vinted seller API called: https://www.vinted.co.uk/api/v2/users/3184785485
+2026-11-13 06:54:33.805 INFO Checking item [10311140799] against optional [seller] filters
+2026-11-13 06:54:33.805 INFO Item [10311140799] in scope for 1 [seller] filter(s)
+2026-11-13 06:54:33.805 INFO Checking item [10311140799] against [seller] filter rule [sheriff_board_game, country_iso_code, US,AU] in [exclude] mode
+2026-11-13 06:54:33.805 INFO Rule value(s): [US,AU], actual value: [US], operator: [equals], word_match: [False]
+2026-11-13 06:54:33.805 INFO [ FAIL ✗ ] excluded item [10311140799] for matching [seller] filter rule [sheriff_board_game, country_iso_code, US,AU] in [exclude] mode
+2026-11-13 06:54:33.805 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:33.805 INFO Completed processing item [10311140799]
+2026-11-13 06:54:33.805 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:33.805 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:33.806 INFO Started processing item [10335204567]
+2026-11-13 06:54:33.806 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:34.340 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10335204567-sheriff-of-nottingham-1st-edition-board-game-good-condition-1-damaged-snap-pouch
+2026-11-13 06:54:34.391 INFO Checking item [10335204567] against optional [item] filters
+2026-11-13 06:54:34.391 INFO Item [10335204567] in scope for 0 [item] filter(s)
+2026-11-13 06:54:34.391 INFO Getting seller details for item [10335204567]
+2026-11-13 06:54:34.560 INFO Vinted seller API called: https://www.vinted.co.uk/api/v2/users/3193014870
+2026-11-13 06:54:34.560 INFO Checking item [10335204567] against optional [seller] filters
+2026-11-13 06:54:34.560 INFO Item [10335204567] in scope for 1 [seller] filter(s)
+2026-11-13 06:54:34.560 INFO Checking item [10335204567] against [seller] filter rule [sheriff_board_game, country_iso_code, US,AU] in [exclude] mode
+2026-11-13 06:54:34.560 INFO Rule value(s): [US,AU], actual value: [GB], operator: [equals], word_match: [False]
+2026-11-13 06:54:34.560 INFO [ PASS ✓ ] item [10335204567] not excluded for current rule. Checking next rule if any
+2026-11-13 06:54:34.560 INFO Item [10335204567] meets all selection filters and no exclusions apply
+2026-11-13 06:54:34.869 INFO Telegram notification sent for item [10335204567]. API called: https://api.telegram.org/botREDACTED_TOKEN/sendPhoto
+2026-11-13 06:54:34.871 INFO Recorded notification for item [10335204567] in '/home/runner/work/VintedScanner/VintedScanner/state/notified_items.csv'
+2026-11-13 06:54:34.871 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:34.871 INFO Completed processing item [10335204567]
+2026-11-13 06:54:34.871 INFO --------------------------------------------------------------------------------
+2026-11-13 06:54:34.871 INFO ================================================================================
+2026-11-13 06:54:34.871 INFO Completed processing search query [sheriff_board_game]
+2026-11-13 06:54:34.871 INFO ================================================================================
+2026-11-13 06:54:34.871 INFO Maximum number of items to process/notify (from config): 10
+2026-11-13 06:54:34.871 INFO Items from Vinted search: 6 - [10725716303, 10505260486, 10485701011, 10409613595, 10311140799, 10335204567]
+2026-11-13 06:54:34.871 INFO Items excluded: 3 - [10505260486, 10485701011, 10311140799]
+2026-11-13 06:54:34.871 INFO Items previously notified: 0 - []
+2026-11-13 06:54:34.871 INFO Item candidates: 0 - []
+2026-11-13 06:54:34.871 INFO Items notified: 3 - [10725716303, 10409613595, 10335204567]
+2026-11-13 06:54:34.871 INFO Items failed to notify: 0 - []
+2026-11-13 06:54:34.871 INFO Items recorded as notified: 3 - [10725716303, 10409613595, 10335204567]
+2026-11-13 06:54:34.874 INFO Vinted session closed
