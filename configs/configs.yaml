@@ -1,31 +1,31 @@
 # Set file names and file paths to load for search and filter configs. Also set the csv file name to store state
 #
-# 'config': the config type. Do NOT change these values!
+# '{config_key}': the config type. Do NOT change these values!
 #   'base_path': (optional) the parent path where all config is located. If no value is supplied, then current working dir. is used
 #   'directory_name': the name of the directory where the file is located
 #   'file_name': the yaml file name for the config e.g. search_config.yaml
-configs:
-  - config: search_config
+file_configs:
+  search_config:
     base_path:
     directory_name: configs
     file_name: search_config.yaml
 
-  - config: state
+  state_config:
     base_path:
     directory_name: state
     file_name: already_notified_items.csv
 
-  - config: item_filters
+  item_filters:
     base_path:
     directory_name: filters
     file_name: item_filters.yaml
 
-  - config: seller_filters
+  seller_filters:
     base_path:
     directory_name: filters
     file_name: seller_filters.yaml
 
-  - config: notification_config
+  notification_config:
     base_path:
     directory_name: configs
     file_name: notification_config.yaml

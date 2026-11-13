@@ -221,9 +221,7 @@ def validate_filters(config):
 
 def filter_item(item_id, data_to_filter: dict, query_id: str, filters: dict, filter_type, args) -> bool:
 
-    filter_label = {"item": "item", "seller": "seller"}.get(
-        filter_type, "item"
-    )
+    filter_label = {"item": "item", "seller": "seller"}.get(filter_type, "item")
 
     matching_queries = [
         query

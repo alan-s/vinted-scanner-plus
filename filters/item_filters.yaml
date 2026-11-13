@@ -9,11 +9,11 @@
 #     - numeric operators: [equals,greater_than,greater_than_or_equal,less_than,less_than_or_equal,between]
 #     - 'nothing' operators: [exists,is_null,is_empty] whether the key exists, or explictly equals NULL, or whether it is empty
 #   - 'value': the value to use in the comparison operator (can accept csv list of values)
-# filters:
-#   - query_id: sheriff_board_game
-#     mode: include
-#     rules:
-#       - key: title
-#         operator: contains
-#         word_match: false
-#         value: 2nd edition
+filters:
+  - query_id: sheriff_board_game
+    mode: include
+    rules:
+      - key: title
+        operator: contains
+        word_match: false
+        value: 2nd edition

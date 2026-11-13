@@ -88,7 +88,7 @@ jobs:
         env:
           CONFIGS: ${{ inputs.CONFIGS }}
         run: |
-          FILE_PATH=$(echo "$CONFIGS" | yq -r '.configs[] | select(.config == "state") | "\(.directory_name)/\(.file_name)"')
+          FILE_PATH=$(echo "$CONFIGS" | yq -r '.configs[] | select(.config == "state_config") | "\(.directory_name)/\(.file_name)"')
           echo "file_path=$FILE_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Commit updated seen items

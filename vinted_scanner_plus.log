@@ -725,3 +725,360 @@
 2026-11-13 06:54:34.871 INFO Items failed to notify: 0 - []
 2026-11-13 06:54:34.871 INFO Items recorded as notified: 3 - [10725716303, 10409613595, 10335204567]
 2026-11-13 06:54:34.874 INFO Vinted session closed
+2026-11-13 07:33:02.068 INFO 
+2026-11-13 07:33:02.070 INFO ================================================================================
+2026-11-13 07:33:02.070 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 07:33:02.071 INFO ================================================================================
+2026-11-13 07:33:02.071 INFO 
+2026-11-13 07:33:02.071 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 07:48:09.467 INFO 
+2026-11-13 07:48:09.468 INFO ================================================================================
+2026-11-13 07:48:09.469 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 07:48:09.469 INFO ================================================================================
+2026-11-13 07:48:09.469 INFO 
+2026-11-13 07:48:09.469 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 07:52:24.485 INFO 
+2026-11-13 07:52:24.486 INFO ================================================================================
+2026-11-13 07:52:24.487 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 07:52:24.487 INFO ================================================================================
+2026-11-13 07:52:24.487 INFO 
+2026-11-13 07:52:24.487 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:15:46.562 INFO 
+2026-11-13 08:15:46.564 INFO ================================================================================
+2026-11-13 08:15:46.564 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:15:46.564 INFO ================================================================================
+2026-11-13 08:15:46.564 INFO 
+2026-11-13 08:15:46.564 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:21:01.874 INFO 
+2026-11-13 08:21:01.875 INFO ================================================================================
+2026-11-13 08:21:01.875 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:21:01.876 INFO ================================================================================
+2026-11-13 08:21:01.876 INFO 
+2026-11-13 08:21:01.876 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:24:31.447 INFO 
+2026-11-13 08:24:31.449 INFO ================================================================================
+2026-11-13 08:24:31.449 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:24:31.449 INFO ================================================================================
+2026-11-13 08:24:31.449 INFO 
+2026-11-13 08:24:31.450 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:26:11.613 INFO 
+2026-11-13 08:26:11.614 INFO ================================================================================
+2026-11-13 08:26:11.614 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:26:11.615 INFO ================================================================================
+2026-11-13 08:26:11.615 INFO 
+2026-11-13 08:26:11.615 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:26:34.874 INFO 
+2026-11-13 08:26:34.876 INFO ================================================================================
+2026-11-13 08:26:34.876 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:26:34.876 INFO ================================================================================
+2026-11-13 08:26:34.876 INFO 
+2026-11-13 08:26:34.877 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:28:42.424 INFO 
+2026-11-13 08:28:42.426 INFO ================================================================================
+2026-11-13 08:28:42.426 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:28:42.426 INFO ================================================================================
+2026-11-13 08:28:42.426 INFO 
+2026-11-13 08:28:42.426 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:33:08.521 INFO 
+2026-11-13 08:33:08.523 INFO ================================================================================
+2026-11-13 08:33:08.523 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:33:08.523 INFO ================================================================================
+2026-11-13 08:33:08.523 INFO 
+2026-11-13 08:33:08.524 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:33:54.698 INFO 
+2026-11-13 08:33:54.700 INFO ================================================================================
+2026-11-13 08:33:54.700 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:33:54.700 INFO ================================================================================
+2026-11-13 08:33:54.700 INFO 
+2026-11-13 08:33:54.700 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:34:38.822 INFO 
+2026-11-13 08:34:38.823 INFO ================================================================================
+2026-11-13 08:34:38.823 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:34:38.824 INFO ================================================================================
+2026-11-13 08:34:38.824 INFO 
+2026-11-13 08:34:38.824 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:38:06.897 INFO 
+2026-11-13 08:38:06.898 INFO ================================================================================
+2026-11-13 08:38:06.898 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:38:06.899 INFO ================================================================================
+2026-11-13 08:38:06.899 INFO 
+2026-11-13 08:38:06.899 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:51:42.698 INFO 
+2026-11-13 08:51:42.699 INFO ================================================================================
+2026-11-13 08:51:42.700 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:51:42.700 INFO ================================================================================
+2026-11-13 08:51:42.700 INFO 
+2026-11-13 08:51:42.700 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:52:39.314 INFO 
+2026-11-13 08:52:39.316 INFO ================================================================================
+2026-11-13 08:52:39.316 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:52:39.316 INFO ================================================================================
+2026-11-13 08:52:39.316 INFO 
+2026-11-13 08:52:39.316 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:56:25.402 INFO 
+2026-11-13 08:56:25.404 INFO ================================================================================
+2026-11-13 08:56:25.404 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:56:25.404 INFO ================================================================================
+2026-11-13 08:56:25.404 INFO 
+2026-11-13 08:56:25.404 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:57:13.360 INFO 
+2026-11-13 08:57:13.361 INFO ================================================================================
+2026-11-13 08:57:13.361 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:57:13.362 INFO ================================================================================
+2026-11-13 08:57:13.362 INFO 
+2026-11-13 08:57:13.362 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 08:57:30.362 INFO 
+2026-11-13 08:57:30.364 INFO ================================================================================
+2026-11-13 08:57:30.364 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 08:57:30.364 INFO ================================================================================
+2026-11-13 08:57:30.365 INFO 
+2026-11-13 08:57:30.365 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:00:48.276 INFO 
+2026-11-13 09:00:48.277 INFO ================================================================================
+2026-11-13 09:00:48.278 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:00:48.278 INFO ================================================================================
+2026-11-13 09:00:48.278 INFO 
+2026-11-13 09:00:48.278 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:01:16.818 INFO 
+2026-11-13 09:01:16.819 INFO ================================================================================
+2026-11-13 09:01:16.820 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:01:16.820 INFO ================================================================================
+2026-11-13 09:01:16.820 INFO 
+2026-11-13 09:01:16.820 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:02:33.981 INFO 
+2026-11-13 09:02:33.982 INFO ================================================================================
+2026-11-13 09:02:33.982 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:02:33.982 INFO ================================================================================
+2026-11-13 09:02:33.983 INFO 
+2026-11-13 09:02:33.983 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:03:20.421 INFO 
+2026-11-13 09:03:20.422 INFO ================================================================================
+2026-11-13 09:03:20.422 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:03:20.422 INFO ================================================================================
+2026-11-13 09:03:20.423 INFO 
+2026-11-13 09:03:20.423 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:04:27.122 INFO 
+2026-11-13 09:04:27.124 INFO ================================================================================
+2026-11-13 09:04:27.124 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:04:27.124 INFO ================================================================================
+2026-11-13 09:04:27.124 INFO 
+2026-11-13 09:04:27.125 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:04:46.081 INFO 
+2026-11-13 09:04:46.082 INFO ================================================================================
+2026-11-13 09:04:46.082 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:04:46.082 INFO ================================================================================
+2026-11-13 09:04:46.083 INFO 
+2026-11-13 09:04:46.083 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:05:42.891 INFO 
+2026-11-13 09:05:42.892 INFO ================================================================================
+2026-11-13 09:05:42.892 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:05:42.893 INFO ================================================================================
+2026-11-13 09:05:42.893 INFO 
+2026-11-13 09:05:42.893 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:25:58.925 INFO 
+2026-11-13 09:25:58.926 INFO ================================================================================
+2026-11-13 09:25:58.926 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:25:58.926 INFO ================================================================================
+2026-11-13 09:25:58.927 INFO 
+2026-11-13 09:25:58.927 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:26:46.114 INFO 
+2026-11-13 09:26:46.115 INFO ================================================================================
+2026-11-13 09:26:46.115 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:26:46.115 INFO ================================================================================
+2026-11-13 09:26:46.116 INFO 
+2026-11-13 09:26:46.116 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:27:23.238 INFO 
+2026-11-13 09:27:23.240 INFO ================================================================================
+2026-11-13 09:27:23.240 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:27:23.240 INFO ================================================================================
+2026-11-13 09:27:23.241 INFO 
+2026-11-13 09:27:23.241 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:30:58.110 INFO 
+2026-11-13 09:30:58.112 INFO ================================================================================
+2026-11-13 09:30:58.112 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:30:58.112 INFO ================================================================================
+2026-11-13 09:30:58.112 INFO 
+2026-11-13 09:30:58.112 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:31:14.687 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 09:31:33.435 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 09:31:38.214 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 09:31:40.590 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 09:31:44.220 INFO ================================================================================
+2026-11-13 09:31:44.220 INFO Started processing search query [sheriff_board_game]
+2026-11-13 09:31:44.220 INFO ================================================================================
+2026-11-13 09:31:44.398 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=5&price_to=20&order=newest_first&page=1
+2026-11-13 09:31:44.403 INFO Vinted page 1 returned 6 item(s)
+2026-11-13 09:31:44.404 INFO Vinted search API returned 6 item(s) with IDs: [10725716303, 10505260486, 10485701011, 10409613595, 10311140799, 10335204567]
+2026-11-13 09:31:44.404 INFO The maximum number of items to process/notify (from config): 10
+2026-11-13 09:31:44.405 INFO --------------------------------------------------------------------------------
+2026-11-13 09:31:44.405 INFO Started processing item [10725716303]
+2026-11-13 09:31:44.405 INFO --------------------------------------------------------------------------------
+2026-11-13 09:31:44.850 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10725716303-sheriff-of-nottingham-second-edition
+2026-11-13 09:31:45.289 INFO Checking item [10725716303] against optional [item] filters
+2026-11-13 09:31:45.290 INFO Item [10725716303] in scope for 0 [item] filter(s)
+2026-11-13 09:31:45.290 INFO Getting seller details for item [10725716303]
+2026-11-13 09:31:45.415 INFO Vinted seller API called: https://www.vinted.co.uk/api/v2/users/3187396505
+2026-11-13 09:31:45.415 INFO Checking item [10725716303] against optional [seller] filters
+2026-11-13 09:31:45.416 INFO Item [10725716303] in scope for 1 [seller] filter(s)
+2026-11-13 09:31:45.416 INFO Checking item [10725716303] against [seller] filter rule [sheriff_board_game, country_iso_code, US,AU] in [exclude] mode
+2026-11-13 09:31:45.416 INFO Rule value(s): [US,AU], actual value: [GB], operator: [equals], word_match: [False]
+2026-11-13 09:31:45.417 INFO [ PASS ✓ ] item [10725716303] not excluded for current rule. Checking next rule if any
+2026-11-13 09:31:45.417 INFO Item [10725716303] meets all selection filters and no exclusions apply
+2026-11-13 09:32:00.129 INFO 
+2026-11-13 09:32:00.131 INFO ================================================================================
+2026-11-13 09:32:00.131 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:32:00.131 INFO ================================================================================
+2026-11-13 09:32:00.131 INFO 
+2026-11-13 09:32:00.131 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:32:05.657 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 09:32:05.659 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 09:32:05.664 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 09:32:05.669 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 09:56:45.811 INFO 
+2026-11-13 09:56:45.812 INFO ================================================================================
+2026-11-13 09:56:45.812 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 09:56:45.813 INFO ================================================================================
+2026-11-13 09:56:45.813 INFO 
+2026-11-13 09:56:45.813 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 09:56:45.821 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 09:56:47.072 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 09:56:47.073 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 09:56:47.088 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 09:56:47.114 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:03:45.900 INFO 
+2026-11-13 10:03:45.902 INFO ================================================================================
+2026-11-13 10:03:45.902 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 10:03:45.902 INFO ================================================================================
+2026-11-13 10:03:45.902 INFO 
+2026-11-13 10:03:45.902 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 10:03:45.910 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 10:03:45.913 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 10:03:45.914 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 10:03:45.916 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 10:03:45.919 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:04:19.005 INFO 
+2026-11-13 10:04:19.007 INFO ================================================================================
+2026-11-13 10:04:19.007 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 10:04:19.007 INFO ================================================================================
+2026-11-13 10:04:19.007 INFO 
+2026-11-13 10:04:19.007 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 10:04:19.014 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 10:04:19.018 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 10:04:19.018 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 10:04:19.020 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 10:04:19.024 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:04:43.358 INFO 
+2026-11-13 10:04:43.360 INFO ================================================================================
+2026-11-13 10:04:43.360 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 10:04:43.360 INFO ================================================================================
+2026-11-13 10:04:43.360 INFO 
+2026-11-13 10:04:43.360 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 10:04:43.367 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 10:04:43.371 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 10:04:43.371 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 10:04:43.373 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 10:04:43.377 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:35:45.247 INFO 
+2026-11-13 10:35:45.248 INFO ================================================================================
+2026-11-13 10:35:45.248 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 10:35:45.249 INFO ================================================================================
+2026-11-13 10:35:45.249 INFO 
+2026-11-13 10:35:45.249 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 10:35:45.256 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 10:35:50.948 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 10:35:50.961 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 10:35:50.984 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:35:58.192 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 10:35:58.194 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 10:35:58.197 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:39:12.708 INFO 
+2026-11-13 10:39:12.710 INFO ================================================================================
+2026-11-13 10:39:12.710 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 10:39:12.710 INFO ================================================================================
+2026-11-13 10:39:12.711 INFO 
+2026-11-13 10:39:12.711 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 10:39:12.718 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 10:39:12.721 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 10:39:12.723 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 10:39:12.727 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:39:14.492 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 10:46:47.696 INFO 
+2026-11-13 10:46:47.696 INFO ================================================================================
+2026-11-13 10:46:47.696 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 10:46:47.696 INFO ================================================================================
+2026-11-13 10:46:47.697 INFO 
+2026-11-13 10:46:47.697 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 10:46:47.700 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 10:46:47.703 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 10:46:47.705 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 10:46:47.708 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:46:47.709 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 10:47:24.036 INFO 
+2026-11-13 10:47:24.036 INFO ================================================================================
+2026-11-13 10:47:24.036 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 10:47:24.036 INFO ================================================================================
+2026-11-13 10:47:24.037 INFO 
+2026-11-13 10:47:24.037 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 10:47:24.040 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 10:47:24.043 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 10:47:24.044 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 10:47:24.047 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:47:24.049 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 10:47:24.437 INFO ================================================================================
+2026-11-13 10:47:24.437 INFO Started processing search query [sheriff_board_game]
+2026-11-13 10:47:24.437 INFO ================================================================================
+2026-11-13 10:47:24.647 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=5&price_to=20&order=newest_first&page=1
+2026-11-13 10:47:24.648 INFO Vinted page 1 returned 6 item(s)
+2026-11-13 10:47:24.648 INFO Vinted search API returned 6 item(s) with IDs: [10725716303, 10505260486, 10485701011, 10409613595, 10311140799, 10335204567]
+2026-11-13 10:47:24.648 INFO The maximum number of items to process/notify (from config): 10
+2026-11-13 10:47:24.649 INFO --------------------------------------------------------------------------------
+2026-11-13 10:47:24.649 INFO Started processing item [10725716303]
+2026-11-13 10:47:24.649 INFO --------------------------------------------------------------------------------
+2026-11-13 10:47:25.019 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10725716303-sheriff-of-nottingham-second-edition
+2026-11-13 10:47:25.145 INFO Checking item [10725716303] against optional [item] filters
+2026-11-13 10:47:51.798 INFO 
+2026-11-13 10:47:51.799 INFO ================================================================================
+2026-11-13 10:47:51.800 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 10:47:51.800 INFO ================================================================================
+2026-11-13 10:47:51.800 INFO 
+2026-11-13 10:47:51.800 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 10:47:51.807 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 10:47:51.811 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 10:47:51.813 INFO Loaded 0 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 10:47:51.816 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:48:03.122 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 10:48:33.817 INFO ================================================================================
+2026-11-13 10:48:33.818 INFO Started processing search query [sheriff_board_game]
+2026-11-13 10:48:33.819 INFO ================================================================================
+2026-11-13 10:48:38.694 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=5&price_to=20&order=newest_first&page=1
+2026-11-13 10:48:38.697 INFO Vinted page 1 returned 6 item(s)
+2026-11-13 10:48:48.095 INFO Vinted search API returned 6 item(s) with IDs: [10725716303, 10505260486, 10485701011, 10409613595, 10311140799, 10335204567]
+2026-11-13 10:49:15.534 INFO The maximum number of items to process/notify (from config): 10
+2026-11-13 10:49:24.963 INFO --------------------------------------------------------------------------------
+2026-11-13 10:49:24.963 INFO Started processing item [10725716303]
+2026-11-13 10:49:24.964 INFO --------------------------------------------------------------------------------
+2026-11-13 10:49:39.876 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10725716303-sheriff-of-nottingham-second-edition
+2026-11-13 10:49:46.690 INFO Checking item [10725716303] against optional [item] filters
+2026-11-13 10:55:24.096 INFO 
+2026-11-13 10:55:24.097 INFO ================================================================================
+2026-11-13 10:55:24.098 INFO                                   VINTED SCANNER PLUS                           
+2026-11-13 10:55:24.098 INFO ================================================================================
+2026-11-13 10:55:24.098 INFO 
+2026-11-13 10:55:24.098 INFO Launched with the following args: --log_filtering --enable_notifications
+2026-11-13 10:55:24.105 INFO Loaded 'configs.yaml' from D:\VintedScanner\configs\configs.yaml
+2026-11-13 10:55:24.109 INFO Loaded 1 search querie(s) from D:\VintedScanner\configs\search_config.yaml
+2026-11-13 10:55:24.112 INFO Loaded 1 [item_filters] filter(s) from D:\VintedScanner\filters\item_filters.yaml
+2026-11-13 10:55:24.116 INFO Loaded 1 [seller_filters] filter(s) from D:\VintedScanner\filters\seller_filters.yaml
+2026-11-13 10:55:28.062 INFO No previous 'D:\VintedScanner\state\already_notified_items.csv' found; clean run
+2026-11-13 10:55:28.499 INFO ================================================================================
+2026-11-13 10:55:28.499 INFO Started processing search query [sheriff_board_game]
+2026-11-13 10:55:28.499 INFO ================================================================================
+2026-11-13 10:55:28.711 INFO Vinted search API called: https://api.vinted.co.uk/svc-catalogue/items?search_text=Sheriff&attribute_ids%5Bcatalog%5D=4881&attribute_ids%5Bbrand%5D=1317890&price_from=5&price_to=20&order=newest_first&page=1
+2026-11-13 10:55:28.713 INFO Vinted page 1 returned 6 item(s)
+2026-11-13 10:55:28.714 INFO Vinted search API returned 6 item(s) with IDs: [10725716303, 10505260486, 10485701011, 10409613595, 10311140799, 10335204567]
+2026-11-13 10:55:28.714 INFO The maximum number of items to process/notify (from config): 10
+2026-11-13 10:55:28.714 INFO --------------------------------------------------------------------------------
+2026-11-13 10:55:28.714 INFO Started processing item [10725716303]
+2026-11-13 10:55:28.714 INFO --------------------------------------------------------------------------------
+2026-11-13 10:55:29.127 INFO Vinted item endpoint called: https://www.vinted.co.uk/items/10725716303-sheriff-of-nottingham-second-edition
+2026-11-13 10:55:29.582 INFO Checking item [10725716303] against optional [item] filters
