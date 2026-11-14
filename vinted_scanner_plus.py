@@ -11,6 +11,7 @@ import managers.logging_manager as logging_manager
 import managers.notification_manager as notifications_manager
 import managers.state_manager as state_manager
 import managers.vinted_api_manager as vinted_api_manager
+import managers.query_manager as query_manager
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
@@ -74,7 +75,8 @@ def main():
     session = vinted_api_manager.initialise_vinted_session(search_config)
 
     # Loop through each search query defined in config
-    for params in queries:
+    for query in queries:
+        results = query_manager.process_all_queries(queries)
 
         logging_manager.item_log_printer(params.get("query_id"), "Started", log_type="query")
 
