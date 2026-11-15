@@ -12,12 +12,12 @@ TIMEOUT_CONNECTION = 30
 
 
 def send_telegram_message(notification_config, item_id, item_title, item_desc, item_price, item_upload_time, item_url,
-                          item_image, favourite_count, seller) -> bool:
+                          item_image, item_favourite_count, seller) -> bool:
     from html import escape
 
     telegram_bot_token = notification_config['telegram']['telegram_bot_token']
     telegram_chat_id = notification_config['telegram']['telegram_chat_id']
-    include_desc = notification_config['message']['include_description']
+    include_description = notification_config['message']['include_description']
 
     safe_title = escape(str(item_title))
 
@@ -28,7 +28,7 @@ def send_telegram_message(notification_config, item_id, item_title, item_desc, i
 
     caption_lines = [
         f'🔗  <a href="{safe_url}">{safe_title}</a>',
-        f"💰  {item_price}" + (f"    ❤️  {favourite_count}" if favourite_count > 0 else ""),
+        f"💰  {item_price}" + (f"    ❤️  {item_favourite_count}" if item_favourite_count > 0 else ""),
         f"⏳  {item_upload_time}"
     ]
 
@@ -55,7 +55,7 @@ def send_telegram_message(notification_config, item_id, item_title, item_desc, i
             f"⭐  {seller.get('positive_feedback_count', 0)}/{seller.get('feedback_count', 0)}   "
             f"👥  {seller.get('followers_count', 0)}\n"
             f"{location}"
-            f"{"\n\n" + item_desc if include_desc else ""}"
+            f"{"\n\n" + item_desc if include_description else ""}"
         )
 
         caption_lines.append("")

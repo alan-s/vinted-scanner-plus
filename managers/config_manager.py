@@ -23,7 +23,7 @@ def load_configs_file_with_paths(path):
 
             config['file_path'] = file_path
 
-        logger.info("Loaded 'configs.yaml' from %s", path)
+        logger.info("Loaded 'configs.yaml' from '%s'", path)
 
         return configs
 
@@ -49,7 +49,7 @@ def load_configs_from_config_yaml(yaml_config):
 
             if config_name == "search_config":
                 logger.info(
-                    f"Loaded {len(file_configs['search_config']['queries'])} search querie(s) from {config['file_path']}")
+                    f"Loaded {len(file_configs['search_config']['queries'])} search querie(s) from '{config['file_path']}'")
         elif config_name in CSV_FILES:
             file_configs[config_name] = config
         else:
