@@ -25,7 +25,7 @@ def load_filters(filter_type, path):
     filter_config = filter_config or {"filters": []}
 
     logger.info(
-        "Loaded %s [%s] filter(s) from %s",
+        "Loaded %s [%s] filter(s) from '%s'",
         len(filter_config["filters"]),
         filter_type,
         Path(path).resolve(),

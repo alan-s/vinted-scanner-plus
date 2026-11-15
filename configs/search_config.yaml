@@ -29,3 +29,9 @@ queries:
     price_from: 5
     price_to: 20
     order: newest_first
+  - query_id: star_wars_deck_building
+    search_text: star wars deck building
+    attribute_ids[catalog]: 4881
+    price_from: 5
+    price_to: 10
+    order: newest_first

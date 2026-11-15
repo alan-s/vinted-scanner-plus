@@ -25,11 +25,11 @@ def load_already_notified_items(path):
                         "price": price,
                     }
             logger.info(
-                f"Loaded {len(already_notified_items)} already notified item(s) from {path}")
+                f"Loaded {len(already_notified_items)} already notified item(s) from '{path}'")
             logger.info(f"Already notified items: [{', '.join(already_notified_items.keys())}]")
 
     except FileNotFoundError:
-        logger.info(f"No previous '{path}' found; clean run")
+        logger.info(f"No previous state file at '{path}' found; clean run")
     except IOError as e:
         logger.error(e, exc_info=True)
         sys.exit(1)

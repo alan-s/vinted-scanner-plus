@@ -166,22 +166,21 @@ def get_item_description_and_upload_datetime(session, search_config, item_id):
     try:
         soup = BeautifulSoup(response.text, "html.parser")
 
-        upload_date = soup.find(
-            "div",
-            attrs={"itemprop": "upload_date"}
-        )
-
         description = soup.find(
             "div",
             attrs={"itemprop": "description"}
+        )
+        upload_date = soup.find(
+            "div",
+            attrs={"itemprop": "upload_date"}
         )
     except Exception as e:
         logger.error(e, exc_info=True)
         return None
 
     return (
-        upload_date.get_text(strip=True) if upload_date else None,
-        description.get_text(strip=True) if description else None
+        description.get_text(strip=True) if description else None,
+        upload_date.get_text(strip=True) if upload_date else None
     )
 
 
