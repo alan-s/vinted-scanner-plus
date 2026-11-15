@@ -229,10 +229,8 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: list, fil
 
     if args.log_filtering:
         logger.info(
-            "Item [%s] in scope for %s [%s] filter(s)",
-            item_id,
-            len(matching_queries),
-            filter_label,
+            f"Item [{item_id}] in scope for {len(matching_queries)} {filter_label} filter(s) - "
+            f"[{', '.join(query['query_id'] for query in matching_queries)}]"
         )
 
     if not matching_queries:
@@ -246,8 +244,8 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: list, fil
             # All rules must match.
             for rule in rules:
                 if args.log_filtering:
-                    logger.info("Checking item [%s] against [%s] filter rule [%s][%s][%s] in [%s] mode", item_id,
-                                filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
+                    logger.info("Checking item [%s] against rule: [%s] on key: [%s] in mode: [%s]", item_id, query_id,
+                                rule["key"], mode)
 
                 if not item_matches_rule(data_to_filter, rule, word_match=rule.get("word_match", False)):
                     if args.log_filtering:
@@ -258,15 +256,15 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: list, fil
                     return False
 
                 elif args.log_filtering:
-                    logger.info("[ PASS ✓ ] item [%s] not excluded for current rule. Checking next rule if any",
+                    logger.info("[ PASS ✓ ] item [%s] not excluded for rule. Checking next rule if any",
                                 item_id)
 
         elif mode == "exclude":
             # Any matching rule excludes the item.
             for rule in rules:
                 if args.log_filtering:
-                    logger.info("Checking item [%s] against [%s] filter rule [%s, %s, %s] in [%s] mode", item_id,
-                                filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
+                    logger.info("Checking item [%s] against rule: [%s] on key: [%s] in mode: [%s]", item_id, query_id,
+                                rule["key"], mode)
 
                 if item_matches_rule(data_to_filter, rule, word_match=rule.get("word_match", False)):
                     if args.log_filtering:
@@ -277,7 +275,7 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: list, fil
                     return False
 
                 elif args.log_filtering:
-                    logger.info("[ PASS ✓ ] item [%s] not excluded for current rule. Checking next rule if any",
+                    logger.info("[ PASS ✓ ] item [%s] not excluded for rule. Checking next rule if any",
                                 item_id)
 
         else:
@@ -314,11 +312,11 @@ def item_matches_rule(item: dict, rule: dict, word_match=False) -> bool:
     rule_value = rule["value"]
 
     logger.info(
-        "Rule value(s): [%s], actual value: [%s], operator: [%s], word_match: [%s]",
+        "Rule value(s): [%s], actual value: [%s], operator: [%s]%s",
         rule_value,
         actual,
         operator,
-        word_match,
+        f", word_match: [{word_match}]" if operator == "contains" else "",
     )
 
     return values_match(actual, rule_value, operator, word_match)

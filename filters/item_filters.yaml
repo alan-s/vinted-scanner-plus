@@ -3,17 +3,18 @@
 # 'query_id': same as query_id from search_config.yaml
 # 'mode': [include,exclude] include: all rules must match for the item to be included. exclude: a match against any rule excludes the item
 # 'rules': 
-#   - 'key': key to filter (additionally accepts nested keys using "." e.g. item.title)
+#   - 'key': key to filter (additionally accepts nested keys using "." e.g. user.verification.email)
 #   - 'operator': available operators for the comparison
-#     - string operators: [equals,contains] normalised case-insensitive exact match, or substring match (default is partial matching. Add optional 'word_match: false' for full word)
-#     - numeric operators: [equals,greater_than,greater_than_or_equal,less_than,less_than_or_equal,between]
-#     - 'nothing' operators: [exists,is_null,is_empty] whether the key exists, or explictly equals NULL, or whether it is empty
+#     - [equals,contains] string operators: normalised case-insensitive exact or substring match
+#     - [equals,greater_than,greater_than_or_equal,less_than,less_than_or_equal,between] numeric operators
+#     - [exists,is_null,is_empty] 'nothing' operators: whether the key exists, or explictly equals NULL, or whether it is empty
+#   - 'word_match' : [true,false] default string operator 'contains' is partial matching. Add optional 'word_match: true' for full word matching)
 #   - 'value': the value to use in the comparison operator (can accept csv list of values)
 filters:
   - query_id: sheriff_board_game
-    mode: include
+    mode: exclude
     rules:
       - key: title
         operator: contains
-        word_match: false
-        value: 2nd edition
+        word_match: true
+        value: 2nd edition, 1st

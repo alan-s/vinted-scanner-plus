@@ -10,7 +10,6 @@ import managers.vinted_api_manager as vinted_api_manager
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
 
-
 _all_configs = None
 
 
@@ -29,12 +28,13 @@ def process_query(query, session, args):
 
     # Skip if query is disabled
     if query_disabled:
-        logger.info(f"Skipping query [{query_id}]; 'disabled' flag set in search config at '{state_config['file_path']}'")
+        logger.info(
+            f"Skipped query [{query_id}]; 'disabled' flag set in search config at '{state_config['file_path']}'")
         return
 
     # Request items from the Vinted API based on the search parameters
     items = vinted_api_manager.get_items_from_catalogue_search(session, search_config, query) or []
-    logger.info("Vinted search API returned %d item(s) with IDs: %s", len(items),
+    logger.info("Vinted search API returned %d item(s) in total with IDs: %s", len(items),
                 [item.get("id") for item in items])
 
     # Keep track for end-of-run stats
@@ -60,13 +60,13 @@ def process_query(query, session, args):
         # Check if the item has already been notified to prevent sending it again
         if item_id in already_notified_items:
             logger.info(
-                f"Skipping item [{item_id}]; listed as previously seen/notified in '{state_config['file_path']}'")
+                f"Skipped item [{item_id}]; listed as previously seen/notified in '{state_config['file_path']}'")
             previously_notified_items.append(item_id)
             continue
 
         # Check against item filters
         if args.log_filtering:
-            logger.info(f"Checking item [{item_id}] against optional [item] filters")
+            logger.info(f"Checking item [{item_id}] against [item] filters")
 
         item_filters = item_filters_config['filters']
         if not filter_manager.filter_item(item_id, item, query_id, item_filters, "item", args):
@@ -80,7 +80,7 @@ def process_query(query, session, args):
 
         # Check against seller filters
         if args.log_filtering:
-            logger.info(f"Checking item [{item_id}] against optional [seller] filters")
+            logger.info(f"Checking item [{item_id}] against [seller] filters")
 
         seller_filters = seller_filters_config['filters']
         if not filter_manager.filter_item(item_id, seller, query_id, seller_filters, "seller", args):
