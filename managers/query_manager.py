@@ -11,12 +11,26 @@ logging_manager.init_logger()
 logger = logging.getLogger(__name__)
 
 
-def process_query(query, all_configs, session, args):
+_all_configs = None
+
+
+def initialise(configs):
+    global _all_configs
+    _all_configs = configs
+
+
+def process_query(query, session, args):
     query_id = query.get("query_id")
+    query_disabled = query.get("disabled", False)
 
     logging_manager.item_log_printer(query_id, "Started", log_type="query")
 
-    search_config, state_config, item_filters_config, seller_filters_config, notification_config = all_configs.values()
+    search_config, state_config, item_filters_config, seller_filters_config, notification_config = _all_configs.values()
+
+    # Skip if query is disabled
+    if query_disabled:
+        logger.info(f"Skipping query [{query_id}]; 'disabled' flag set in search config at '{state_config['file_path']}'")
+        return
 
     # Request items from the Vinted API based on the search parameters
     items = vinted_api_manager.get_items_from_catalogue_search(session, search_config, query) or []

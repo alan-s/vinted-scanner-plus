@@ -15,12 +15,12 @@ file_configs:
     directory_name: state
     file_name: already_notified_items.csv
 
-  item_filters:
+  item_filters_config:
     base_path:
     directory_name: filters
     file_name: item_filters.yaml
 
-  seller_filters:
+  seller_filters_config:
     base_path:
     directory_name: filters
     file_name: seller_filters.yaml

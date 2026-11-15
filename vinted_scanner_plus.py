@@ -72,13 +72,14 @@ def main():
     session = vinted_api_manager.initialise_vinted_session(search_config)
 
     # Loop through each search query defined in config
+    query_manager.initialise(all_configs)
     for query in queries:
-        query_manager.process_query(query, all_configs, session, args)
+        query_manager.process_query(query, session, args)
 
     # Close api sessions
     vinted_api_manager.close_session(session)
 
-    logger.info(f"Completed processing {len(queries)} querie(s)")
+    logger.info(f"Completed processing all querie(s). Exiting.")
 
 
 if __name__ == "__main__":

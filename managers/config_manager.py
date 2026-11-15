@@ -8,8 +8,8 @@ import utils.file_utils as file_utils
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
 
-ALL_YAML_FILES = {'search_config', 'item_filters', 'seller_filters', 'notification_config'}
-FILTER_YAML_FILES = {'item_filters', 'seller_filters'}
+ALL_YAML_FILES = {'search_config', 'item_filters_config', 'seller_filters_config', 'notification_config'}
+FILTER_YAML_FILES = {'item_filters_config', 'seller_filters_config'}
 CSV_FILES = {'state_config'}
 
 
