@@ -134,7 +134,7 @@ def get_item_details_for_message(item, search_config, session):
         if total_amount is not None
         else "N/D"
     )
-    item_currency = '£'
+    item_currency = item_price_data["currency_code"]
     item_price = (
         f"{item_currency}{item_amount} "
         f"({item_currency}{item_total_amount})"

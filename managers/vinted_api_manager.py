@@ -94,7 +94,6 @@ def get_items_from_catalogue_search(session, search_config, query_params):
     url = f"{search_config['vinted']['vinted_api_url']}/svc-catalogue/items"
     pages = search_config['search']['pages']
     per_page = search_config['search']['per_page']
-    currency = search_config['vinted']['currency']
     query_params = {k: v for k, v in query_params.items() if k != "query_id"}
 
     page = 1
@@ -102,15 +101,12 @@ def get_items_from_catalogue_search(session, search_config, query_params):
 
     while page <= pages:
 
-        query_params = {**query_params, "currency": currency, "per_page": per_page, "page": page}
+        query_params = {**query_params, "per_page": per_page, "page": page}
 
         # Request items from the Vinted API based on the search parameters
         try:
 
-            response = session.get(
-                url=url,
-                params=query_params,
-            )
+            response = session.get(url=url, params=query_params)
 
             logger.info("Vinted search API called: %s", response.url)
 
@@ -139,6 +135,7 @@ def get_items_from_catalogue_search(session, search_config, query_params):
         logger.info(
             "Vinted page %d returned %d item(s)", page, len(new_items)
         )
+        data = response.json()
 
         # If fewer than 96 items were returned, this is the last page
         if len(new_items) < 96:
@@ -155,9 +152,7 @@ def get_item_description_and_upload_datetime(session, search_config, item_id):
     try:
         url = f"{vinted_url}/items/{item_id}"
 
-        response = session.get(
-            url=url,
-        )
+        response = session.get(url=url)
 
         logger.info("Vinted item endpoint called: %s", response.url)
 
@@ -192,9 +187,7 @@ def get_user_details(session, search_config, user_id):
     try:
         url = f"{vinted_url}/api/v2/users/{user_id}"
 
-        response = session.get(
-            url=url,
-        )
+        response = session.get(url=url)
 
         logger.info("Vinted seller API called: %s", response.url)
 

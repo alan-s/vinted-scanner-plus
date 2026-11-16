@@ -6,8 +6,8 @@ import sys
 
 import managers.config_manager as config_manager
 import managers.logging_manager as logging_manager
-import managers.vinted_api_manager as vinted_api_manager
 import managers.query_manager as query_manager
+import managers.vinted_api_manager as vinted_api_manager
 
 logging_manager.init_logger()
 logger = logging.getLogger(__name__)
@@ -78,6 +78,7 @@ def main():
     # Close api sessions
     vinted_api_manager.close_session(session)
     logger.info("Completed processing all querie(s). Exiting")
+
 
 if __name__ == "__main__":
     main()

@@ -7,7 +7,6 @@ vinted:
   vinted_url: https://www.vinted.co.uk
   vinted_api_url: https://api.vinted.co.uk
   locale:
-  currency: GBP
 
 # 'pages': number of pages to scan for each request
 # 'per_page' : number of items per page to return. 24 with 'order' by 'relevance' appears to be a good combination
@@ -15,14 +14,14 @@ vinted:
 search:
   pages: 2
   per_page: 24
-  max_items: 24
+  max_items: 10
 
 # Vinted queries for search
 # 'query_id' : provide a unique query identifier
 # 'search_text' : free search field, this field may be empty if you wish to search other attributes
 # 'attribute_ids[catalog]' : the category to search, if the field is empty it will search in all categories. Vinted assigns a numeric ID to each category, e.g. 2996 is the ID for e-Book Reader
 # 'attribute_ids[brand]' search by brand. Vinted assigns a numeric ID to each brand, e.g. 417 is the ID for Louis Vuitton
-# 'order' : [relevance, newest_first, price_high_to_low, price_low_to_high] : how to order the results
+# 'order' : [relevance, newest_first, price_high_to_low, price_low_to_high] how to order the results
 # 'disabled' : [true,false] all queries are processed. Add optional 'disabled: true' to not skip query
 # Note: where supported, multiple values can be supplied in comma supported format e.g. attribute_ids[brand]: 1317890,295656
 queries:
@@ -31,12 +30,12 @@ queries:
     attribute_ids[catalog]: 4881
     attribute_ids[brand]: 114196
     price_from: 20
-    price_to: 22
+    price_to: 50
     order: relevance
   - query_id: cluedo_harry_potter
     search_text: cluedo harry potter
     attribute_ids[catalog]: 4881
     price_from: 25
     price_to: 30
-    order: newest_first
+    order: relevance
     disabled: true
