@@ -1,5 +1,7 @@
 from itertools import islice
 
+from currency_symbols import CurrencySymbols
+
 import managers.filter_manager as filter_manager
 import managers.logging_manager as logging_manager
 import managers.notification_manager as notifications_manager
@@ -43,7 +45,7 @@ def process_query(query, session, args):
     # Process each item returned in the response, and notify based on filters
     max_items = search_config['search']['max_items']
     if items:
-        logging_manager.info("The maximum number of items to process/notify (from config): %s", max_items)
+        logging_manager.info("From config, the maximum number of items to process/notify is: %s", max_items)
 
     # Load the list of already notified items
     already_notified_items = {k: v for k, v in state_config.items() if k != "file_path"}
@@ -130,11 +132,15 @@ def get_item_details_for_message(item, search_config, session):
         if total_amount is not None
         else "N/D"
     )
-    item_currency = item_price_data["currency_code"]
+    item_currency_code = item_price_data["currency_code"]
+    item_currency_symbol = CurrencySymbols.get_symbol(item_currency_code)
+    item_amount_w_symbol = f"{item_currency_symbol}{item_amount}"
+    item_total_amount_w_symbol = f"{item_currency_symbol}{item_total_amount}"
+
     item_price = (
-        f"{item_currency}{item_amount} "
-        f"({item_currency}{item_total_amount})"
-        if item_amount != "N/D" and item_total_amount != "N/D"
+        f"{item_amount_w_symbol} "
+        f"({item_total_amount_w_symbol})"
+        if item_amount_w_symbol != "N/D" and item_total_amount_w_symbol != "N/D"
         else "N/D"
     )
 
@@ -153,6 +159,8 @@ def get_item_details_for_message(item, search_config, session):
         'item_id': item_id,
         'item_title': item_title,
         'item_url': item_url,
+        'item_amount_w_symbol': item_amount_w_symbol,
+        'item_total_amount_w_symbol': item_total_amount_w_symbol,
         'item_price': item_price,
         'item_favourite_count': item_favourite_count,
         'item_image': item_image,
@@ -190,7 +198,8 @@ def send_notification(notification_config, message_details, seller, args, state_
         if not args.disable_state_file:
             if state_manager.record_already_notified_item(state_config['file_path'], message_details['item_id'],
                                                           message_details['item_title'],
-                                                          message_details['item_price']):
+                                                          message_details['item_amount_w_symbol'],
+                                                          message_details['item_total_amount_w_symbol']):
                 logging_manager.info(
                     f"Recorded notification for item [{message_details['item_id']}] in '{state_config['file_path']}'")
         else:

@@ -128,7 +128,7 @@ def get_items_from_catalogue_search(session, search_config, query_params):
         items.extend(new_items)
 
         logging_manager.info(
-            "Vinted page %d returned %d item(s)", page, len(new_items)
+            "Vinted page %d/%d returned %d item(s)", page, pages, len(new_items)
         )
         data = response.json()
 

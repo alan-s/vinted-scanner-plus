@@ -15,10 +15,11 @@ def load_already_notified_items(path):
 
             for row in reader:
                 if row:
-                    item_id, title, price = row
+                    item_id, item_title, item_price, item_total_price = row
                     already_notified_items[item_id] = {
-                        "title": title,
-                        "price": price,
+                        "title": item_title,
+                        "item_price": item_price,
+                        "item_total_price": item_total_price
                     }
             logging_manager.info(
                 f"Loaded {len(already_notified_items)} already notified item(s) from '{path}'")
@@ -37,13 +38,13 @@ def load_already_notified_items(path):
 
 
 # Save a new notified item to prevent repeated alerts
-def record_already_notified_item(path, item_id, title, price):
+def record_already_notified_item(path, item_id, item_title, item_price, item_total_price):
     try:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
 
         with open(path, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            writer.writerow([item_id, title, price])
+            writer.writerow([item_id, item_title, item_price, item_total_price])
         return True
     except IOError as e:
         logging_manager.error(e, exc_info=True)

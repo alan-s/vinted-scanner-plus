@@ -30,9 +30,9 @@ def item_log_printer(identifier, state, log_type="query"):
 
 def log_end_of_run_stats(items, excluded_items, previously_notified_items, candidate_items, notified_items,
                          failed_notified_items, max_items, notifications_enabled):
-    logging.info("Maximum number of items to process/notify (from config): %s", max_items)
-    logging.info("Items from Vinted search: %s - [%s]", len(items),
-                 ", ".join([str(item["id"]) for item in items]))
+    logging.info("Total number of items from Vinted search: %s", len(items))
+    logging.info("From config, the maximum number of items processed/notified: %s - [%s]", max_items,
+                 ", ".join([str(item["id"]) for item in items[:max_items]]))
     logging.info("Items excluded: %s - [%s]", len(excluded_items),
                  ", ".join(str(item_id) for item_id in excluded_items))
     logging.info("Items previously notified: %s - [%s]", len(previously_notified_items),
