@@ -26,7 +26,7 @@ queries:
   - query_id: monopoly_stranger_things
     search_text: monopoly
     attribute_ids[catalog]: 4881
-    attribute_ids[brand]: 1794815105
+    attribute_ids[brand]: 114196
     price_from: 20
     price_to: 22
     order: relevance
