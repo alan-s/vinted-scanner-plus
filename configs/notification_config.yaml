@@ -1,4 +1,5 @@
 # The message format and the external connectors for sending notifications
+# Warning: never commit production tokens to Git. For production runs on GitHub, store tokens in an Actions secret
 #
 # Message format
 # 'include_description': include the item description in the notification (default = false)
