@@ -12,9 +12,9 @@
 #   - 'value': the value to use in the comparison operator (can accept csv list of values)
 filters:
   - query_id: monopoly_stranger_things
-    mode: include
+    mode: exclude
     rules:
       - key: title
         operator: contains
         word_match: true
-        value: Stranger Things 
+        value: cluedo

@@ -26,11 +26,11 @@ search:
 # Note: where supported, multiple values can be supplied in comma supported format e.g. attribute_ids[brand]: 1317890,295656
 queries:
   - query_id: monopoly_stranger_things
-    search_text: monopoly
+    search_text: monopoly stranger things
     attribute_ids[catalog]: 4881
     attribute_ids[brand]: 114196
     price_from: 20
-    price_to: 50
+    price_to: 25
     order: relevance
   - query_id: cluedo_harry_potter
     search_text: cluedo harry potter
