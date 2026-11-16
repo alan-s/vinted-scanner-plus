@@ -1,4 +1,3 @@
-import logging
 from itertools import islice
 
 import managers.filter_manager as filter_manager
@@ -6,9 +5,6 @@ import managers.logging_manager as logging_manager
 import managers.notification_manager as notifications_manager
 import managers.state_manager as state_manager
 import managers.vinted_api_manager as vinted_api_manager
-
-logging_manager.init_logger()
-logger = logging.getLogger(__name__)
 
 _all_configs = None
 
@@ -28,14 +24,14 @@ def process_query(query, session, args):
 
     # Skip if query is disabled
     if query_disabled:
-        logger.info(
+        logging_manager.info(
             f"Skipped query [{query_id}]; 'disabled' set in query config at '{state_config['file_path']}'")
         return
 
     # Request items from the Vinted API based on the search parameters
     items = vinted_api_manager.get_items_from_catalogue_search(session, search_config, query) or []
-    logger.info("Vinted search API returned %d item(s) in total with IDs: %s", len(items),
-                [item.get("id") for item in items])
+    logging_manager.info("Vinted search API returned %d item(s) in total with IDs: %s", len(items),
+                         [item.get("id") for item in items])
 
     # Keep track for end-of-run stats
     excluded_items = []
@@ -47,7 +43,7 @@ def process_query(query, session, args):
     # Process each item returned in the response, and notify based on filters
     max_items = search_config['search']['max_items']
     if items:
-        logger.info("The maximum number of items to process/notify (from config): %s", max_items)
+        logging_manager.info("The maximum number of items to process/notify (from config): %s", max_items)
 
     # Load the list of already notified items
     already_notified_items = {k: v for k, v in state_config.items() if k != "file_path"}
@@ -59,14 +55,14 @@ def process_query(query, session, args):
 
         # Check if the item has already been notified to prevent sending it again
         if item_id in already_notified_items:
-            logger.info(
+            logging_manager.info(
                 f"Skipped item [{item_id}]; listed as previously seen/notified in '{state_config['file_path']}'")
             previously_notified_items.append(item_id)
             continue
 
         # Check against item filters
         if args.log_filtering:
-            logger.info(f"Checking item [{item_id}] against [item] filters")
+            logging_manager.info(f"Checking item [{item_id}] against [item] filters")
 
         item_filters = item_filters_config['filters']
         if not filter_manager.filter_item(item_id, item, query_id, item_filters, "item", args):
@@ -75,12 +71,12 @@ def process_query(query, session, args):
             continue
 
         # Get seller detail for item
-        logger.info(f"Getting seller details for item [{item_id}]")
+        logging_manager.info(f"Getting seller details for item [{item_id}]")
         seller = get_seller_details(item, session, search_config)
 
         # Check against seller filters
         if args.log_filtering:
-            logger.info(f"Checking item [{item_id}] against [seller] filters")
+            logging_manager.info(f"Checking item [{item_id}] against [seller] filters")
 
         seller_filters = seller_filters_config['filters']
         if not filter_manager.filter_item(item_id, seller, query_id, seller_filters, "seller", args):
@@ -89,7 +85,7 @@ def process_query(query, session, args):
             continue
 
         if args.log_filtering:
-            logger.info(f"Item [{item_id}] meets all selection filters and no exclusions apply")
+            logging_manager.info(f"Item [{item_id}] meets all selection filters and no exclusions apply")
 
         # Send notification is set
         candidate_items.append(item_id)
@@ -101,9 +97,9 @@ def process_query(query, session, args):
                 notified_items.append(item_id)
             else:
                 failed_notified_items.append(item_id)
-                logger.error(f"Failed to send notification for item [{item_id}]")
+                logging_manager.error(f"Failed to send notification for item [{item_id}]")
         else:
-            logger.info(f"No notification sent for item [{item_id}]; '--{list(vars(args))[1]}' not set")
+            logging_manager.info(f"No notification sent for item [{item_id}]; '--{list(vars(args))[1]}' not set")
 
         logging_manager.item_log_printer(item_id, "Completed", log_type="item")
 
@@ -148,7 +144,7 @@ def get_item_details_for_message(item, search_config, session):
     item_image = item_photo.get("full_size_url")
 
     # Scrape the HTML response for the upload time
-    logger.info(f"Getting additional item details from Vinted")
+    logging_manager.info(f"Getting additional item details from Vinted")
     item_description, item_upload_time = vinted_api_manager.get_item_description_and_upload_datetime(session,
                                                                                                      search_config,
                                                                                                      item_id)
@@ -178,7 +174,8 @@ def get_seller_details(item, session, search_config):
 def send_notification(notification_config, message_details, seller, args, state_config):
     if not notification_config['telegram']['telegram_bot_token'] or not notification_config['telegram'][
         'telegram_chat_id']:
-        logger.error(f"Missing 'bot_token' or 'chat_id' in notification config at '{notification_config['file_path']}'")
+        logging_manager.error(
+            f"Missing 'bot_token' or 'chat_id' in notification config at '{notification_config['file_path']}'")
         return False
 
     # Send Telegram notifications if configured
@@ -194,10 +191,10 @@ def send_notification(notification_config, message_details, seller, args, state_
             if state_manager.record_already_notified_item(state_config['file_path'], message_details['item_id'],
                                                           message_details['item_title'],
                                                           message_details['item_price']):
-                logger.info(
+                logging_manager.info(
                     f"Recorded notification for item [{message_details['item_id']}] in '{state_config['file_path']}'")
         else:
-            logger.info(
+            logging_manager.info(
                 f"Not recording notification for item [{message_details['item_id']}] in '{state_config['file_path']}'; '--{list(vars(args))[2]}' set")
 
         return True

@@ -1,12 +1,7 @@
-import logging
-
 import requests
 from bs4 import BeautifulSoup
 
 import managers.logging_manager as logging_manager
-
-logging_manager.init_logger()
-logger = logging.getLogger(__name__)
 
 # Timeout configuration for the requests
 TIMEOUT_CONNECTION = 30
@@ -68,7 +63,7 @@ def initialise_vinted_session(search_config):
         return session
 
     except (requests.exceptions.RequestException, ValueError) as e:
-        logger.error("Unable to initialise Vinted session: %s", e)
+        logging_manager.error("Unable to initialise Vinted session: %s", e)
         return None
 
 
@@ -108,20 +103,20 @@ def get_items_from_catalogue_search(session, search_config, query_params):
 
             response = session.get(url=url, params=query_params)
 
-            logger.info("Vinted search API called: %s", response.url)
+            logging_manager.info("Vinted search API called: %s", response.url)
 
             response.raise_for_status()
             data = response.json()
 
         except (requests.exceptions.RequestException, ValueError) as e:
-            logger.error("Unable to fetch Vinted page %s: %s", page, e)
+            logging_manager.error("Unable to fetch Vinted page %s: %s", page, e)
             return None
 
         # Extract and validate items
         new_items = data.get("items") if isinstance(data, dict) else None
 
         if not isinstance(new_items, list):
-            logger.error(
+            logging_manager.error(
                 "Vinted response did not contain an items list "
                 "(status=%s, keys=%s)",
                 response.status_code,
@@ -132,7 +127,7 @@ def get_items_from_catalogue_search(session, search_config, query_params):
         # Add current page items to the existing collection
         items.extend(new_items)
 
-        logger.info(
+        logging_manager.info(
             "Vinted page %d returned %d item(s)", page, len(new_items)
         )
         data = response.json()
@@ -154,10 +149,10 @@ def get_item_description_and_upload_datetime(session, search_config, item_id):
 
         response = session.get(url=url)
 
-        logger.info("Vinted item endpoint called: %s", response.url)
+        logging_manager.info("Vinted item endpoint called: %s", response.url)
 
     except (requests.exceptions.RequestException, ValueError) as e:
-        logger.error("Unable to fetch Vinted item page: %s", e)
+        logging_manager.error("Unable to fetch Vinted item page: %s", e)
         return None
 
     try:
@@ -172,7 +167,7 @@ def get_item_description_and_upload_datetime(session, search_config, item_id):
             attrs={"itemprop": "upload_date"}
         )
     except Exception as e:
-        logger.error(e, exc_info=True)
+        logging_manager.error(e, exc_info=True)
         return None
 
     return (
@@ -189,7 +184,7 @@ def get_user_details(session, search_config, user_id):
 
         response = session.get(url=url)
 
-        logger.info("Vinted seller API called: %s", response.url)
+        logging_manager.info("Vinted seller API called: %s", response.url)
 
         response.raise_for_status()
 
@@ -198,11 +193,11 @@ def get_user_details(session, search_config, user_id):
         return data.get("user")
 
     except (requests.exceptions.RequestException, ValueError) as e:
-        logger.error(f"Unable to fetch Vinted seller {user_id}: {e}")
+        logging_manager.error(f"Unable to fetch Vinted seller {user_id}: {e}")
         return None
 
 
 def close_session(session):
     if session is not None:
         session.close()
-        logger.info("Vinted session closed")
+        logging_manager.info("Vinted session closed")

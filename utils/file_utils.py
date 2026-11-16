@@ -1,13 +1,9 @@
-import logging
 import sys
 from pathlib import Path
 
 import yaml
 
 import managers.logging_manager as logging_manager
-
-logging_manager.init_logger()
-logger = logging.getLogger(__name__)
 
 
 def load_yaml(path):
@@ -18,11 +14,11 @@ def load_yaml(path):
         return loaded_yaml
 
     except yaml.YAMLError as e:
-        logger.error("Error: invalid YAML syntax. Error: %s", e)
+        logging_manager.error("Error: invalid YAML syntax. Error: %s", e)
         sys.exit(1)
 
     except OSError as e:
-        logger.error("Error: Unable to read YAML file [%s]. Error: %s", path, e)
+        logging_manager.error("Error: Unable to read YAML file [%s]. Error: %s", path, e)
         sys.exit(1)
 
 

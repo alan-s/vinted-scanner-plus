@@ -1,11 +1,6 @@
-import logging
-
 import requests
 
 import managers.logging_manager as logging_manager
-
-logging_manager.init_logger()
-logger = logging.getLogger(__name__)
 
 # Timeout configuration for the requests
 TIMEOUT_CONNECTION = 30
@@ -87,16 +82,16 @@ def send_telegram_message(notification_config, item_id, item_title, item_desc, i
         )
 
         if response.status_code != 200:
-            logger.error(
+            logging_manager.error(
                 f"Telegram notification failed for item [{item_id}]. "
                 f"Status code: {response.status_code}, Response: {response.text}"
             )
             return False
         else:
-            logger.info("Telegram notification sent for item [%s]. API called: %s", item_id, url)
+            logging_manager.info("Telegram notification sent for item [%s]. API called: %s", item_id, url)
             return True
 
     except requests.exceptions.RequestException as e:
-        logger.error(f"Error sending Telegram message: {e}")
+        logging_manager.error(f"Error sending Telegram message: {e}")
 
         return False

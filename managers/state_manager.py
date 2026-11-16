@@ -1,12 +1,8 @@
 import csv
-import logging
 import sys
 from pathlib import Path
 
 import managers.logging_manager as logging_manager
-
-logging_manager.init_logger()
-logger = logging.getLogger(__name__)
 
 already_notified_items = {}
 
@@ -24,17 +20,17 @@ def load_already_notified_items(path):
                         "title": title,
                         "price": price,
                     }
-            logger.info(
+            logging_manager.info(
                 f"Loaded {len(already_notified_items)} already notified item(s) from '{path}'")
-            logger.info(f"Already notified items: [{', '.join(already_notified_items.keys())}]")
+            logging_manager.info(f"Already notified items: [{', '.join(already_notified_items.keys())}]")
 
     except FileNotFoundError:
-        logger.info(f"No previous state file at '{path}' found; clean run")
+        logging_manager.info(f"No previous state file at '{path}' found; clean run")
     except IOError as e:
-        logger.error(e, exc_info=True)
+        logging_manager.error(e, exc_info=True)
         sys.exit(1)
     except (csv.Error, UnicodeDecodeError, ValueError) as e:
-        logger.error("CSV validation failed. Error: %s in row %s", e, row)
+        logging_manager.error("CSV validation failed. Error: %s in row %s", e, row)
         sys.exit(1)
 
     return already_notified_items
@@ -50,5 +46,5 @@ def record_already_notified_item(path, item_id, title, price):
             writer.writerow([item_id, title, price])
         return True
     except IOError as e:
-        logger.error(e, exc_info=True)
+        logging_manager.error(e, exc_info=True)
         sys.exit(1)

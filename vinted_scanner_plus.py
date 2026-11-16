@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-import logging
 import pathlib
 import sys
 
@@ -9,48 +8,21 @@ import managers.logging_manager as logging_manager
 import managers.query_manager as query_manager
 import managers.vinted_api_manager as vinted_api_manager
 
-logging_manager.init_logger()
-logger = logging.getLogger(__name__)
-
-parser = argparse.ArgumentParser()
-
-parser.add_argument(
-    "--log_filtering",
-    action="store_true",
-    dest="log_filtering",
-    default=False,
-    help="Enable logging when filtering items. By default, logging of filters is off"
-)
-
-parser.add_argument(
-    "--enable_notifications",
-    action="store_true",
-    dest="enable_notifications",
-    default=False,
-    help="Enable notifications to external connectors e.g. Telegram. By default, no notifications are sent"
-)
-
-parser.add_argument(
-    "--disable_state_file",
-    action="store_true",
-    dest="disable_state_file",
-    default=False,
-    help="Disable storing previously notified items in a state file. By default, notified items are stored"
-)
-
-args = parser.parse_args()
-
 
 def main():
-    logger.info("")
-    logger.info("================================================================================")
-    logger.info("                                  VINTED SCANNER PLUS                           ")
-    logger.info("================================================================================")
-    logger.info("")
+    # Setup
+    args = configure_args()
+    logging_manager.init_logger()
+
+    logging_manager.info("")
+    logging_manager.info("================================================================================")
+    logging_manager.info("                                  VINTED SCANNER PLUS                           ")
+    logging_manager.info("================================================================================")
+    logging_manager.info("")
 
     # Print what options app has been launched with
     args_str = " ".join(sys.argv[1:])
-    logger.info(f"Launched with the following args: {args_str}")
+    logging_manager.info(f"Launched with the following args: {args_str}")
 
     # Get all the required file paths from config
     base_dir = pathlib.Path.cwd()
@@ -64,7 +36,7 @@ def main():
 
     # No search queries
     if not queries:
-        logger.info(f"Terminating; no search queries defined in '{search_config['file_path']}'")
+        logging_manager.info(f"Terminating; no search queries defined in '{search_config['file_path']}'")
         sys.exit(0)
 
     # Init session to be used for api calls
@@ -77,7 +49,37 @@ def main():
 
     # Close api sessions
     vinted_api_manager.close_session(session)
-    logger.info("Completed processing all querie(s). Exiting")
+    logging_manager.info("Completed processing all querie(s). Exiting")
+
+
+def configure_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--log_filtering",
+        action="store_true",
+        dest="log_filtering",
+        default=False,
+        help="Enable logging when filtering items. By default, logging of filters is off"
+    )
+
+    parser.add_argument(
+        "--enable_notifications",
+        action="store_true",
+        dest="enable_notifications",
+        default=False,
+        help="Enable notifications to external connectors e.g. Telegram. By default, no notifications are sent"
+    )
+
+    parser.add_argument(
+        "--disable_state_file",
+        action="store_true",
+        dest="disable_state_file",
+        default=False,
+        help="Disable storing previously notified items in a state file. By default, notified items are stored"
+    )
+
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
