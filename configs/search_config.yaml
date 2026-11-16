@@ -23,17 +23,17 @@ search:
 # 'disabled' : [true,false] all queries are processed. Add optional 'disabled: true' to not skip query
 # Note: where supported, multiple values can be supplied in comma supported format e.g. attribute_ids[brand]: 1317890,295656
 queries:
-  - query_id: sheriff_board_game
-    search_text: Sheriff
+  - query_id: monopoly_stranger_things
+    search_text: monopoly
     attribute_ids[catalog]: 4881
-    attribute_ids[brand]: 1317890
-    price_from: 5
-    price_to: 20
-    order: newest_first
-    disabled: false
-  - query_id: star_wars_deck_building
-    search_text: star wars deck building
+    attribute_ids[brand]: 1794815105
+    price_from: 20
+    price_to: 22
+    order: relevance
+  - query_id: cluedo_harry_potter
+    search_text: cluedo harry potter
     attribute_ids[catalog]: 4881
-    price_from: 5
-    price_to: 10
+    price_from: 25
+    price_to: 30
     order: newest_first
+    disabled: true

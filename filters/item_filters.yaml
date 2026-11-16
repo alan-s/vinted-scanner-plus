@@ -11,10 +11,10 @@
 #   - 'word_match' : [true,false] default string operator 'contains' is partial matching. Add optional 'word_match: true' for full word matching)
 #   - 'value': the value to use in the comparison operator (can accept csv list of values)
 filters:
-  - query_id: sheriff_board_game
-    mode: exclude
+  - query_id: monopoly_stranger_things
+    mode: include
     rules:
       - key: title
         operator: contains
         word_match: true
-        value: 2nd edition, 1st
+        value: Stranger Things 
