@@ -50,7 +50,7 @@ def process_query(query, session, args):
         logger.info("The maximum number of items to process/notify (from config): %s", max_items)
 
     # Load the list of already notified items
-    already_notified_items = state_manager.load_already_notified_items(state_config['file_path'])
+    already_notified_items = {k: v for k, v in state_config.items() if k != "file_path"}
 
     for item in islice(items, max_items):
 
@@ -92,18 +92,17 @@ def process_query(query, session, args):
             logger.info(f"Item [{item_id}] meets all selection filters and no exclusions apply")
 
         # Send notification is set
+        candidate_items.append(item_id)
         if args.enable_notifications:
 
             # Construct message details for item
             message_details = get_item_details_for_message(item, search_config, session)
-            if notification_config['telegram']['telegram_bot_token'] and notification_config['telegram'][
-                'telegram_chat_id']:
-                if send_notification(notification_config, message_details, seller, args, state_config):
-                    notified_items.append(item_id)
-                else:
-                    failed_notified_items.append(item_id)
+            if send_notification(notification_config, message_details, seller, args, state_config):
+                notified_items.append(item_id)
+            else:
+                failed_notified_items.append(item_id)
+                logger.error(f"Failed to send notification for item [{item_id}]")
         else:
-            candidate_items.append(item_id)
             logger.info(f"No notification sent for item [{item_id}]; '--{list(vars(args))[1]}' not set")
 
         logging_manager.item_log_printer(item_id, "Completed", log_type="item")
@@ -149,6 +148,7 @@ def get_item_details_for_message(item, search_config, session):
     item_image = item_photo.get("full_size_url")
 
     # Scrape the HTML response for the upload time
+    logger.info(f"Getting additional item details from Vinted")
     item_description, item_upload_time = vinted_api_manager.get_item_description_and_upload_datetime(session,
                                                                                                      search_config,
                                                                                                      item_id)
@@ -176,6 +176,11 @@ def get_seller_details(item, session, search_config):
 
 
 def send_notification(notification_config, message_details, seller, args, state_config):
+    if not notification_config['telegram']['telegram_bot_token'] or not notification_config['telegram'][
+        'telegram_chat_id']:
+        logger.error(f"Missing 'bot_token' or 'chat_id' in notification config at '{notification_config['file_path']}'")
+        return False
+
     # Send Telegram notifications if configured
     if notifications_manager.send_telegram_message(notification_config, message_details['item_id'],
                                                    message_details['item_title'],
@@ -186,11 +191,11 @@ def send_notification(notification_config, message_details, seller, args, state_
 
         # Record item as notified in state file if set
         if not args.disable_state_file:
-            state_manager.record_already_notified_item(state_config['file_path'], message_details['item_id'],
-                                                       message_details['item_title'],
-                                                       message_details['item_price'])
-            logger.info(
-                f"Recorded notification for item [{message_details['item_id']}] in '{state_config['file_path']}'")
+            if state_manager.record_already_notified_item(state_config['file_path'], message_details['item_id'],
+                                                          message_details['item_title'],
+                                                          message_details['item_price']):
+                logger.info(
+                    f"Recorded notification for item [{message_details['item_id']}] in '{state_config['file_path']}'")
         else:
             logger.info(
                 f"Not recording notification for item [{message_details['item_id']}] in '{state_config['file_path']}'; '--{list(vars(args))[2]}' set")

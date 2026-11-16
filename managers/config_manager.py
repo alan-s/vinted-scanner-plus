@@ -3,6 +3,7 @@ import sys
 
 import managers.filter_manager as filter_manager
 import managers.logging_manager as logging_manager
+import managers.state_manager as state_manager
 import utils.file_utils as file_utils
 
 logging_manager.init_logger()
@@ -51,8 +52,10 @@ def load_configs_from_config_yaml(yaml_config):
                 logger.info(
                     f"Loaded {len(file_configs['search_config']['queries'])} search querie(s) from '{config['file_path']}'")
         elif config_name in CSV_FILES:
-            file_configs[config_name] = config
+            file_configs[config_name] = state_manager.load_already_notified_items(config['file_path'])
         else:
             file_configs[config_name] = None
+
+        file_configs[config_name]['file_path'] = config['file_path']
 
     return file_configs

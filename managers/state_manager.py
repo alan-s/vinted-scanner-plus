@@ -48,7 +48,7 @@ def record_already_notified_item(path, item_id, title, price):
         with open(path, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow([item_id, title, price])
-
+        return True
     except IOError as e:
         logger.error(e, exc_info=True)
         sys.exit(1)

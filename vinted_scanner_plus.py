@@ -3,7 +3,6 @@ import argparse
 import logging
 import pathlib
 import sys
-from re import search
 
 import managers.config_manager as config_manager
 import managers.logging_manager as logging_manager
@@ -78,9 +77,7 @@ def main():
 
     # Close api sessions
     vinted_api_manager.close_session(session)
-
-    logger.info(f"Completed processing all querie(s). Exiting.")
-
+    logger.info("Completed processing all querie(s). Exiting")
 
 if __name__ == "__main__":
     main()
