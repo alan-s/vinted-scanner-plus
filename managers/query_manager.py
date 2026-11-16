@@ -29,7 +29,7 @@ def process_query(query, session, args):
     # Skip if query is disabled
     if query_disabled:
         logger.info(
-            f"Skipped query [{query_id}]; 'disabled' flag set in search config at '{state_config['file_path']}'")
+            f"Skipped query [{query_id}]; 'disabled' set in query config at '{state_config['file_path']}'")
         return
 
     # Request items from the Vinted API based on the search parameters

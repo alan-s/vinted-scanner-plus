@@ -8,11 +8,13 @@ vinted:
   vinted_api_url: https://api.vinted.co.uk
   locale:
 
-# 'pages': number of pages to scan for each request. Note, Vinted returns a maximum of 96 items per page by default
+# 'pages': number of pages to scan for each request
+# 'per_page' : number of items per page to return. 24 with 'order' by 'relevance' appears to be a good combination
 # 'max_items': maximum number of items to process (and potentially notify) for each search query
 search:
   pages: 2
-  max_items: 10
+  per_page: 96
+  max_items: 14
 
 # Vinted queries for search
 # 'query_id' : provide a unique query identifier

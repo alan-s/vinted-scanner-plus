@@ -93,6 +93,7 @@ def build_api_headers(search_config):
 def get_items_from_catalogue_search(session, search_config, query_params):
     url = f"{search_config['vinted']['vinted_api_url']}/svc-catalogue/items"
     pages = search_config['search']['pages']
+    per_page = search_config['search']['per_page']
     query_params = {k: v for k, v in query_params.items() if k != "query_id"}
 
     page = 1
@@ -100,7 +101,7 @@ def get_items_from_catalogue_search(session, search_config, query_params):
 
     while page <= pages:
 
-        query_params = {**query_params, "page": page}
+        query_params = {**query_params, "per_page": per_page, "page": page}
 
         # Request items from the Vinted API based on the search parameters
         try:
