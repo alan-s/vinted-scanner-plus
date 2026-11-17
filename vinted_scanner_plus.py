@@ -63,7 +63,7 @@ def configure_args():
         dest="log_path",
         type=pathlib.Path,
         default=pathlib.Path(__file__).resolve().parent / "vinted_scanner_plus.log",
-        help="Set the desire log path used"
+        help="Set the desired log path to use"
     )
 
     parser.add_argument(

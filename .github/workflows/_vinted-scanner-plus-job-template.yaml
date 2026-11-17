@@ -7,6 +7,9 @@ on:
         required: false
         type: string
         default: ""
+      log_path:
+        required: true
+        type: string
 
       CONFIGS:
         required: true
@@ -48,6 +51,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Retrieve latest seen items CSV
+        run: |
+          git fetch origin main
+          git checkout origin/main -- state/already_notified_items.csv || true
+
       - name: Load config and filter yaml from input vars
         env:
           CONFIGS: ${{ inputs.CONFIGS }}
@@ -68,6 +76,12 @@ jobs:
           printf '%s' "$ITEM_FILTERS" > filters/item_filters.yaml
           printf '%s' "$SELLER_FILTERS" > filters/seller_filters.yaml
 
+      - name: Set environment variables
+        env:
+          INPUT_LOG_PATH: ${{ inputs.log_path }}
+        run: |
+          echo "LOG_PATH=$INPUT_LOG_PATH" >> "$GITHUB_ENV"
+
       - name: Run scanner
         env:
           SCANNER_ARGS: ${{ inputs.args }}
@@ -78,8 +92,10 @@ jobs:
           import subprocess
 
           args = shlex.split(os.environ.get("SCANNER_ARGS", ""))
+          log_path = os.environ["LOG_PATH"]
+
           subprocess.run(
-              ["python3", "vinted_scanner_plus.py", *args],
+              ["python3", "vinted_scanner_plus.py", *args, "--log-path", log_path],
               check=True
           )'
 
@@ -89,11 +105,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Retrieve the latest CSV from GitHub
-          git fetch origin main
-          git checkout origin/main -- state/already_notified_items.csv || true
-
-          # Stage the updated CSV
           git add state/already_notified_items.csv
 
           # Commit and push only if changes exist
@@ -109,7 +120,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add vinted_scanner_plus.log
+          if [ ! -f "$LOG_PATH" ]; then
+            echo "Log file not found: $LOG_PATH"
+            exit 1
+          fi
+
+          git add "$LOG_PATH"
 
           if git diff --cached --quiet; then
             echo "No new logs to commit."
