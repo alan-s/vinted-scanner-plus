@@ -3,8 +3,6 @@ from pathlib import Path
 
 import yaml
 
-import managers.logging_manager as logging_manager
-
 
 def load_yaml(path):
     try:
@@ -14,11 +12,11 @@ def load_yaml(path):
         return loaded_yaml
 
     except yaml.YAMLError as e:
-        logging_manager.error("Error: invalid YAML syntax. Error: %s", e)
+        logger.error("Error: invalid YAML syntax. Error: %s", e)
         sys.exit(1)
 
     except OSError as e:
-        logging_manager.error("Error: Unable to read YAML file [%s]. Error: %s", path, e)
+        logger.error("Error: Unable to read YAML file [%s]. Error: %s", path, e)
         sys.exit(1)
 
 

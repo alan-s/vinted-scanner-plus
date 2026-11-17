@@ -1,9 +1,11 @@
+import logging
 import sys
 
-import managers.filter_manager as filter_manager
-import managers.logging_manager as logging_manager
-import managers.state_manager as state_manager
-import utils.file_utils as file_utils
+from managers.filter_manager import load_filters
+from managers.state_manager import load_already_notified_items
+from utils.file_utils import load_yaml, build_file_path
+
+logger = logging.getLogger(__name__)
 
 ALL_YAML_FILES = {'search_config', 'item_filters_config', 'seller_filters_config', 'notification_config'}
 FILTER_YAML_FILES = {'item_filters_config', 'seller_filters_config'}
@@ -12,7 +14,7 @@ CSV_FILES = {'state_config'}
 
 def load_configs_file_with_paths(path):
     try:
-        configs = file_utils.load_yaml(path)
+        configs = load_yaml(path)
 
         validation_passed = validate_file_configs(configs)
         if validation_passed is not True:
@@ -21,22 +23,22 @@ def load_configs_file_with_paths(path):
         file_configs = configs['file_configs']
 
         for config_name, config in file_configs.items():
-            file_path = file_utils.build_file_path(config['file_name'], config['directory_name'], config['base_path'])
+            file_path = build_file_path(config['file_name'], config['directory_name'], config['base_path'])
 
             config['file_path'] = file_path
 
-        logging_manager.info("Loaded 'configs.yaml' from '%s'", path)
+        logger.info("Loaded 'configs.yaml' from '%s'", path)
 
         return configs
 
     except ValueError as e:
-        logging_manager.error(f"Configs file at '%s' failed validation: %s", path, e)
+        logger.error(f"Configs file at '%s' failed validation: %s", path, e)
         sys.exit(1)
     except FileNotFoundError, IOError:
-        logging_manager.error(f"No configs file found at '%s'", path)
+        logger.error(f"No configs file found at '%s'", path)
         sys.exit(1)
     except IOError as e:
-        logging_manager.error(e, exc_info=True)
+        logger.error(e, exc_info=True)
         sys.exit(1)
 
 
@@ -47,16 +49,16 @@ def load_configs_from_config_yaml(yaml_config):
     for config_name, config in meta_configs.items():
 
         if config_name in FILTER_YAML_FILES:
-            file_configs[config_name] = filter_manager.load_filters(config_name, config['file_path'])
+            file_configs[config_name] = load_filters(config_name, config['file_path'])
 
         elif config_name in ALL_YAML_FILES.difference(FILTER_YAML_FILES):
-            file_configs[config_name] = file_utils.load_yaml(config['file_path'])
+            file_configs[config_name] = load_yaml(config['file_path'])
 
             if config_name == "search_config":
-                logging_manager.info(
+                logger.info(
                     f"Loaded {len(file_configs['search_config']['queries'])} search querie(s) from '{config['file_path']}'")
         elif config_name in CSV_FILES:
-            file_configs[config_name] = state_manager.load_already_notified_items(config['file_path'])
+            file_configs[config_name] = load_already_notified_items(config['file_path'])
         else:
             file_configs[config_name] = None
 

@@ -1,26 +1,28 @@
+import logging
 import re
 import sys
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-import managers.logging_manager as logging_manager
-import utils.file_utils as file_utils
-import utils.text_utils as text_utils
+from utils.file_utils import load_yaml
+from utils.text_utils import normalise
+
+logger = logging.getLogger(__name__)
 
 
 def load_filters(filter_type, path):
     try:
-        filter_config = file_utils.load_yaml(path)
+        filter_config = load_yaml(path)
         validate_filters(filter_config)
 
     except ValueError as e:
-        logging_manager.error("Invalid filter configuration in %s. Error: %s", path, e)
+        logger.error("Invalid filter configuration in %s. Error: %s", path, e)
         sys.exit(1)
 
     # No YAML content means no filters
     filter_config = filter_config or {"filters": []}
 
-    logging_manager.info(
+    logger.info(
         "Loaded %s [%s] filter(s) from '%s'",
         len(filter_config["filters"]),
         filter_type,
@@ -224,7 +226,7 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: list, fil
     ]
 
     if args.log_filtering:
-        logging_manager.info(
+        logger.info(
             f"Item [{item_id}] in scope for {len(matching_queries)} {filter_label} filter(s) - "
             f"[{', '.join(query['query_id'] for query in matching_queries)}]"
         )
@@ -240,41 +242,41 @@ def filter_item(item_id, data_to_filter: dict, query_id: str, filters: list, fil
             # All rules must match.
             for rule in rules:
                 if args.log_filtering:
-                    logging_manager.info("Checking item [%s] against rule: [%s] on key: [%s] in mode: [%s]", item_id,
-                                         query_id,
-                                         rule["key"], mode)
+                    logger.info("Checking item [%s] against rule: [%s] on key: [%s] in mode: [%s]", item_id,
+                                query_id,
+                                rule["key"], mode)
 
                 if not item_matches_rule(data_to_filter, rule, word_match=rule.get("word_match", False)):
                     if args.log_filtering:
-                        logging_manager.info(
+                        logger.info(
                             "[ FAIL ✗ ] excluded item [%s] for not matching [%s] filter rule [%s, %s, %s] in [%s] mode",
                             item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
 
                     return False
 
                 elif args.log_filtering:
-                    logging_manager.info("[ PASS ✓ ] item [%s] not excluded for rule. Checking next rule if any",
-                                         item_id)
+                    logger.info("[ PASS ✓ ] item [%s] not excluded for rule. Checking next rule if any",
+                                item_id)
 
         elif mode == "exclude":
             # Any matching rule excludes the item.
             for rule in rules:
                 if args.log_filtering:
-                    logging_manager.info("Checking item [%s] against rule: [%s] on key: [%s] in mode: [%s]", item_id,
-                                         query_id,
-                                         rule["key"], mode)
+                    logger.info("Checking item [%s] against rule: [%s] on key: [%s] in mode: [%s]", item_id,
+                                query_id,
+                                rule["key"], mode)
 
                 if item_matches_rule(data_to_filter, rule, word_match=rule.get("word_match", False)):
                     if args.log_filtering:
-                        logging_manager.info(
+                        logger.info(
                             "[ FAIL ✗ ] excluded item [%s] for matching [%s] filter rule [%s, %s, %s] in [%s] mode",
                             item_id, filter_label, query_id, rule["key"], rule.get("value", "<not required>"), mode)
 
                     return False
 
                 elif args.log_filtering:
-                    logging_manager.info("[ PASS ✓ ] item [%s] not excluded for rule. Checking next rule if any",
-                                         item_id)
+                    logger.info("[ PASS ✓ ] item [%s] not excluded for rule. Checking next rule if any",
+                                item_id)
 
         else:
             raise ValueError(f"Invalid filter mode: {mode}")
@@ -294,7 +296,7 @@ def item_matches_rule(item: dict, rule: dict, word_match=False) -> bool:
         return exists
 
     if not exists:
-        logging_manager.info(
+        logger.info(
             "Key [%s] not found in item [%s]",
             key,
             item.get("id"),
@@ -309,7 +311,7 @@ def item_matches_rule(item: dict, rule: dict, word_match=False) -> bool:
 
     rule_value = rule["value"]
 
-    logging_manager.info(
+    logger.info(
         "Rule value(s): [%s], actual value: [%s], operator: [%s]%s",
         rule_value,
         actual,
@@ -362,8 +364,8 @@ def values_match(actual, rule_value, operator="equals", word_match=False):
         # String equality.
         if isinstance(actual, str) and isinstance(rule_value, str):
             return any(
-                text_utils.normalise(value.strip())
-                == text_utils.normalise(actual)
+                normalise(value.strip())
+                == normalise(actual)
                 for value in rule_value.split(",")
                 if value.strip()
             )
@@ -396,13 +398,13 @@ def values_match(actual, rule_value, operator="equals", word_match=False):
                 "Check values from Vinted API and in rule config"
             )
 
-        actual = text_utils.normalise(str(actual))
+        actual = normalise(str(actual))
         rule_value = str(rule_value)
 
         # Support comma-separated rule values.
         # Any one of the values matching is sufficient.
         rule_values = [
-            text_utils.normalise(value.strip())
+            normalise(value.strip())
             for value in rule_value.split(",")
             if value.strip()
         ]

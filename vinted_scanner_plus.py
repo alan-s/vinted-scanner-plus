@@ -1,34 +1,37 @@
 #!/usr/bin/env python3
 import argparse
+import logging
 import pathlib
 import sys
 
-import managers.config_manager as config_manager
-import managers.logging_manager as logging_manager
-import managers.query_manager as query_manager
-import managers.vinted_api_manager as vinted_api_manager
+from managers.config_manager import load_configs_file_with_paths, load_configs_from_config_yaml
+from managers.logging_manager import init_logger
+from managers.query_manager import initialise, process_query
+from managers.vinted_api_manager import initialise_vinted_session, close_session
 
 
 def main():
     # Setup
     args = configure_args()
-    logging_manager.init_logger()
+    init_logger(args.log_path)
+    logger = logging.getLogger(__name__)
 
-    logging_manager.info("")
-    logging_manager.info("================================================================================")
-    logging_manager.info("                                  VINTED SCANNER PLUS                           ")
-    logging_manager.info("================================================================================")
-    logging_manager.info("")
+    logger.info("")
+    logger.info("================================================================================")
+    logger.info("                                  VINTED SCANNER PLUS                           ")
+    logger.info("================================================================================")
+    logger.info("")
 
     # Print what options app has been launched with
     args_str = " ".join(sys.argv[1:])
-    logging_manager.info(f"Launched with the following args: {args_str}")
+    logger.info(f"Launched with the following args: {args_str}")
+    logger.info(f"Logging to '{args.log_path})'")
 
     # Get all the required file paths from config
     base_dir = pathlib.Path.cwd()
     config_file_path = base_dir / "configs" / "configs.yaml"
-    config_yaml = config_manager.load_configs_file_with_paths(config_file_path)
-    all_configs = config_manager.load_configs_from_config_yaml(config_yaml)
+    config_yaml = load_configs_file_with_paths(config_file_path)
+    all_configs = load_configs_from_config_yaml(config_yaml)
 
     # Load search queries
     search_config = all_configs['search_config']
@@ -36,27 +39,35 @@ def main():
 
     # No search queries
     if not queries:
-        logging_manager.info(f"Terminating; no search queries defined in '{search_config['file_path']}'")
+        logger.info(f"Terminating; no search queries defined in '{search_config['file_path']}'")
         sys.exit(0)
 
     # Init session to be used for api calls
-    session = vinted_api_manager.initialise_vinted_session(search_config)
+    session = initialise_vinted_session(search_config)
 
     # Loop through each search query defined in config
-    query_manager.initialise(all_configs)
+    initialise(all_configs)
     for query in queries:
-        query_manager.process_query(query, session, args)
+        process_query(query, session, args)
 
     # Close api sessions
-    vinted_api_manager.close_session(session)
-    logging_manager.info("Completed processing all querie(s). Exiting")
+    close_session(session)
+    logger.info("Completed processing all querie(s). Exiting")
 
 
 def configure_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--log_filtering",
+        "--log-path",
+        dest="log_path",
+        type=pathlib.Path,
+        default=pathlib.Path(__file__).resolve().parent / "vinted_scanner_plus.log",
+        help="Set the desire log path used"
+    )
+
+    parser.add_argument(
+        "--log-filtering",
         action="store_true",
         dest="log_filtering",
         default=False,
@@ -64,7 +75,7 @@ def configure_args():
     )
 
     parser.add_argument(
-        "--enable_notifications",
+        "--enable-notifications",
         action="store_true",
         dest="enable_notifications",
         default=False,
@@ -72,7 +83,7 @@ def configure_args():
     )
 
     parser.add_argument(
-        "--disable_state_file",
+        "--disable-state-file",
         action="store_true",
         dest="disable_state_file",
         default=False,
