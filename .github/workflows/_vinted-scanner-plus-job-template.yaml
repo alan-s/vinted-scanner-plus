@@ -1,4 +1,4 @@
-name: Vinted Scanner Plus Call Template
+name: Vinted Scanner Plus Job Template
 
 on:
   workflow_call:
@@ -29,7 +29,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: vinted-scanner-main
+  group: vinted-scanner-plus-main
   cancel-in-progress: false
 
 jobs:

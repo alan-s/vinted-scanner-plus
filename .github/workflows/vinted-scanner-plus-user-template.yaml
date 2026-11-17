@@ -1,0 +1,24 @@
+name: Vinted Scanner Plus User Template
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    uses: ./.github/workflows/_vinted-scanner-plus-job-template.yaml
+
+    with:
+      args: "--log_filtering" #add --enable_notifications to send notifications
+
+      CONFIGS: ${{ vars.VSP_USER01_CONFIGS }}
+      SEARCH_CONFIG: ${{ vars.VSP_USER01_SEARCH_CONFIG }}
+      ITEM_FILTERS: ${{ vars.VSP_USER01_ITEM_FILTERS }}
+      SELLER_FILTERS: ${{ vars.VSP_USER01_SELLER_FILTERS }}
+
+    secrets:
+      NOTIFICATION_CONFIG: ${{ secrets.VSP_USER01_NOTIFICATION_CONFIG }}
