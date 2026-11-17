@@ -13,6 +13,11 @@ CSV_FILES = {'state_config'}
 def load_configs_file_with_paths(path):
     try:
         configs = file_utils.load_yaml(path)
+
+        validation_passed = validate_file_configs(configs)
+        if validation_passed is not True:
+            raise validation_passed
+
         file_configs = configs['file_configs']
 
         for config_name, config in file_configs.items():
@@ -24,8 +29,11 @@ def load_configs_file_with_paths(path):
 
         return configs
 
+    except ValueError as e:
+        logging_manager.error(f"Configs file at '%s' failed validation: %s", path, e)
+        sys.exit(1)
     except FileNotFoundError, IOError:
-        logging_manager.info(f"No 'configs.yaml' found at %s", path)
+        logging_manager.error(f"No configs file found at '%s'", path)
         sys.exit(1)
     except IOError as e:
         logging_manager.error(e, exc_info=True)
@@ -55,3 +63,57 @@ def load_configs_from_config_yaml(yaml_config):
         file_configs[config_name]['file_path'] = config['file_path']
 
     return file_configs
+
+
+def validate_file_configs(yaml_content: dict) -> bool | ValueError:
+    allowed_sections = {
+        "search_config",
+        "state_config",
+        "item_filters_config",
+        "seller_filters_config",
+        "notification_config",
+    }
+
+    allowed_keys = {
+        "base_path",
+        "directory_name",
+        "file_name",
+    }
+
+    if not isinstance(yaml_content, dict):
+        return ValueError("YAML content must be a dictionary.")
+
+    if set(yaml_content.keys()) != {"file_configs"}:
+        return ValueError("Only the 'file_configs' top-level key is allowed.")
+
+    file_configs = yaml_content["file_configs"]
+
+    if not isinstance(file_configs, dict):
+        return ValueError("'file_configs' must be a dictionary.")
+
+    invalid_sections = set(file_configs.keys()) - allowed_sections
+    if invalid_sections:
+        return ValueError(f"Invalid file config sections: {invalid_sections}")
+
+    missing_sections = allowed_sections - set(file_configs.keys())
+    if missing_sections:
+        return ValueError(f"Missing file config sections: {missing_sections}")
+
+    for section_name, section_config in file_configs.items():
+
+        if not isinstance(section_config, dict):
+            return ValueError(f"'{section_name}' must be a dictionary.")
+
+        invalid_keys = set(section_config.keys()) - allowed_keys
+        if invalid_keys:
+            return ValueError(
+                f"Invalid keys in '{section_name}': {invalid_keys}"
+            )
+
+        if not section_config.get("file_name"):
+            return ValueError(
+                f"'file_name' is mandatory and must have a value "
+                f"in '{section_name}'."
+            )
+
+    return True
