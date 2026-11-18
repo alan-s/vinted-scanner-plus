@@ -121,7 +121,7 @@ def process_query(query, session, args):
 
     # Print end-of-query stats
     log_end_of_run_stats(items, excluded_items, previously_notified_items, candidate_items,
-                         notified_items, failed_notified_items, failed_processing_items, max_items,
+                         notified_items, failed_notified_items, max_items,
                          args.enable_notifications)
 
 

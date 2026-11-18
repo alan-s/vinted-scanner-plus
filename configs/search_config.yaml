@@ -1,21 +1,21 @@
 # Vinted platform urls and queries to search
 #
-# 'vinted_url': change the TLD according to your country (.fr, .es, etc.)
-# 'vinted_api_url': url of the api for the same country TLD
-# 'locale': marketplace locale e.g. en-GB, it-IT, etc.
+# 'vinted_url': set to your country's url (.fr, .es, etc.)
+# 'vinted_api_url': url of the api for the same marketplace
+# 'locale': (Optional) marketplace locale value e.g. en-GB, it-IT, etc.
 vinted:
   vinted_url: https://www.vinted.co.uk
   vinted_api_url: https://api.vinted.co.uk
   locale:
 
-# 'pages': number of pages to scan for each request
+# 'pages': number of pages to scan for each search query
 # 'per_page' : number of items per page to return. 24 with 'order' by 'relevance' appears to be a good combination
 # 'max_items': maximum number of items to process (and potentially notify) for each search query
-# 'min_delay_seconds' 'max_delay_seconds' : add an optional random delay (between min and max seconds) to reduce likelihood of rate-limiting by the Vinted API
+# 'min_delay_seconds' 'max_delay_seconds' : optional random delay (between min and max seconds) to reduce likelihood of rate-limiting by the Vinted API
 search:
   pages: 2
   per_page: 24
-  max_items: 8
+  max_items: 10
   min_delay_seconds:
   max_delay_seconds:
 
@@ -32,7 +32,7 @@ queries:
     search_text: monopoly stranger things
     attribute_ids[catalog]: 4881
     attribute_ids[brand]: 114196
-    price_from: 20
+    price_from: 19
     price_to: 25
     order: relevance
   - query_id: cluedo_harry_potter

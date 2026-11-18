@@ -138,7 +138,7 @@ def get_items_from_catalogue_search(session, search_config, query_params):
         data = response.json()
 
         # If fewer than 96 items were returned, this is the last page
-        if len(new_items) < 96:
+        if len(new_items) < per_page:
             break
 
         page += 1
