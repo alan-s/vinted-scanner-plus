@@ -62,7 +62,7 @@ This project is a fork of Vinted Scanner, but not part of the fork network. All 
 
 ## How it works
 
-One run of `vinted_scanner_plus.py` does the following:
+On run, `vinted_scanner_plus.py` does the following:
 
 1. Loads a config file `configs.yaml`, which in turn points to all other files required
 2. Loads platform config, search queries, item and seller filter rules, and a CSV state file that contains previously seen items
