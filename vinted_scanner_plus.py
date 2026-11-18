@@ -25,7 +25,7 @@ def main():
     # Print what options app has been launched with
     args_str = " ".join(sys.argv[1:])
     logger.info(f"Launched with the following args: {args_str}")
-    logger.info(f"Logging to '{args.log_path})'")
+    logger.info(f"Logging to '{args.log_path}'")
 
     # Get all the required file paths from config
     base_dir = pathlib.Path.cwd()

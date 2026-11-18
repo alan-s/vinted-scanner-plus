@@ -1,22 +1,23 @@
 import logging
 import sys
-from logging import *
-
-log_name = "vinted_scanner_plus.log"
-logger = logging.getLogger(__name__)
 
 
-def init_logger():
-    """Initialises the global logging configuration."""
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s.%(msecs)03d %(levelname)s %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[
-            logging.StreamHandler(sys.stdout),
-            logging.FileHandler(log_name, encoding="utf-8", mode="a")
-        ]
-    )
+def init_logger(log_path):
+    try:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s.%(msecs)03d %(levelname)s %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+            handlers=[
+                logging.StreamHandler(sys.stdout),
+                logging.FileHandler(log_path, encoding="utf-8", mode="a")
+            ],
+            force=True,
+        )
+    except OSError as e:
+        print(f"Terminating; couldn't initialise log file at {log_path}")
+        sys.exit(1)
 
 
 def item_log_printer(identifier, state, log_type="query"):
