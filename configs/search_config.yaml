@@ -11,10 +11,13 @@ vinted:
 # 'pages': number of pages to scan for each request
 # 'per_page' : number of items per page to return. 24 with 'order' by 'relevance' appears to be a good combination
 # 'max_items': maximum number of items to process (and potentially notify) for each search query
+# 'min_delay_seconds' 'max_delay_seconds' : add an optional random delay (between min and max seconds) to reduce likelihood of rate-limiting by the Vinted API
 search:
   pages: 2
   per_page: 24
-  max_items: 10
+  max_items: 8
+  min_delay_seconds:
+  max_delay_seconds:
 
 # Vinted queries for search
 # 'query_id' : provide a unique query identifier

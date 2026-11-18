@@ -8,7 +8,7 @@ from managers.logging_manager import item_log_printer, log_end_of_run_stats
 from managers.notification_manager import send_telegram_message
 from managers.state_manager import record_already_notified_item
 from managers.vinted_api_manager import get_items_from_catalogue_search, get_item_description_and_upload_datetime, \
-    get_user_details
+    get_user_details, random_delay_in_seconds
 
 logger = logging.getLogger(__name__)
 
@@ -45,16 +45,19 @@ def process_query(query, session, args):
     candidate_items = []
     notified_items = []
     failed_notified_items = []
+    failed_processing_items = []
 
     # Process each item returned in the response, and notify based on filters
-    max_items = search_config['search']['max_items']
-    if items:
+    max_items = search_config.get('search', {}).get('max_items', None)
+    if items and max_items is not None:
         logger.info("From config, the maximum number of items to process/notify is: %s", max_items)
 
     # Load the list of already notified items
     already_notified_items = {k: v for k, v in state_config.items() if k != "file_path"}
 
     for item in islice(items, max_items):
+
+        random_delay_in_seconds(search_config)  # To reduce likelihood of rate-limiting from Vinted API
 
         item_id = str(item["id"])
         item_log_printer(item_id, "Started", log_type="item")
@@ -79,6 +82,11 @@ def process_query(query, session, args):
         # Get seller detail for item
         logger.info(f"Getting seller details for item [{item_id}]")
         seller = get_seller_details(item, session, search_config)
+
+        # Failed getting seller details from api
+        if seller is None:
+            logger.info(f"Failed to get seller details. Skipping item [{item_id}]")
+            continue
 
         # Check against seller filters
         if args.log_filtering:
@@ -105,7 +113,7 @@ def process_query(query, session, args):
                 failed_notified_items.append(item_id)
                 logger.error(f"Failed to send notification for item [{item_id}]")
         else:
-            logger.info(f"No notification sent for item [{item_id}]; '--{list(vars(args))[1]}' not set")
+            logger.info(f"No notification sent for item [{item_id}]; '--{list(vars(args))[2]}' not set")
 
         item_log_printer(item_id, "Completed", log_type="item")
 
@@ -113,7 +121,8 @@ def process_query(query, session, args):
 
     # Print end-of-query stats
     log_end_of_run_stats(items, excluded_items, previously_notified_items, candidate_items,
-                         notified_items, failed_notified_items, max_items, args.enable_notifications)
+                         notified_items, failed_notified_items, failed_processing_items, max_items,
+                         args.enable_notifications)
 
 
 def get_item_details_for_message(item, search_config, session):
@@ -208,7 +217,7 @@ def send_notification(notification_config, message_details, seller, args, state_
                     f"Recorded notification for item [{message_details['item_id']}] in '{state_config['file_path']}'")
         else:
             logger.info(
-                f"Not recording notification for item [{message_details['item_id']}] in '{state_config['file_path']}'; '--{list(vars(args))[2]}' set")
+                f"Not recording notification for item [{message_details['item_id']}] in '{state_config['file_path']}'; '--{list(vars(args))[3]}' set")
 
         return True
     else:

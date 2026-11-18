@@ -1,4 +1,7 @@
 import logging
+import random
+import sys
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -197,6 +200,31 @@ def get_user_details(session, search_config, user_id):
     except (requests.exceptions.RequestException, ValueError) as e:
         logger.error(f"Unable to fetch Vinted seller {user_id}: {e}")
         return None
+
+
+def random_delay_in_seconds(search_config):
+    try:
+        min_seconds = int(search_config.get('search').get('min_delay_seconds') or 0)
+        max_seconds = int(search_config.get('search').get('max_delay_seconds') or 0)
+
+        # no negatives, and make sure min <= max
+        if min_seconds < 0 or max_seconds < 0 or min_seconds > max_seconds:
+            raise ValueError(
+                f"'min_delay_seconds' and 'max_delay_seconds' must be > 0, and 'min_delay_seconds' < 'max_delay_seconds'")
+
+        delay = random.randint(min_seconds, max_seconds)
+        if delay > 0:
+            logger.info(
+                f"Rate limit set in config (min={min_seconds}s, max={max_seconds}s) "
+                f"- adding {delay} second(s) delay before the next item"
+            )
+            time.sleep(delay)
+        return delay
+
+    except (ValueError, TypeError, AttributeError) as e:
+        logger.error("Invalid 'min_delay_seconds' or 'max_delay_seconds' value in '%s' : %s",
+                     search_config['file_path'], e)
+        sys.exit(1)
 
 
 def close_session(session):
