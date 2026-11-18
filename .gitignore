@@ -5,9 +5,3 @@ __pycache__/
 
 # configs
 configs/notification_config.yaml
-
-# state
-state/
-
-# log
-vinted_scanner_plus.log
