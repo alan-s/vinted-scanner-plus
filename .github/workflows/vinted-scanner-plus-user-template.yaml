@@ -13,7 +13,7 @@ jobs:
     uses: ./.github/workflows/_vinted-scanner-plus-job-template.yaml
 
     with:
-      args: "--log-filtering" #--enable_notifications when ready to send notifications
+      args: "--log-filtering" #--enable-notifications when ready to send notifications
       log_path: "vinted_scanner_plus.log" # leave as file name to output to app root
 
       CONFIGS: ${{ vars.VSP_USER01_CONFIGS }}

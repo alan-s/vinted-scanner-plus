@@ -1,7 +1,10 @@
+import logging
 import sys
 from pathlib import Path
 
 import yaml
+
+logger = logging.getLogger(__name__)
 
 
 def load_yaml(path):

@@ -76,11 +76,34 @@ jobs:
           printf '%s' "$ITEM_FILTERS" > filters/item_filters.yaml
           printf '%s' "$SELLER_FILTERS" > filters/seller_filters.yaml
 
-      - name: Set environment variables
+      - name: Set environment variable for log path
         env:
           INPUT_LOG_PATH: ${{ inputs.log_path }}
         run: |
           echo "LOG_PATH=$INPUT_LOG_PATH" >> "$GITHUB_ENV"
+
+      - name: Resolve and set environment variable for state file path
+        env:
+          RAW_CONFIGS: ${{ inputs.CONFIGS }}
+        run: |
+          python3 -c '
+          import os, yaml
+          from utils.file_utils import build_file_path
+
+          configs = yaml.safe_load(os.environ.get("RAW_CONFIGS", "")) or {}
+          file_cfg = configs.get("file_configs") or {}
+          state_cfg = file_cfg.get("state_config") or {}
+
+          resolved_path = build_file_path(
+              filename=state_cfg["file_name"],
+              directory_name=state_cfg.get("directory_name"),
+              base_path=state_cfg.get("base_path")
+          )
+
+          # Export to $GITHUB_ENV so it is available as $STATE_FILE_PATH in later steps
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write(f"STATE_FILE_PATH={resolved_path}\n")
+          '
 
       - name: Run scanner
         env:
@@ -100,18 +123,18 @@ jobs:
           )'
 
       - name: Commit updated seen items
-        if: ${{ hashFiles('state/already_notified_items.csv') != '' }}
+        if: ${{ hashFiles(env.STATE_FILE_PATH) != '' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add state/already_notified_items.csv
+          git add "$STATE_FILE_PATH"
 
           # Commit and push only if changes exist
           if git diff --cached --quiet; then
             echo "No new items to commit."
           else
-            git commit -m "Update Vinted seen items."
+            git commit -m "Update seen/notified items."
             git push origin HEAD:main
           fi
 
