@@ -2,7 +2,7 @@
 
 **Vinted Scanner Plus** is a lightweight Python scanner that polls any **Vinted** marketplace for newly listed items matching your search queries and sends **Telegram** notifications on each run, compensating for Vinted's lack of real-time alerts.
 
-It introduces a flexible and powerful rules engine to alert you only on listings that match your criteria, while keeping a record of previously seen items to avoid duplicates. This enhanced functionality over Vinted's default search ensures you can snap up a bargain as soon as an item is listed!
+It introduces a flexible and powerful rules engine to alert only on listings that match your criteria, while keeping a record of previously seen items to avoid duplicates. This enhanced functionality, over Vinted's default search, ensures you csnap a bargain as soon as an item is listed!
 
 This project is a fork of Vinted Scanner, but not part of the fork network. All credit goes to the respective authors. See [Why another Vinted Scanner?](#why-another-vinted-scanner) and [credits ](#credits-and-licence) for details.
 
@@ -130,8 +130,8 @@ VintedScannerPlus/
 
 1. To get started, clone the repo and install required packages:
 ```bash
-git clone https://github.com/michelepinto/VintedScanner.git
-cd VintedScannerPlus
+git clone https://github.com/alan-s/vinted-scanner-plus.git
+cd vinted-scanner-plus
 
 pip3 install -r requirements.txt
 ```
