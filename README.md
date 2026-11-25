@@ -57,6 +57,7 @@ This project is a fork of Vinted Scanner, but not part of the fork network. All 
 - Naive rate limiting strategy
 - User isolation*
 - Config validation*
+- Free and reliable job scheduling
 
 * Work-In-Progress (see [Known quirks and limitations ](#known-quirks-and-limitations))
 
@@ -404,7 +405,7 @@ The same approach can be used for the items ( `{vinted_url.vinted_url}/items/`) 
 
 ## Running on a schedule
 
-You can schedule Vinted Scanner Plus like any other script, supplying the desired CLI arguments. Take note of the [disclaimer](#disclaimer) with regards hitting APIs too frequently.
+You can schedule Vinted Scanner Plus like any other script on your local host, supplying the desired CLI arguments. Take note of the [disclaimer](#disclaimer) with regards hitting APIs too frequently. However, you can also utilise GitHub workflows to schedule and run the scanner for free.
 
 ### GitHub Actions
 
@@ -450,7 +451,7 @@ name: Vinted Scanner Plus User Template
 on:
   workflow_dispatch:
   schedule:
-    - cron: "7,22,37,52 * * * *"
+    - cron: "7,22,37,52 * * * *" # remove this schedule if using 'workflow_dispatch' with external schedule
 
 permissions:
   contents: write
@@ -474,10 +475,37 @@ jobs:
 
 Notes on the CI setup:
 
-- Cron in GitHub Actions is **UTC**, and scheduled runs are best-effort — they are frequently delayed during busy periods, so treat "every 15 minutes" as a target rather than a guarantee
+- Cron in GitHub Actions is **UTC**, and scheduled runs are best-effort, not guaranteed, on a free tier — they are frequently delayed or dropped. The recommended approach is to schedule using an external source (see [Scheduling with 'workflow_dispatch'](#scheduling-with-workflow_dispatch))
 - Since each run loads configs from dynamic paths, there is full user isolation for queries, state, filters and log file
 - Scheduled workflows are disabled automatically after 60 days without repository activity. The state-file commits count as activity, so this normally takes care of itself.
 - Under Settings → Actions → General, workflow permissions must allow read *and* write for the push step to succeed.
+
+### Scheduling with `workflow_dispatch`
+
+Any runs scheduled through GitHub using the `schedule` trigger are frequently delayed or dropped on the free tier, making it less-than-ideal for reliable monitoring; it isn't recommended.
+
+Instead, define a schedule externally, and use it to call the GitHub API. GitHub almost always run the workflow when the `workflow_dispatch` trigger is called, making it a reliable and free method for monitoring. 
+
+To configure:
+1. Ensure `workflow_dispatch` is defined in the `vinted-scanner-plus-user-template.yaml` (and remove or comment out the `schedule` block)
+2. Set up an access token on your repo, for example, `Settings > Developer Settings > Personal access tokens > Fine-grained token`
+   1. Enter a token name, select your repo under `Repository access` and ensure the read/write permission is granted for `Actions`. Copy the `github_pat_` token
+3. Configure an external scheduler to call the GitHub API. Something simple, free, and reliable, such as [cron-job.org](https://cron-job.org/) is ideal
+   1. Assuming you've created a free account with [cron-job.org](https://cron-job.org/), add a new cronjob with a title
+   2. Set `URL`: `https://api.github.com/repos/{your_username}/{repo_name}/actions/workflows/vinted-scanner-plus-user-template.yaml/dispatches` 
+   3. Define the desired schedule e.g. `7,22,37,52 * * * *`
+   4. Under `Advanced`, add the following `Header` key:value pairs
+   ```
+    Accept : application/vnd.github+json
+    Authorization : Bearer {your_token}
+    Content-Type : application/json
+    User-Agent : CronJob-Trigger
+    ```
+   5. `Request method`: `POST`
+   6. `Request body`: `{"ref": "main"}`
+4. Save and test
+
+This job will now run on the defined schedule, use your access token to call the GitHub API, and then so a workflow run scheduled (with high likelihood!).
 
 ## Known quirks and limitations
 
@@ -485,7 +513,7 @@ Things the code does today that are worth being aware of before you rely on it:
 
 - **Config validation needs improvement.** Currently, it's limited and some assumptions are assumed on user entry
 - **Single notification token and state file used.** Currently, all query notifications are sent to a single Telegram account and state is saved in a single file
-- **State file visible on a public repo,** so everyone can see the IDs of the listings you have been tracking
+- **State file and logs are visible on a public repo,** so everyone can see the IDs of the listings you have been tracking. Make your repo private if that is a concern
 - **Uses an unofficial API.** Vinted publishes no documented public API. Endpoint paths, parameter names and response shapes can change without notice
 - **Two requests are made per new item.** Item and seller details are fetched individually, so a run that discovers many new items makes many calls in quick succession. Aggressive polling can get you rate-limited or blocked. Keep the interval reasonable and check the platform's terms before running this at scale (see [Disclaimer](#disclaimer))
 - **Vinted `svc-catalogue/items` endpoint when used with `order : relevance` is non-deterministic**, so do not be confused if the same query returns different, but tangential results on each run, even in short succession

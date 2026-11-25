@@ -3,7 +3,7 @@ name: Vinted Scanner Plus User Template
 on:
   workflow_dispatch:
   schedule:
-    - cron: "7,22,37,52 * * * *"
+    - cron: "7,22,37,52 * * * *" # remove this schedule if using 'workflow_dispatch' with external schedule
 
 permissions:
   contents: write
