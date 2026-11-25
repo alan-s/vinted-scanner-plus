@@ -20,12 +20,12 @@ def load_filters(filter_type, path):
         sys.exit(1)
 
     # No YAML content means no filters
-    filter_config = filter_config or {"filters": []}
+    filter_config = filter_config or {"item_filters": []}
 
     logger.info(
         "Loaded %s [%s] filter(s) from '%s'",
-        len(filter_config["filters"]),
-        filter_type,
+        len(filter_config.get("item_filters", filter_config.get("seller_filters", []))),
+        filter_type.replace("_filters_config", ""),
         Path(path).resolve(),
     )
 
@@ -81,13 +81,24 @@ def validate_filters(config):
         # bool is a subclass of int in Python, so explicitly exclude it.
         return isinstance(value_arg, (int, float)) and not isinstance(value_arg, bool)
 
-    check_keys(config, {"filters"}, set(), "Root")
+    # Root must contain exactly one of the two accepted keys.
+    if not isinstance(config, dict):
+        raise ValueError("Root must be a mapping")
 
-    if not isinstance(config["filters"], list):
-        raise ValueError("'filters' must be a list")
+    root_keys = {"item_filters", "seller_filters"}
 
-    for i, item in enumerate(config["filters"]):
-        context = f"filters[{i}]"
+    if len(config) != 1 or not config.keys() <= root_keys:
+        raise ValueError(
+            f"Root must contain exactly one of: {sorted(root_keys)}"
+        )
+
+    root_key = next(iter(config))
+
+    if not isinstance(config[root_key], list):
+        raise ValueError(f"'{root_key}' must be a list")
+
+    for i, item in enumerate(config[root_key]):
+        context = f"{root_key}[{i}]"
 
         check_keys(
             item,
@@ -216,7 +227,7 @@ def validate_filters(config):
     return True
 
 
-def filter_item(item_id, data_to_filter: dict, query_id: str, filters: list, filter_type, args) -> bool:
+def check_item_against_filters(item_id, data_to_filter: dict, query_id: str, filters: list, filter_type, args) -> bool:
     filter_label = {"item": "item", "seller": "seller"}.get(filter_type, "item")
 
     matching_queries = [

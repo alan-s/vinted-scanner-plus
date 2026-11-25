@@ -3,7 +3,7 @@ from itertools import islice
 
 from currency_symbols import CurrencySymbols
 
-from managers.filter_manager import filter_item
+from managers.filter_manager import check_item_against_filters
 from managers.logging_manager import item_log_printer, log_end_of_run_stats
 from managers.notification_manager import send_telegram_message
 from managers.state_manager import record_already_notified_item
@@ -31,7 +31,7 @@ def process_query(query, session, args):
     # Skip if query is disabled
     if query_disabled:
         logger.info(
-            f"Skipped query [{query_id}]; 'disabled' set in query config at '{state_config['file_path']}'")
+            f"Skipped query [{query_id}]; 'disabled' set in query config at '{search_config['file_path']}'")
         return
 
     # Request items from the Vinted API based on the search parameters
@@ -69,16 +69,6 @@ def process_query(query, session, args):
             previously_notified_items.append(item_id)
             continue
 
-        # Check against item filters
-        if args.log_filtering:
-            logger.info(f"Checking item [{item_id}] against [item] filters")
-
-        item_filters = item_filters_config['filters']
-        if not filter_item(item_id, item, query_id, item_filters, "item", args):
-            excluded_items.append(item_id)
-            item_log_printer(item_id, "Completed", log_type="item")
-            continue
-
         # Get seller detail for item
         logger.info(f"Getting seller details for item [{item_id}]")
         seller = get_seller_details(item, session, search_config)
@@ -88,18 +78,25 @@ def process_query(query, session, args):
             logger.info(f"Failed to get seller details. Skipping item [{item_id}]")
             continue
 
-        # Check against seller filters
-        if args.log_filtering:
-            logger.info(f"Checking item [{item_id}] against [seller] filters")
+        # Check against item and seller filters
+        item_filters = item_filters_config.get('item_filters')
+        seller_filters = seller_filters_config.get('seller_filters')
 
-        seller_filters = seller_filters_config['filters']
-        if not filter_item(item_id, seller, query_id, seller_filters, "seller", args):
+        filters_to_apply = (
+            (item, item_filters, "item"),
+            (seller, seller_filters, "seller"),
+        )
+
+        if any(
+                not is_item_included_after_filter(args, item_id, target, query_id, filters, filter_type)
+                for target, filters, filter_type in filters_to_apply
+                if filters is not None):
             excluded_items.append(item_id)
             item_log_printer(item_id, "Completed", log_type="item")
             continue
 
         if args.log_filtering:
-            logger.info(f"Item [{item_id}] meets all selection filters and no exclusions apply")
+            logger.info(f"Item [{item_id}] meets all selection criteria and no exclusions apply")
 
         # Send notification is set
         candidate_items.append(item_id)
@@ -123,6 +120,15 @@ def process_query(query, session, args):
     log_end_of_run_stats(items, excluded_items, previously_notified_items, candidate_items,
                          notified_items, failed_notified_items, max_items,
                          args.enable_notifications)
+
+
+def is_item_included_after_filter(args, item_id, object_to_filter, query_id, filters, filter_type) -> bool:
+    logger.info(f"Checking item [{item_id}] against [{filter_type}] filters")
+
+    if not check_item_against_filters(item_id, object_to_filter, query_id, filters, filter_type, args):
+        return False
+
+    return True
 
 
 def get_item_details_for_message(item, search_config, session):
