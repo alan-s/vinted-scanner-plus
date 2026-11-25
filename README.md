@@ -59,7 +59,7 @@ This project is a fork of Vinted Scanner, but not part of the fork network. All 
 - Config validation*
 - Free and reliable job scheduling
 
-* Work-In-Progress (see [Known quirks and limitations ](#known-quirks-and-limitations))
+\* Work-In-Progress (see [Known quirks and limitations ](#known-quirks-and-limitations))
 
 ## How it works
 
