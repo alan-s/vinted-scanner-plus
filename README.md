@@ -30,6 +30,7 @@ This project is a fork of Vinted Scanner, but not part of the fork network. All 
   - [State file](#state-file)
 - [Running on a schedule](#running-on-a-schedule)
   - [GitHub Actions](#github-actions)
+  - [Scheduling with 'workflow_dispatch'](#scheduling-with-workflow_dispatch)
 - [Known quirks and limitations](#known-quirks-and-limitations)
 - [Troubleshooting](#troubleshooting)
 - [Credits and licence](#credits-and-licence)
