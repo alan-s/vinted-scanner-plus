@@ -200,29 +200,28 @@ def validate_filters(config):
                 value = rule["value"]
 
                 if (
-                        not isinstance(value, (str, int, float))
-                        or isinstance(value, bool)
+                        not isinstance(value, (str, int, float, bool))
                 ):
                     raise ValueError(
-                        f"{rule_context}.value must be a string or number "
+                        f"{rule_context}.value must be a string, number or boolean "
                         f"for operator '{operator}'"
                     )
 
-                value = str(value)
+                if isinstance(value, str):
 
-                if not value.strip():
-                    raise ValueError(
-                        f"{rule_context}.value must be a non-empty string "
-                        f"for operator '{operator}'"
-                    )
+                    if not value.strip():
+                        raise ValueError(
+                            f"{rule_context}.value must be a non-empty string "
+                            f"for operator '{operator}'"
+                        )
 
-                # Validate comma-separated values.
-                expected_values = [v.strip() for v in value.split(",")]
+                    # Validate comma-separated values.
+                    expected_values = [v.strip() for v in value.split(",")]
 
-                if any(not v for v in expected_values):
-                    raise ValueError(
-                        f"{rule_context}.value contains an empty CSV value"
-                    )
+                    if any(not v for v in expected_values):
+                        raise ValueError(
+                            f"{rule_context}.value contains an empty CSV value"
+                        )
 
     return True
 

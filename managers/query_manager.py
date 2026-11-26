@@ -45,7 +45,6 @@ def process_query(query, session, args):
     candidate_items = []
     notified_items = []
     failed_notified_items = []
-    failed_processing_items = []
 
     # Process each item returned in the response, and notify based on filters
     max_items = search_config.get('search', {}).get('max_items', None)

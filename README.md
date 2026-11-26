@@ -4,7 +4,7 @@
 
 It introduces a flexible and powerful rules engine to alert only on listings that match your criteria, while keeping a record of previously seen items to avoid duplicates. This enhanced functionality, over Vinted's default search, ensures you csnap a bargain as soon as an item is listed!
 
-This project is a fork of Vinted Scanner, but not part of the fork network. All credit goes to the respective authors. See [Why another Vinted Scanner?](#why-another-vinted-scanner) and [credits ](#credits-and-licence) for details.
+This project is a fork of Vinted Scanner, but not part of the fork network. All credit goes to the respective authors. See [Why another Vinted Scanner?](#why-another-vinted-scanner) and [Credits ](#credits-and-licence) for details.
 
 ![Python](https://img.shields.io/badge/python-3.14-blue?style=flat-square&logo=python&logoColor=white)
 ![Telegram](https://img.shields.io/badge/notifications-Telegram-26A5E4?style=flat-square&logo=telegram&logoColor=white)
@@ -262,6 +262,7 @@ The rules engine provides an additional level of filtering on both item and sell
 | `mode`                  | include or exclude the item if the rules evaluate to `True`                                                     | `include`, `exclude` <br>**include**: all rules must match for the item to be included <br>**exclude**: a match against any rule excludes the item               |
 | `rules.key`*            | Key name for the attribute to filter (additionally accepts nested keys using "." e.g. item.title)               |                                                                                                                                                                  |
 | `rules.operator`        | Available operators for the comparison                                                                          |                                                                                                                                                                  |
+| - `boolean operator`    | Compare with 'true' / 'false' value                                                                             | `equals`                                                                                                                                                         |
 | - `string operators`    | Normalised case-insensitive exact match, or substring match (partial or full word matching. Default is partial) | `equals`, `contains` <br>**equals**: exact match <br>**contains**: substring match (default is partial matching. Add optional `word_match: false` for full word) |
 | - `numeric operators`   | Must be a numeric type                                                                                          | `equals`, `greater_than`, `greater_than_or_equal`, `less_than`, `less_than_or_equal`, `between`                                                                  |
 | - `'nothing' operators` | Whether the key exists, or explictly equals NULL, or whether it is empty                                        | `exists`, `is_null`, `is_empty`                                                                                                                                  |

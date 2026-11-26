@@ -1,10 +1,11 @@
-# Define optional filters on seller attributes for each Vinted query. Used to include or exclude items from the final result set
+# Define optional filters on attributes for each Vinted query. Used to include or exclude items from the final result set
 #
-# 'query_id': same as query_id from search_config.yaml
+# 'query_id': query_id from search_config.yaml where filter should apply
 # 'mode': [include,exclude] include: all rules must match for the item to be included. exclude: a match against any rule excludes the item
 # 'rules': 
 #   - 'key': key to filter (additionally accepts nested keys using "." e.g. user.verification.email)
 #   - 'operator': available operators for the comparison
+#     - [equals] boolean operator: compare with 'true' / 'false' value
 #     - [equals,contains] string operators: normalised case-insensitive exact or substring match
 #     - [equals,greater_than,greater_than_or_equal,less_than,less_than_or_equal,between] numeric operators
 #     - [exists,is_null,is_empty] 'nothing' operators: whether the key exists, or explictly equals NULL, or whether it is empty
